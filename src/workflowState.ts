@@ -1,5 +1,5 @@
 interface WorkflowState {
-    currentStepName: String;
+  currentStepName: String;
 }
 
 export default WorkflowState;
