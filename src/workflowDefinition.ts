@@ -12,7 +12,8 @@ interface SnsIntegrationDetails extends IntegrationDetails {}
 
 interface StepDefinition {
   name: string;
-  definition: string;
+  retries: number;
+  timeoutSeconds: number;
   integrationDetails: LambdaIntegrationDetails | SnsIntegrationDetails;
 }
 
