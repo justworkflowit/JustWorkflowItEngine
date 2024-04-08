@@ -9,7 +9,6 @@ class JustWorkflowItEngine {
   }
 
   public static executeNextStep(workflowState: WorkflowState): void {
-    console.log('executeNextStep', workflowState);
   }
 }
 
