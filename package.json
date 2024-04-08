@@ -1,5 +1,5 @@
 {
-  "name": "justworkflowitengine",
+  "name": "@justworkflowit/engine",
   "version": "1.0.0",
   "description": "The JustWorkflowIt Engine",
   "main": "index.js",
