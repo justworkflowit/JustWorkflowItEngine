@@ -9,6 +9,7 @@ class JustWorkflowItEngine {
   }
 
   public static executeNextStep(workflowState: WorkflowState): void {
+    const _ = workflowState;
   }
 }
 

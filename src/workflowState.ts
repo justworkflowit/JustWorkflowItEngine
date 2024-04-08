@@ -1,3 +1,5 @@
-class WorkflowState {}
+interface WorkflowState {
+    currentStepName: String;
+}
 
 export default WorkflowState;
