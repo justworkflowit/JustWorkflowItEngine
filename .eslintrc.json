@@ -7,6 +7,7 @@
   "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
     "prettier/prettier": ["error"],
+    "import/prefer-default-export": "off",
     "@typescript-eslint/explicit-function-return-type": "error",
     // note you must disable the base rule as it can report incorrect errors
     "no-unused-vars": "off",
