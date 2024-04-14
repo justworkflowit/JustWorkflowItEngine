@@ -1,7 +1,9 @@
-import { IllegalArgumentException } from './exceptions';
+import { IllegalArgumentException } from '../exceptions';
 import StepExecutor from './stepExecutor';
-import WorkflowDefinition from './workflowDefinition';
-import WorkflowState from './workflowState';
+import WorkflowState from '../workflowState';
+import validateAndGetWorkflowDefinition, {
+  WorkflowDefinition,
+} from './workflowDefinition';
 
 class JustWorkflowItEngine {
   workflowDefinition: WorkflowDefinition;
@@ -9,10 +11,12 @@ class JustWorkflowItEngine {
   stepExecutors: Array<StepExecutor>;
 
   constructor(
-    workflowDefinition: WorkflowDefinition,
+    inputWorkflowDefinition: string,
     stepExecutors: Array<StepExecutor>
   ) {
-    this.workflowDefinition = workflowDefinition;
+    this.workflowDefinition = validateAndGetWorkflowDefinition(
+      inputWorkflowDefinition
+    );
     this.stepExecutors = stepExecutors;
   }
 
@@ -21,6 +25,7 @@ class JustWorkflowItEngine {
     const currentStepDefinition = this.workflowDefinition.steps.filter(
       (step) => step.name === currentWorkflowState.nextStepName
     )[0];
+
     if (!currentStepDefinition) {
       throw new IllegalArgumentException(
         `Step named '${currentWorkflowState.nextStepName}' not found in workflow definition '${this.workflowDefinition.workflowName}'`

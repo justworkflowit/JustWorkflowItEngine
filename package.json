@@ -39,5 +39,8 @@
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.4"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0"
   }
 }
