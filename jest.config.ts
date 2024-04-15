@@ -20,6 +20,16 @@ const config: Config = {
 
   // The root directory that Jest should scan for tests and modules within
   rootDir: 'test',
+
+  preset: 'ts-jest',
+
+  testEnvironment: 'node',
+
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.json',
+    },
+  },
 };
 
 export default config;

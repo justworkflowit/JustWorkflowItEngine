@@ -12,15 +12,13 @@ const workflowDefinitionSchema = {
         name: { type: 'string' },
         retries: { type: 'int32' },
         timeoutSeconds: { type: 'int32' },
-        transitionToStep: { type: 'string' },
+        transitionToStep: { type: 'string', nullable: true },
         integrationDetails: { ref: 'integrationDetailSchema' },
-        transitionToStepName: { type: 'string' },
       },
     },
-    integrationDetailTypes: { enum: ['aws:lambda', 'aws:sns'] },
     integrationDetailSchema: {
       properties: {
-        type: { ref: 'integrationDetailTypes' },
+        type: { type: 'string' },
       },
     },
   },

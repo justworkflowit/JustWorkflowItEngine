@@ -1,6 +1,6 @@
 interface WorkflowState {
-  nextStepName: String;
-  userspace: {
+  nextStepName: string | null;
+  userSpace: {
     [key: string]: any;
   };
 }

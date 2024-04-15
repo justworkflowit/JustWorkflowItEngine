@@ -1,0 +1,55 @@
+import JustWorkflowItEngine from '../src';
+import StepExecutor from '../src/engine/stepExecutor';
+import { WorkflowDefinition } from '../src/engine/workflowDefinition';
+import WorkflowState from '../src/workflowState';
+
+const integrationTypeA = 'integrationTypeA';
+const stepExecutorA: StepExecutor = {
+  type: integrationTypeA,
+  execute: (currentWorkflowState: WorkflowState): WorkflowState => {
+    console.log('Hello world, Naush!');
+    return currentWorkflowState;
+  },
+};
+
+const step1Name = 'firstStep';
+const step2Name = 'secondStep';
+
+const aWorkflowDefinition: WorkflowDefinition = {
+  workflowName: 'aWorkflowDefinition',
+  steps: [
+    {
+      name: step1Name,
+      retries: 2,
+      timeoutSeconds: 1000,
+      transitionToStep: 'secondStep',
+      integrationDetails: {
+        type: integrationTypeA,
+      },
+    },
+    {
+      name: step2Name,
+      retries: 2,
+      timeoutSeconds: 1000,
+      transitionToStep: 'secondStep',
+      integrationDetails: {
+        type: integrationTypeA,
+      },
+    },
+  ],
+};
+
+test('run a basic workflow definition', () => {
+  const engine = new JustWorkflowItEngine({
+    workflowDefinition: JSON.stringify(aWorkflowDefinition),
+    stepExecutors: [stepExecutorA],
+  });
+
+  let currentWorkflowState: WorkflowState = {
+    nextStepName: 'firstStep', // TODO: should this be automated. Maybe in the class constructor definition
+    userSpace: {},
+  };
+
+  currentWorkflowState = engine.executeNextStep(currentWorkflowState);
+  expect(currentWorkflowState.nextStepName).toBe(step2Name);
+});

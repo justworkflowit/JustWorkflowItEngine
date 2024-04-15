@@ -5,19 +5,21 @@ import validateAndGetWorkflowDefinition, {
   WorkflowDefinition,
 } from './workflowDefinition';
 
+interface JustWorkflowItEngineConstructorArgs {
+  workflowDefinition: string;
+  stepExecutors: Array<StepExecutor>;
+}
+
 class JustWorkflowItEngine {
   workflowDefinition: WorkflowDefinition;
 
   stepExecutors: Array<StepExecutor>;
 
-  constructor(
-    inputWorkflowDefinition: string,
-    stepExecutors: Array<StepExecutor>
-  ) {
+  constructor(constructorArgs: JustWorkflowItEngineConstructorArgs) {
     this.workflowDefinition = validateAndGetWorkflowDefinition(
-      inputWorkflowDefinition
+      constructorArgs.workflowDefinition
     );
-    this.stepExecutors = stepExecutors;
+    this.stepExecutors = constructorArgs.stepExecutors;
   }
 
   public executeNextStep(currentWorkflowState: WorkflowState): WorkflowState {
@@ -51,11 +53,11 @@ class JustWorkflowItEngine {
     const stepOutput = currentStepExecutor.execute(currentWorkflowState); // TODO: let's not pass the entire state
     const newWorkflowState: WorkflowState = {
       ...currentWorkflowState,
-      userspace: {
-        ...currentWorkflowState.userspace,
+      userSpace: {
+        ...currentWorkflowState.userSpace,
         ...stepOutput,
       },
-      nextStepName: currentStepDefinition.transitionToStepName,
+      nextStepName: currentStepDefinition.transitionToStep,
     };
 
     return newWorkflowState;
