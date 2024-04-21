@@ -1,14 +1,6 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 import { IllegalArgumentException } from '../exceptions';
 
-const jsonXformSchemaImport = {
-  $schema: 'http://json-schema.org/draft-07/schema#',
-  $ref: '#/definitions/JsonXformSchema',
-  definitions: {},
-};
-
-console.log('naush', jsonXformSchemaImport);
-
 interface ViaDefinition {
   type: 'date' | 'commands';
   sourceFormat?: string;
@@ -93,75 +85,14 @@ const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinitionInitial> = {
         fieldset: {
           type: 'array',
           items: {
-            type: 'object',
-            properties: {
-              from: {
-                type: 'string',
-              },
-              to: {
-                type: 'string',
-              },
-              valueToKey: {
-                type: 'boolean',
-              },
-              withValueFrom: {
-                type: 'string',
-              },
-              withTemplate: {
-                type: 'string',
-              },
-              toArray: {
-                type: 'boolean',
-              },
-              via: {
-                type: 'object',
-                properties: {
-                  type: {
-                    type: 'string',
-                    enum: ['date', 'commands'],
-                  },
-                  sourceFormat: {
-                    type: 'string',
-                  },
-                  format: {
-                    type: 'string',
-                  },
-                },
-                required: ['type'],
-                additionalProperties: false,
-              },
-              fromEach: {
-                type: 'object',
-                properties: {
-                  field: {
-                    type: 'string',
-                  },
-                  to: {
-                    type: 'string',
-                  },
-                  flatten: {
-                    type: 'boolean',
-                  },
-                  //     fieldset: {
-                  //       type: 'array',
-                  //       items: {
-                  //         $ref: '#/definitions/fieldset' as any,
-                  //       },
-                  //     },
-                },
-                required: ['field'],
-                additionalProperties: false,
-              },
-            },
-            required: [],
-            additionalProperties: false,
-          },
+            $ref: '#/definitions/fieldset',
+          } as any, // https://github.com/ajv-validator/ajv/issues/2392
         },
       },
       required: ['fieldset'],
       additionalProperties: false,
     },
-    'fieldset': {
+    fieldset: {
       type: 'object',
       properties: {
         from: {
@@ -211,12 +142,12 @@ const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinitionInitial> = {
             flatten: {
               type: 'boolean',
             },
-            // fieldset: {
-            //   type: 'array',
-            //   items: {
-            //     $ref: '#/definitions/interface-403441572-4006-4224-403441572-0-6329' as any,
-            //   },
-            // },
+            fieldset: {
+              type: 'array',
+              items: {
+                $ref: '#/definitions/fieldset',
+              } as any, // https://github.com/ajv-validator/ajv/issues/2392
+            },
           },
           required: ['field'],
           additionalProperties: false,
