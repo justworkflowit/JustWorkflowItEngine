@@ -2,7 +2,7 @@ import Ajv, { JSONSchemaType } from 'ajv';
 import { IllegalArgumentException } from '../exceptions';
 import ParameterDefinition from './parameterDefinitionSchema';
 
-interface IntegrationDetails {
+export interface IntegrationDetails {
   type: string;
   parameters: ParameterDefinition;
 }

@@ -1,11 +1,16 @@
-import WorkflowState from '../workflowState';
+import { IntegrationDetails } from '../workflowDefinition';
+
+export type StepExecutorIntegrationDetails = Omit<
+  IntegrationDetails,
+  'parameters'
+>;
 
 interface StepExecutor {
   type: string;
   execute(
-    currentWorkflowState: WorkflowState,
-    userParameters: any
-  ): WorkflowState;
+    integrationDetails: StepExecutorIntegrationDetails,
+    userParameters: unknown
+  ): unknown;
 }
 
 export default StepExecutor;

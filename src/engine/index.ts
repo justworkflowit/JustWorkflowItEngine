@@ -1,5 +1,5 @@
 import { IllegalArgumentException } from '../exceptions';
-import StepExecutor from './stepExecutor';
+import StepExecutor, { StepExecutorIntegrationDetails } from './stepExecutor';
 import WorkflowState from '../workflowState';
 import validateAndGetWorkflowDefinition, {
   WorkflowDefinition,
@@ -64,16 +64,23 @@ class JustWorkflowItEngine {
       );
     }
 
+    const { parameters: _parameters, ...restOfIntegrationDetails } =
+      currentStepDefinition.integrationDetails;
+    const stepIntegrationDetails: StepExecutorIntegrationDetails = {
+      ...restOfIntegrationDetails,
+    };
+
     // Execute the current step executor using the current workflow state
     const stepOutput = currentStepExecutor.execute(
-      currentWorkflowState,
+      stepIntegrationDetails,
       userParameters
     ); // TODO: let's not pass the entire state, maybe just integration details and userParameters
+
     const newWorkflowState: WorkflowState = {
       ...currentWorkflowState,
       userSpace: {
         ...currentWorkflowState.userSpace,
-        ...stepOutput,
+        stepOutput,
       },
       nextStepName: currentStepDefinition.transitionToStep,
     };

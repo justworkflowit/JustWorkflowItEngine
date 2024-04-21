@@ -1,14 +1,24 @@
 import JustWorkflowItEngine from '../src';
-import StepExecutor from '../src/engine/stepExecutor';
+import StepExecutor, {
+  StepExecutorIntegrationDetails,
+} from '../src/engine/stepExecutor';
 import { WorkflowDefinition } from '../src/workflowDefinition';
 import WorkflowState from '../src/workflowState';
 
 const integrationTypeA = 'integrationTypeA';
+const anOutput = {
+  anOutputPropertyKey: 'anOutputProperty',
+};
+
 const stepExecutorA: StepExecutor = {
+  // TODO: let's type the step executor, let the user provide unknown if needed
   type: integrationTypeA,
-  execute: (currentWorkflowState: WorkflowState): WorkflowState => {
-    console.log('Hello world, Naush!');
-    return currentWorkflowState;
+  execute: (
+    integrationDetails: StepExecutorIntegrationDetails,
+    userParameters: unknown
+  ): unknown => {
+    console.log('Hello world, Naush!', integrationDetails, userParameters);
+    return anOutput;
   },
 };
 
