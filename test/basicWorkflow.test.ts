@@ -34,6 +34,9 @@ const aWorkflowDefinition: WorkflowDefinition = {
       transitionToStep: 'secondStep',
       integrationDetails: {
         type: integrationTypeA,
+        // parameters: {
+
+        // }
       },
     },
   ],

@@ -1,30 +1,60 @@
-import Ajv, { JTDDataType } from 'ajv/dist/jtd';
+import Ajv, { JSONSchemaType } from 'ajv';
 import { IllegalArgumentException } from '../exceptions';
 
-const workflowDefinitionSchema = {
+interface IntegrationDetails {
+  type: string;
+}
+
+interface StepDefinition {
+  name: string;
+  retries: number;
+  timeoutSeconds: number;
+  transitionToStep: string | null;
+  integrationDetails: IntegrationDetails;
+}
+
+interface WorkflowDefinitionInitial {
+  workflowName: string;
+  steps: Array<StepDefinition>;
+}
+
+const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinitionInitial> = {
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  type: 'object',
   properties: {
     workflowName: { type: 'string' },
-    steps: { elements: { ref: 'stepDefinitionSchema' } },
+    steps: {
+      type: 'array',
+      items: { $ref: '#/definitions/stepDefinitionSchema' } as any, // https://github.com/ajv-validator/ajv/issues/2392
+    },
   },
   definitions: {
     stepDefinitionSchema: {
+      type: 'object',
       properties: {
         name: { type: 'string' },
-        retries: { type: 'int32' },
-        timeoutSeconds: { type: 'int32' },
-        transitionToStep: { type: 'string', nullable: true },
-        integrationDetails: { ref: 'integrationDetailSchema' },
+        retries: { type: 'integer' },
+        timeoutSeconds: { type: 'integer' },
+        transitionToStep: { type: 'string' },
+        integrationDetails: { $ref: '#/definitions/integrationDetailSchema' },
       },
+      required: ['name', 'retries', 'timeoutSeconds', 'integrationDetails'],
+      additionalProperties: false,
     },
     integrationDetailSchema: {
+      type: 'object',
       properties: {
         type: { type: 'string' },
       },
+      required: ['type'],
+      additionalProperties: false,
     },
   },
-} as const;
+  required: ['workflowName', 'steps'],
+  additionalProperties: false,
+};
 
-export type WorkflowDefinition = JTDDataType<typeof workflowDefinitionSchema>;
+export type WorkflowDefinition = WorkflowDefinitionInitial;
 
 function validateAndGetWorkflowDefinition(
   inputWorkflowDefinitionString: string
