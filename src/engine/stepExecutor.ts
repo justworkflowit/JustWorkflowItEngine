@@ -5,12 +5,14 @@ export type StepExecutorIntegrationDetails = Omit<
   'parameters'
 >;
 
+export interface StepExecutorArguments {
+  integrationDetails: StepExecutorIntegrationDetails;
+  parameters: unknown;
+}
+
 interface StepExecutor {
   type: string;
-  execute(
-    integrationDetails: StepExecutorIntegrationDetails,
-    userParameters: unknown
-  ): unknown;
+  execute(args: StepExecutorArguments): Record<string, unknown>;
 }
 
 export default StepExecutor;

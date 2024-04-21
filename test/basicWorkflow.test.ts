@@ -1,24 +1,27 @@
 import JustWorkflowItEngine from '../src';
 import StepExecutor, {
-  StepExecutorIntegrationDetails,
+  StepExecutorArguments,
 } from '../src/engine/stepExecutor';
 import { WorkflowDefinition } from '../src/workflowDefinition';
 import WorkflowState from '../src/workflowState';
 
 const integrationTypeA = 'integrationTypeA';
-const anOutput = {
-  anOutputPropertyKey: 'anOutputProperty',
+
+const outputAPropertyKey = 'outputAPropertyKey';
+const outputA = {
+  [outputAPropertyKey]: 'anOutputProperty',
 };
 
 const stepExecutorA: StepExecutor = {
   // TODO: let's type the step executor, let the user provide unknown if needed
   type: integrationTypeA,
-  execute: (
-    integrationDetails: StepExecutorIntegrationDetails,
-    userParameters: unknown
-  ): unknown => {
-    console.log('Hello world, Naush!', integrationDetails, userParameters);
-    return anOutput;
+  execute: (args: StepExecutorArguments): Record<string, unknown> => {
+    console.log(
+      'Hello world, Naush!',
+      args.integrationDetails,
+      args.parameters
+    );
+    return outputA;
   },
 };
 
@@ -32,13 +35,13 @@ const aWorkflowDefinition: WorkflowDefinition = {
       name: step1Name,
       retries: 2,
       timeoutSeconds: 1000,
-      transitionToStep: 'secondStep',
+      transitionToStep: step2Name,
       integrationDetails: {
         type: integrationTypeA,
         parameters: {
           fieldset: [
             {
-              to: 'newProp',
+              to: 'newPropA',
               withTemplate: 'a brand new field',
             },
           ],
@@ -49,14 +52,14 @@ const aWorkflowDefinition: WorkflowDefinition = {
       name: step2Name,
       retries: 2,
       timeoutSeconds: 1000,
-      transitionToStep: 'secondStep',
+      transitionToStep: step2Name,
       integrationDetails: {
         type: integrationTypeA,
         parameters: {
           fieldset: [
             {
-              to: 'newProp',
-              withTemplate: 'a brand new field',
+              from: `${step1Name}Result.${outputAPropertyKey}`,
+              to: 'newPropB',
             },
           ],
         },
@@ -78,4 +81,7 @@ test('run a basic workflow definition', () => {
 
   currentWorkflowState = engine.executeNextStep(currentWorkflowState);
   expect(currentWorkflowState.nextStepName).toBe(step2Name);
+
+  currentWorkflowState = engine.executeNextStep(currentWorkflowState);
+  expect(currentWorkflowState.nextStepName).toBe(null);
 });

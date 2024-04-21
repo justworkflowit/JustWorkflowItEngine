@@ -38,13 +38,16 @@ class JustWorkflowItEngine {
       );
     }
 
+    const { parameters: parameterDefinition, ...restOfIntegrationDetails } =
+      currentStepDefinition.integrationDetails;
+
     // Extract parameters from current workflow definition and workflow state using xform
     let userParameters;
 
     try {
       userParameters = mapToNewObject(
         currentWorkflowState,
-        currentStepDefinition.integrationDetails.parameters
+        parameterDefinition
       );
     } catch (e) {
       throw new IllegalArgumentException(
@@ -64,26 +67,27 @@ class JustWorkflowItEngine {
       );
     }
 
-    const { parameters: _parameters, ...restOfIntegrationDetails } =
-      currentStepDefinition.integrationDetails;
     const stepIntegrationDetails: StepExecutorIntegrationDetails = {
       ...restOfIntegrationDetails,
     };
 
     // Execute the current step executor using the current workflow state
-    const stepOutput = currentStepExecutor.execute(
-      stepIntegrationDetails,
-      userParameters
-    ); // TODO: let's not pass the entire state, maybe just integration details and userParameters
+    const stepResult = currentStepExecutor.execute({
+      integrationDetails: stepIntegrationDetails,
+      parameters: userParameters,
+    }); // TODO: let's not pass the entire state, maybe just integration details and userParameters
 
     const newWorkflowState: WorkflowState = {
       ...currentWorkflowState,
       userSpace: {
         ...currentWorkflowState.userSpace,
-        stepOutput,
+        [`${currentStepDefinition.name}Parameters`]: userParameters,
+        [`${currentStepDefinition.name}Result`]: stepResult,
       },
       nextStepName: currentStepDefinition.transitionToStep,
     };
+
+    console.log('newWorkflowState', newWorkflowState);
 
     return newWorkflowState;
   }
