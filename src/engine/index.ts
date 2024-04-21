@@ -5,6 +5,10 @@ import validateAndGetWorkflowDefinition, {
   WorkflowDefinition,
 } from './workflowDefinition';
 
+const xform = require('@perpk/json-xform');
+
+const { mapToNewObject } = xform;
+
 interface JustWorkflowItEngineConstructorArgs {
   workflowDefinition: string;
   stepExecutors: Array<StepExecutor>;
@@ -35,6 +39,11 @@ class JustWorkflowItEngine {
     }
 
     // TODO: Extract parameters from current workflow definition and workflow state using xform
+    const userParameters = mapToNewObject(
+      currentWorkflowState,
+      currentStepDefinition.integrationDetails.parameters
+    );
+    console.log('userParameters', userParameters);
     // TODO: Validate that the parameters exist
 
     // Find executor for the current step
