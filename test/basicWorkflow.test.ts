@@ -1,6 +1,6 @@
 import JustWorkflowItEngine from '../src';
 import StepExecutor from '../src/engine/stepExecutor';
-import { WorkflowDefinition } from '../src/engine/workflowDefinition';
+import { WorkflowDefinition } from '../src/workflowDefinition';
 import WorkflowState from '../src/workflowState';
 
 const integrationTypeA = 'integrationTypeA';

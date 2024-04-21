@@ -1,37 +1,10 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 import { IllegalArgumentException } from '../exceptions';
-
-interface ViaDefinition {
-  type: 'date' | 'commands';
-  sourceFormat?: string;
-  format?: string;
-}
-
-interface FromEachDefinition {
-  field: string;
-  to?: string;
-  flatten?: boolean;
-  fieldset?: FieldsetDefinition[];
-}
-
-interface FieldsetDefinition {
-  from?: string;
-  to?: string;
-  valueToKey?: boolean;
-  withValueFrom?: string;
-  withTemplate?: string;
-  toArray?: boolean;
-  via?: ViaDefinition;
-  fromEach?: FromEachDefinition;
-}
-
-export interface JsonXformSchema {
-  fieldset: FieldsetDefinition[];
-}
+import ParameterDefinition from './parameterDefinitionSchema';
 
 interface IntegrationDetails {
   type: string;
-  parameters: JsonXformSchema;
+  parameters: ParameterDefinition;
 }
 
 interface StepDefinition {
@@ -74,25 +47,25 @@ const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinitionInitial> = {
       type: 'object',
       properties: {
         type: { type: 'string' },
-        parameters: { $ref: '#/definitions/jsonXformSchema' },
+        parameters: { $ref: '#/definitions/parameterDefinitionSchema' },
       },
       required: ['type'],
       additionalProperties: false,
     },
-    jsonXformSchema: {
+    parameterDefinitionSchema: {
       type: 'object',
       properties: {
         fieldset: {
           type: 'array',
           items: {
-            $ref: '#/definitions/fieldset',
+            $ref: '#/definitions/fieldsetSchema',
           } as any, // https://github.com/ajv-validator/ajv/issues/2392
         },
       },
       required: ['fieldset'],
       additionalProperties: false,
     },
-    fieldset: {
+    fieldsetSchema: {
       type: 'object',
       properties: {
         from: {
@@ -145,7 +118,7 @@ const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinitionInitial> = {
             fieldset: {
               type: 'array',
               items: {
-                $ref: '#/definitions/fieldset',
+                $ref: '#/definitions/fieldsetSchema',
               } as any, // https://github.com/ajv-validator/ajv/issues/2392
             },
           },

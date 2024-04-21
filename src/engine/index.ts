@@ -3,7 +3,7 @@ import StepExecutor from './stepExecutor';
 import WorkflowState from '../workflowState';
 import validateAndGetWorkflowDefinition, {
   WorkflowDefinition,
-} from './workflowDefinition';
+} from '../workflowDefinition';
 
 const xform = require('@perpk/json-xform');
 
@@ -38,13 +38,19 @@ class JustWorkflowItEngine {
       );
     }
 
-    // TODO: Extract parameters from current workflow definition and workflow state using xform
-    const userParameters = mapToNewObject(
-      currentWorkflowState,
-      currentStepDefinition.integrationDetails.parameters
-    );
-    console.log('userParameters', userParameters);
-    // TODO: Validate that the parameters exist
+    // Extract parameters from current workflow definition and workflow state using xform
+    let userParameters;
+
+    try {
+      userParameters = mapToNewObject(
+        currentWorkflowState,
+        currentStepDefinition.integrationDetails.parameters
+      );
+    } catch (e) {
+      throw new IllegalArgumentException(
+        `Unable to parse user parameters. Exception: ${e}`
+      );
+    }
 
     // Find executor for the current step
     const currentStepExecutorType =
@@ -59,7 +65,10 @@ class JustWorkflowItEngine {
     }
 
     // Execute the current step executor using the current workflow state
-    const stepOutput = currentStepExecutor.execute(currentWorkflowState); // TODO: let's not pass the entire state
+    const stepOutput = currentStepExecutor.execute(
+      currentWorkflowState,
+      userParameters
+    ); // TODO: let's not pass the entire state, maybe just integration details and userParameters
     const newWorkflowState: WorkflowState = {
       ...currentWorkflowState,
       userSpace: {
