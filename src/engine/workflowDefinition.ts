@@ -1,8 +1,45 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 import { IllegalArgumentException } from '../exceptions';
 
+const jsonXformSchemaImport = {
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  $ref: '#/definitions/JsonXformSchema',
+  definitions: {},
+};
+
+console.log('naush', jsonXformSchemaImport);
+
+interface ViaDefinition {
+  type: 'date' | 'commands';
+  sourceFormat?: string;
+  format?: string;
+}
+
+interface FromEachDefinition {
+  field: string;
+  to?: string;
+  flatten?: boolean;
+  fieldset?: FieldsetDefinition[];
+}
+
+interface FieldsetDefinition {
+  from?: string;
+  to?: string;
+  valueToKey?: boolean;
+  withValueFrom?: string;
+  withTemplate?: string;
+  toArray?: boolean;
+  via?: ViaDefinition;
+  fromEach?: FromEachDefinition;
+}
+
+export interface JsonXformSchema {
+  fieldset: FieldsetDefinition[];
+}
+
 interface IntegrationDetails {
   type: string;
+  parameters: JsonXformSchema;
 }
 
 interface StepDefinition {
@@ -45,8 +82,147 @@ const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinitionInitial> = {
       type: 'object',
       properties: {
         type: { type: 'string' },
+        parameters: { $ref: '#/definitions/jsonXformSchema' },
       },
       required: ['type'],
+      additionalProperties: false,
+    },
+    jsonXformSchema: {
+      type: 'object',
+      properties: {
+        fieldset: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              from: {
+                type: 'string',
+              },
+              to: {
+                type: 'string',
+              },
+              valueToKey: {
+                type: 'boolean',
+              },
+              withValueFrom: {
+                type: 'string',
+              },
+              withTemplate: {
+                type: 'string',
+              },
+              toArray: {
+                type: 'boolean',
+              },
+              via: {
+                type: 'object',
+                properties: {
+                  type: {
+                    type: 'string',
+                    enum: ['date', 'commands'],
+                  },
+                  sourceFormat: {
+                    type: 'string',
+                  },
+                  format: {
+                    type: 'string',
+                  },
+                },
+                required: ['type'],
+                additionalProperties: false,
+              },
+              fromEach: {
+                type: 'object',
+                properties: {
+                  field: {
+                    type: 'string',
+                  },
+                  to: {
+                    type: 'string',
+                  },
+                  flatten: {
+                    type: 'boolean',
+                  },
+                  //     fieldset: {
+                  //       type: 'array',
+                  //       items: {
+                  //         $ref: '#/definitions/fieldset' as any,
+                  //       },
+                  //     },
+                },
+                required: ['field'],
+                additionalProperties: false,
+              },
+            },
+            required: [],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ['fieldset'],
+      additionalProperties: false,
+    },
+    'fieldset': {
+      type: 'object',
+      properties: {
+        from: {
+          type: 'string',
+        },
+        to: {
+          type: 'string',
+        },
+        valueToKey: {
+          type: 'boolean',
+        },
+        withValueFrom: {
+          type: 'string',
+        },
+        withTemplate: {
+          type: 'string',
+        },
+        toArray: {
+          type: 'boolean',
+        },
+        via: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              enum: ['date', 'commands'],
+            },
+            sourceFormat: {
+              type: 'string',
+            },
+            format: {
+              type: 'string',
+            },
+          },
+          required: ['type'],
+          additionalProperties: false,
+        },
+        fromEach: {
+          type: 'object',
+          properties: {
+            field: {
+              type: 'string',
+            },
+            to: {
+              type: 'string',
+            },
+            flatten: {
+              type: 'boolean',
+            },
+            // fieldset: {
+            //   type: 'array',
+            //   items: {
+            //     $ref: '#/definitions/interface-403441572-4006-4224-403441572-0-6329' as any,
+            //   },
+            // },
+          },
+          required: ['field'],
+          additionalProperties: false,
+        },
+      },
+      required: [],
       additionalProperties: false,
     },
   },

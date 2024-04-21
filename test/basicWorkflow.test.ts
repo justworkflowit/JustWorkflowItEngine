@@ -25,6 +25,14 @@ const aWorkflowDefinition: WorkflowDefinition = {
       transitionToStep: 'secondStep',
       integrationDetails: {
         type: integrationTypeA,
+        parameters: {
+          fieldset: [
+            {
+              to: 'newProp',
+              withTemplate: 'a brand new field',
+            },
+          ],
+        },
       },
     },
     {
@@ -34,9 +42,14 @@ const aWorkflowDefinition: WorkflowDefinition = {
       transitionToStep: 'secondStep',
       integrationDetails: {
         type: integrationTypeA,
-        // parameters: {
-
-        // }
+        parameters: {
+          fieldset: [
+            {
+              to: 'newProp',
+              withTemplate: 'a brand new field',
+            },
+          ],
+        },
       },
     },
   ],
