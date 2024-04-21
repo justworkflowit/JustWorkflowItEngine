@@ -52,7 +52,7 @@ const aWorkflowDefinition: WorkflowDefinition = {
       name: step2Name,
       retries: 2,
       timeoutSeconds: 1000,
-      transitionToStep: step2Name,
+      transitionToStep: null, // TODO: set this to null
       integrationDetails: {
         type: integrationTypeA,
         parameters: {

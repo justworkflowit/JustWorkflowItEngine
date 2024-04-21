@@ -148,7 +148,8 @@ function validateAndGetWorkflowDefinition(
   if (validate(inputWorkflowDefinition)) {
     return inputWorkflowDefinition;
   }
-  throw new IllegalArgumentException(validate.errors!.join(','));
+
+  throw new IllegalArgumentException(JSON.stringify(validate.errors!));
 }
 
 export default validateAndGetWorkflowDefinition;
