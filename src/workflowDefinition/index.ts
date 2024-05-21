@@ -1,10 +1,10 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 import { IllegalArgumentException } from '../exceptions';
-import ParameterDefinition from './parameterDefinitionSchema';
+import ParameterTransformerDefinition from './parameterTransformerDefinitionSchema';
 
 export interface IntegrationDetails {
   type: string;
-  parameterTransformer: ParameterDefinition;
+  parameterTransformer: ParameterTransformerDefinition;
 }
 
 interface StepDefinition {
