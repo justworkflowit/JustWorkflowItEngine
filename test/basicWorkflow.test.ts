@@ -38,7 +38,7 @@ const aWorkflowDefinition: WorkflowDefinition = {
       transitionToStep: step2Name,
       integrationDetails: {
         type: integrationTypeA,
-        parameters: {
+        parameterTransformer: {
           fieldset: [
             {
               to: 'newPropA',
@@ -52,10 +52,10 @@ const aWorkflowDefinition: WorkflowDefinition = {
       name: step2Name,
       retries: 2,
       timeoutSeconds: 1000,
-      transitionToStep: null, // TODO: set this to null
+      transitionToStep: null, // TODO: must be able to set this to null, it is causing the tests to fail currently
       integrationDetails: {
         type: integrationTypeA,
-        parameters: {
+        parameterTransformer: {
           fieldset: [
             {
               from: `${step1Name}Result.${outputAPropertyKey}`,

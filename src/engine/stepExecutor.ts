@@ -2,7 +2,7 @@ import { IntegrationDetails } from '../workflowDefinition';
 
 export type StepExecutorIntegrationDetails = Omit<
   IntegrationDetails,
-  'parameters'
+  'parameterTransformer'
 >;
 
 export interface StepExecutorArguments {

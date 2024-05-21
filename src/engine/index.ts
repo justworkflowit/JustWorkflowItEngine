@@ -38,7 +38,7 @@ class JustWorkflowItEngine {
       );
     }
 
-    const { parameters: parameterDefinition, ...restOfIntegrationDetails } =
+    const { parameterTransformer, ...restOfIntegrationDetails } =
       currentStepDefinition.integrationDetails;
 
     // Extract parameters from current workflow definition and workflow state using xform
@@ -47,7 +47,7 @@ class JustWorkflowItEngine {
     try {
       userParameters = mapToNewObject(
         currentWorkflowState,
-        parameterDefinition
+        parameterTransformer
       );
     } catch (e) {
       throw new IllegalArgumentException(

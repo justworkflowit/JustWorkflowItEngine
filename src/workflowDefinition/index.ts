@@ -4,7 +4,7 @@ import ParameterDefinition from './parameterDefinitionSchema';
 
 export interface IntegrationDetails {
   type: string;
-  parameters: ParameterDefinition;
+  parameterTransformer: ParameterDefinition;
 }
 
 interface StepDefinition {
@@ -47,12 +47,14 @@ const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinitionInitial> = {
       type: 'object',
       properties: {
         type: { type: 'string' },
-        parameters: { $ref: '#/definitions/parameterDefinitionSchema' },
+        parameterTransformer: {
+          $ref: '#/definitions/parameterTransformerSchema',
+        },
       },
       required: ['type'],
       additionalProperties: false,
     },
-    parameterDefinitionSchema: {
+    parameterTransformerSchema: {
       type: 'object',
       properties: {
         fieldset: {
