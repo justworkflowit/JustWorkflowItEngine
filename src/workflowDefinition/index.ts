@@ -15,9 +15,26 @@ interface StepDefinition {
   integrationDetails: IntegrationDetails;
 }
 
+interface DefinitionsSchema {
+  type: string;
+  properties?: {
+    [key: string]: DefinitionsSchema;
+  };
+  items?: DefinitionsSchema | DefinitionsSchema[];
+  additionalProperties?: DefinitionsSchema | boolean;
+  required?: string[];
+  definitions?: {
+    [key: string]: DefinitionsSchema;
+  };
+  enum?: string[];
+  const?: string;
+  default?: string;
+}
+
 interface WorkflowDefinitionInitial {
   workflowName: string;
   steps: Array<StepDefinition>;
+  definitions: { [key: string]: DefinitionsSchema };
 }
 
 const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinitionInitial> = {
@@ -29,8 +46,52 @@ const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinitionInitial> = {
       type: 'array',
       items: { $ref: '#/definitions/stepDefinitionSchema' } as any, // https://github.com/ajv-validator/ajv/issues/2392
     },
+    definitions: { $ref: '#/definitions/definitionsSchema' } as any, // https://github.com/ajv-validator/ajv/issues/2392
   },
   definitions: {
+    definitionsSchema: {
+      type: 'object',
+      patternProperties: {
+        // Change from additionalProperties to patternProperties
+        '.*': {
+          type: 'object',
+          properties: {
+            type: { type: 'string' },
+            properties: {
+              type: 'object',
+              additionalProperties: { $ref: '#/properties/definitions' } as any, // https://github.com/ajv-validator/ajv/issues/2392,
+              required: [],
+            },
+            items: {
+              oneOf: [
+                { $ref: '#/properties/definitions' } as any, // https://github.com/ajv-validator/ajv/issues/2392,
+                {
+                  type: 'array',
+                  items: { $ref: '#/properties/definitions' } as any, // https://github.com/ajv-validator/ajv/issues/2392
+                },
+              ],
+            },
+            additionalProperties: {
+              oneOf: [
+                { $ref: '#/properties/definitions' } as any, // https://github.com/ajv-validator/ajv/issues/2392,
+                { type: 'boolean' },
+              ],
+            },
+            required: { type: 'array', items: { type: 'string' } },
+            definitions: {
+              type: 'object',
+              additionalProperties: { $ref: '#/properties/definitions' } as any, // https://github.com/ajv-validator/ajv/issues/2392,
+              required: [],
+            },
+            enum: { type: 'array', items: { type: 'string' } },
+            const: { type: 'string' },
+            default: { type: 'string' },
+          },
+          required: ['type'],
+        },
+      },
+      required: [],
+    },
     stepDefinitionSchema: {
       type: 'object',
       properties: {
