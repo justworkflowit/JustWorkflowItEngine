@@ -191,13 +191,43 @@ function validateAndGetWorkflowDefinition(
 
   const inputWorkflowDefinition = JSON.parse(inputWorkflowDefinitionString);
 
-  const validate = ajv.compile<WorkflowDefinition>(workflowDefinitionSchema);
+  const validateWorkflowDefinition = ajv.compile<WorkflowDefinition>(
+    workflowDefinitionSchema
+  );
 
-  if (validate(inputWorkflowDefinition)) {
-    return inputWorkflowDefinition;
+  if (!validateWorkflowDefinition(inputWorkflowDefinition)) {
+    throw new IllegalArgumentException(
+      JSON.stringify(validateWorkflowDefinition.errors!)
+    );
   }
 
-  throw new IllegalArgumentException(JSON.stringify(validate.errors!));
+  const emptySchemaForUserDefinitionValidation: JSONSchemaType<{}> = {
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    type: 'object',
+    properties: {},
+    definitions: inputWorkflowDefinition.definitions as any,
+  };
+
+  // Step 1: pull out user defined definitions and validate they are JSONSchema compatible
+  const validateEmptyUserDefinedSchema = ajv.compile<{}>(
+    emptySchemaForUserDefinitionValidation
+  );
+  if (!validateEmptyUserDefinedSchema({})) {
+    throw new IllegalArgumentException(
+      JSON.stringify(validateEmptyUserDefinedSchema.errors!)
+    );
+  }
+
+  // TODO: walk through all parameter and output definitions using execution data to validate that all type definitions have been set up correctly
+  // TODO: iterate over each step and perform static analysis
+
+  // let step = inputWorkflowDefinition.steps[0];
+  // while (step != null) {
+  //   step
+  // }
+  // inputWorkflowDefinition.definitions
+
+  return inputWorkflowDefinition;
 }
 
 export default validateAndGetWorkflowDefinition;
