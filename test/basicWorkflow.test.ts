@@ -67,9 +67,13 @@ const aWorkflowDefinition: WorkflowDefinition = {
     },
   ],
   definitions: {
-    aDefinition: {
+    [`${step2Name}Parameter`]: {
       type: 'object',
-      properties: {},
+      properties: {
+        a: {
+          type: 'string',
+        },
+      },
       required: ['name'],
       additionalProperties: false,
     },
