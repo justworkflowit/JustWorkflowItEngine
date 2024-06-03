@@ -78,7 +78,12 @@ const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinitionInitial> = {
         name: { type: 'string' },
         retries: { type: 'integer' },
         timeoutSeconds: { type: 'integer' },
-        transitionToStep: { type: 'string' },
+        transitionToStep: {
+          oneOf: [
+            { type: 'null' } as any, // Does not compile without this
+            { type: 'string' },
+          ],
+        },
         integrationDetails: { $ref: '#/definitions/integrationDetailSchema' },
       },
       required: ['name', 'retries', 'timeoutSeconds', 'integrationDetails'],
