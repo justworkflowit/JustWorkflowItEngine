@@ -15,19 +15,15 @@ const outputA = {
 const stepExecutorA: StepExecutor = {
   // TODO: let's type the step executor, let the user provide unknown if needed
   type: integrationTypeA,
-  execute: (args: StepExecutorArguments): Record<string, unknown> => {
-    console.log(
-      'Hello world, Naush!',
-      args.integrationDetails,
-      args.parameters
-    );
-    return outputA;
-  },
+  execute: (_args: StepExecutorArguments): Record<string, unknown> => outputA,
 };
 
 const step1Name = 'firstStep';
 const step2Name = 'secondStep';
-
+const step1ParametersName = `${step1Name}Parameters`;
+const step1ResultsName = `${step1Name}Results`;
+const step2ParametersName = `${step2Name}Parameters`;
+const step2ResultsName = `${step2Name}Results`;
 const aWorkflowDefinition: WorkflowDefinition = {
   workflowName: 'aWorkflowDefinition',
   steps: [
@@ -38,6 +34,12 @@ const aWorkflowDefinition: WorkflowDefinition = {
       transitionToStep: step2Name,
       integrationDetails: {
         type: integrationTypeA,
+        parameterDefinition: {
+          $ref: `#/definitions/${step1ParametersName}`,
+        },
+        resultDefinition: {
+          $ref: `#/definitions/${step1ResultsName}`,
+        },
         parameterTransformer: {
           fieldset: [
             {
@@ -55,6 +57,12 @@ const aWorkflowDefinition: WorkflowDefinition = {
       transitionToStep: null,
       integrationDetails: {
         type: integrationTypeA,
+        parameterDefinition: {
+          $ref: `#/definitions/${step2ParametersName}`,
+        },
+        resultDefinition: {
+          $ref: `#/definitions/${step2ResultsName}`,
+        },
         parameterTransformer: {
           fieldset: [
             {
@@ -67,7 +75,7 @@ const aWorkflowDefinition: WorkflowDefinition = {
     },
   ],
   definitions: {
-    [`${step2Name}Parameters`]: {
+    [step2ResultsName]: {
       type: 'object',
       properties: {
         a: {

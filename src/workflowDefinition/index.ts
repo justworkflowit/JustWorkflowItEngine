@@ -5,6 +5,8 @@ import ParameterTransformerDefinition from './parameterTransformerDefinitionSche
 export interface IntegrationDetails {
   type: string;
   parameterTransformer: ParameterTransformerDefinition;
+  parameterDefinition: { $ref: string };
+  resultDefinition: { $ref: string };
 }
 
 interface StepDefinition {
@@ -22,7 +24,6 @@ interface JSONSchema {
   required?: string[];
   additionalProperties?: boolean | JSONSchema;
   $ref?: string;
-  // Add other JSON Schema properties as needed
 }
 
 interface DefinitionsSchema {
@@ -96,8 +97,22 @@ const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinitionInitial> = {
         parameterTransformer: {
           $ref: '#/definitions/parameterTransformerSchema',
         },
+        parameterDefinition: {
+          $ref: '#/definitions/refSchema',
+        },
+        resultDefinition: {
+          $ref: '#/definitions/refSchema',
+        },
       },
       required: ['type'],
+      additionalProperties: false,
+    },
+    refSchema: {
+      type: 'object',
+      properties: {
+        $ref: { type: 'string' },
+      },
+      required: ['$ref'],
       additionalProperties: false,
     },
     parameterTransformerSchema: {
