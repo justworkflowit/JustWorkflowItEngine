@@ -1,9 +1,8 @@
 import { IllegalArgumentException } from '../exceptions';
 import StepExecutor, { StepExecutorIntegrationDetails } from './stepExecutor';
 import WorkflowState from '../workflowState';
-import validateAndGetWorkflowDefinition, {
-  WorkflowDefinition,
-} from '../workflowDefinition';
+import validateAndGetWorkflowDefinition from '../workflowDefinition';
+import { WorkflowDefinition } from '../workflowDefinition/types';
 
 const xform = require('@perpk/json-xform');
 

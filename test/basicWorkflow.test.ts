@@ -2,7 +2,7 @@ import JustWorkflowItEngine from '../src';
 import StepExecutor, {
   StepExecutorArguments,
 } from '../src/engine/stepExecutor';
-import { WorkflowDefinition } from '../src/workflowDefinition';
+import { WorkflowDefinition } from '../src/workflowDefinition/types';
 import WorkflowState from '../src/workflowState';
 
 const integrationTypeA = 'integrationTypeA';
@@ -75,10 +75,40 @@ const aWorkflowDefinition: WorkflowDefinition = {
     },
   ],
   definitions: {
-    [step2ResultsName]: {
+    [step1ParametersName]: {
       type: 'object',
       properties: {
         a: {
+          type: 'string',
+        },
+      },
+      required: ['name'],
+      additionalProperties: false,
+    },
+    [step1ResultsName]: {
+      type: 'object',
+      properties: {
+        a: {
+          type: 'string',
+        },
+      },
+      required: ['name'],
+      additionalProperties: false,
+    },
+    [step2ParametersName]: {
+      type: 'object',
+      properties: {
+        a: {
+          type: 'string',
+        },
+      },
+      required: ['name'],
+      additionalProperties: false,
+    },
+    [step2ResultsName]: {
+      type: 'object',
+      properties: {
+        inputA: {
           type: 'string',
         },
       },

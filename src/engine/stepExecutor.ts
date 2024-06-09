@@ -1,4 +1,4 @@
-import { IntegrationDetails } from '../workflowDefinition';
+import { IntegrationDetails } from '../workflowDefinition/types';
 
 export type StepExecutorIntegrationDetails = Omit<
   IntegrationDetails,

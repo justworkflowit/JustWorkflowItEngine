@@ -1,42 +1,9 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 import { IllegalArgumentException } from '../exceptions';
-import ParameterTransformerDefinition from './parameterTransformerDefinitionSchema';
+import { performAnalysisOnTypes } from './typeAnalysis';
+import { WorkflowDefinition } from './types';
 
-export interface IntegrationDetails {
-  type: string;
-  parameterTransformer: ParameterTransformerDefinition;
-  parameterDefinition: { $ref: string };
-  resultDefinition: { $ref: string };
-}
-
-interface StepDefinition {
-  name: string;
-  retries: number;
-  timeoutSeconds: number;
-  transitionToStep: string | null;
-  integrationDetails: IntegrationDetails;
-}
-
-interface JSONSchema {
-  type?: string | string[];
-  properties?: { [key: string]: JSONSchema };
-  items?: JSONSchema | JSONSchema[];
-  required?: string[];
-  additionalProperties?: boolean | JSONSchema;
-  $ref?: string;
-}
-
-interface DefinitionsSchema {
-  [key: string]: JSONSchema;
-}
-
-interface WorkflowDefinitionInitial {
-  workflowName: string;
-  steps: Array<StepDefinition>;
-  definitions: DefinitionsSchema;
-}
-
-const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinitionInitial> = {
+const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinition> = {
   $schema: 'http://json-schema.org/draft-07/schema#',
   type: 'object',
   properties: {
@@ -197,8 +164,6 @@ const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinitionInitial> = {
   additionalProperties: false,
 };
 
-export type WorkflowDefinition = WorkflowDefinitionInitial;
-
 function validateAndGetWorkflowDefinition(
   inputWorkflowDefinitionString: string
 ): WorkflowDefinition {
@@ -216,31 +181,7 @@ function validateAndGetWorkflowDefinition(
     );
   }
 
-  const emptySchemaForUserDefinitionValidation: JSONSchemaType<{}> = {
-    $schema: 'http://json-schema.org/draft-07/schema#',
-    type: 'object',
-    properties: {},
-    definitions: inputWorkflowDefinition.definitions as any,
-  };
-
-  // Step 1: pull out user defined definitions and validate they are JSONSchema compatible
-  const validateEmptyUserDefinedSchema = ajv.compile<{}>(
-    emptySchemaForUserDefinitionValidation
-  );
-  if (!validateEmptyUserDefinedSchema({})) {
-    throw new IllegalArgumentException(
-      JSON.stringify(validateEmptyUserDefinedSchema.errors!)
-    );
-  }
-
-  // TODO: walk through all parameter and output definitions using execution data to validate that all type definitions have been set up correctly
-  // TODO: iterate over each step and perform static analysis
-
-  // let step = inputWorkflowDefinition.steps[0];
-  // while (step != null) {
-  //   step
-  // }
-  // inputWorkflowDefinition.definitions
+  performAnalysisOnTypes(inputWorkflowDefinition, ajv);
 
   return inputWorkflowDefinition;
 }
