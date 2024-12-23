@@ -21,7 +21,7 @@ jobs:
           git config --global user.email 'github-actions@github.com'
           git add package.json
           git commit -m "Increment version number"
-          git tag -a v$(npm pkg get version) -m "Release $(npm pkg get version)"
+          git tag -a v$(npm pkg get version | tr -d '"') -m "Release $(npm pkg get version | tr -d '"')"
           git push --tags
           git push origin main
       - name: Create Release
