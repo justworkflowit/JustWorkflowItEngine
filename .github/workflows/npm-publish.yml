@@ -27,10 +27,10 @@ jobs:
       - name: Create Release
         uses: actions/create-release@v1
         with:
-          tag_name: "v$(npm pkg get version)"
           release_name: "Release $(npm pkg get version)"
           draft: false
           prerelease: true
+          auto_tag: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TITLE: "Release $(npm pkg get version)"
