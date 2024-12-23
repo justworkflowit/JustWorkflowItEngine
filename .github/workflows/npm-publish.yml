@@ -15,12 +15,15 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm test
-      - run: npm version patch --git-tag-version false
-      - run: git config --global user.name 'github-actions'
-      - run: git config --global user.email 'github-actions@github.com'
-      - run: git tag -a "v$(npm pkg get version)" -m "Release $(npm pkg get version)"
-      - run: git push --tags
-      - run: git push origin main
+      - run: |
+          npm version prepatch --preid=alpha --git-tag-version false
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add package.json
+          git commit -m "Increment version number"
+          git tag -a "v$(npm pkg get version)" -m "Release $(npm pkg get version)"
+          git push --tags
+          git push origin main
       - name: Create Release
         uses: actions/create-release@v1
         with:
@@ -38,5 +41,5 @@ jobs:
       - name: Publish to npm
         run: |
           npm publish --access restricted
-          env:
-            NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
