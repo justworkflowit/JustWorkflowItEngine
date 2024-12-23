@@ -24,25 +24,25 @@ jobs:
 
       # Step 4: Increment Version, Commit, and Tag
       - name: Increment Version and Create Tag
+        id: tag
         run: |
           npm version prepatch --preid=alpha --git-tag-version false
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
           git add package.json
-          git commit -m "Increment version number to $(npm pkg get version | tr -d '\"')"
+          git commit -m "Increment version to $(npm pkg get version | tr -d '\"')"
           TAG_NAME="v$(npm pkg get version | tr -d '\"')"
           git tag -a $TAG_NAME -m "Release $TAG_NAME"
           git push origin main
           git push origin $TAG_NAME
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
 
       # Step 5: Create GitHub Release
       - name: Create Release
         uses: actions/create-release@v1
         with:
-          tag_name: v$(npm pkg get version | tr -d '"')
-          release_name: "Release $(npm pkg get version | tr -d '\"')"
+          tag_name: ${{ env.tag_name }}
+          release_name: "Release ${{ env.tag_name }}"
           draft: false
           prerelease: true
         env:
