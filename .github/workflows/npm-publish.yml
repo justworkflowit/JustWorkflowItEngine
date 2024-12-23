@@ -8,36 +8,47 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Checkout Code
       - uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      # Step 3: Install Dependencies and Run Tests
       - run: npm ci
       - run: npm test
-      - run: |
+
+      # Step 4: Increment Version, Commit, and Tag
+      - name: Increment Version and Create Tag
+        run: |
           npm version prepatch --preid=alpha --git-tag-version false
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
           git add package.json
-          git commit -m "Increment version number"
-          git tag -a v$(npm pkg get version | tr -d '"') -m "Release $(npm pkg get version | tr -d '"')"
-          git push --tags
+          git commit -m "Increment version number to $(npm pkg get version | tr -d '\"')"
+          TAG_NAME="v$(npm pkg get version | tr -d '\"')"
+          git tag -a $TAG_NAME -m "Release $TAG_NAME"
           git push origin main
+          git push origin $TAG_NAME
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 5: Create GitHub Release
       - name: Create Release
         uses: actions/create-release@v1
         with:
-          tag_name: $(git describe --tags --abbrev=0)
-          release_name: "Release $(npm pkg get version)"
+          tag_name: v$(npm pkg get version | tr -d '"')
+          release_name: "Release $(npm pkg get version | tr -d '\"')"
           draft: false
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_TITLE: "Release $(npm pkg get version)"
-          RELEASE_NOTES: "Release notes for $(npm pkg get version)"
-          RELEASE_TAG: "v$(npm pkg get version)"
-          RELEASE_DRAFT: false
-          RELEASE_PRERELEASE: true
+
+      # Step 6: Publish to npm
       - name: Publish to npm
         run: |
           npm config set //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}
