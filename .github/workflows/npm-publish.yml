@@ -27,7 +27,7 @@ jobs:
       - name: Create Release
         uses: actions/create-release@v1
         with:
-          tag_name: "rel-v$(npm pkg get version)"
+          tag_name: $(git describe --tags --abbrev=0)
           release_name: "Release $(npm pkg get version)"
           draft: false
           prerelease: true
