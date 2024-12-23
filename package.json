@@ -1,8 +1,9 @@
 {
   "name": "@justworkflowit/engine",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "The JustWorkflowIt Engine",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "test": "jest",
     "lint": "npx eslint . --ext .ts --fix && prettier --write \"**/*.*\" --config .prettierrc.json",
