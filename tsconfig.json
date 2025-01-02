@@ -4,13 +4,15 @@
     "module": "commonjs",
     "lib": ["es6"],
     "allowJs": true,
-    "outDir": "build",
-    "rootDir": ".",
+    "outDir": "dist",
+    "rootDir": "src",
     "strict": true,
-    "noImplicitAny": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["src", "global.d.ts", "test", "jest.config.ts"],
-  "exclude": ["node_modules", "plugins", "public"]
+  "include": ["src"],
+  "exclude": ["node_modules", "test"]
 }

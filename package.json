@@ -2,12 +2,17 @@
   "name": "@justworkflowit/engine",
   "version": "0.0.20-alpha.0",
   "description": "The JustWorkflowIt Engine",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest",
     "lint": "npx eslint . --ext .ts --fix && prettier --write \"**/*.*\" --config .prettierrc.json",
-    "build": "rm -rf ./build && npm run lint && npm run test && tsc"
+    "build": "rm -rf dist && npm run lint && npm run test && tsc",
+    "prepare": "npm run build"
   },
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nkorai/JustWorkflowItEngine.git"

@@ -1,0 +1,11 @@
+# Exclude unnecessary files from the npm package
+src/
+test/
+node_modules/
+.github/
+.eslint*
+.prettier*
+jest.config.ts
+tsconfig.json
+*.log
+repomix*.txt
