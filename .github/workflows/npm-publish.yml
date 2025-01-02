@@ -18,9 +18,10 @@ jobs:
         with:
           node-version: 20
 
-      # Step 3: Install Dependencies and Run Tests
+      # Step 3: Install Dependencies, Build, and Run Tests
       - run: npm ci
       - run: npm test
+      - run: npm run build # Build step added here
 
       # Step 4: Increment Version, Commit, and Tag
       - name: Increment Version and Create Tag
