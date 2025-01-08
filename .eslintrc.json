@@ -28,6 +28,7 @@
         "format": ["strictCamelCase"],
         "leadingUnderscore": "require"
       }
-    ]
+    ],
+    "no-continue": "off"
   }
 }

@@ -6,6 +6,7 @@ import StepExecutor, {
 } from '../src/engine/stepExecutor';
 import { WorkflowDefinition } from '../src/workflowDefinition/types';
 import WorkflowState from '../src/workflowState';
+import { SampleEngineRunner } from '../src/samples/sampleEngineRunner';
 
 const simpleIntegration = 'simpleIntegration';
 
@@ -153,15 +154,20 @@ describe('Workflow Engine Test Cases', () => {
       stepExecutors: [stepExecutorA],
     });
 
-    let currentWorkflowState: WorkflowState = {
-      nextStepName: workflowDefinition.steps[0]?.name || null,
+    const initialWorkflowState: WorkflowState = {
+      nextStepName: workflowDefinition.steps[0]!.name,
       userSpace: {},
     };
 
-    while (currentWorkflowState.nextStepName !== null) {
-      currentWorkflowState = engine.executeNextStep(currentWorkflowState);
-    }
+    const sampleEngineRunner = new SampleEngineRunner(
+      engine,
+      initialWorkflowState
+    );
 
-    expect(currentWorkflowState.nextStepName).toBe(null);
+    sampleEngineRunner.runUntilTerminalStep();
+
+    expect(sampleEngineRunner.getCurrentWorkflowState().nextStepName).toBe(
+      null
+    );
   });
 });

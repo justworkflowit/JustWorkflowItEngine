@@ -1,8 +1,11 @@
-import { IllegalArgumentException } from '../exceptions';
+import { IllegalArgumentException, IllegalStateException } from '../exceptions';
 import StepExecutor, { StepExecutorIntegrationDetails } from './stepExecutor';
 import WorkflowState from '../workflowState';
 import validateAndGetWorkflowDefinition from '../workflowDefinition';
-import { WorkflowDefinition } from '../workflowDefinition/types';
+import {
+  StepDefinition,
+  WorkflowDefinition,
+} from '../workflowDefinition/types';
 
 const xform = require('@perpk/json-xform');
 
@@ -25,20 +28,32 @@ class JustWorkflowItEngine {
     this.stepExecutors = constructorArgs.stepExecutors;
   }
 
-  public executeNextStep(currentWorkflowState: WorkflowState): WorkflowState {
-    // Get current step
-    const currentStepDefinition = this.workflowDefinition.steps.filter(
+  public getStepUnderExecution(
+    currentWorkflowState: WorkflowState
+  ): StepDefinition {
+    if (currentWorkflowState.nextStepName === null) {
+      throw new IllegalStateException(
+        'Workflow State indicates that workflow has run to completion, no steps left to execute.'
+      );
+    }
+
+    return this.workflowDefinition.steps.filter(
       (step) => step.name === currentWorkflowState.nextStepName
     )[0];
+  }
 
-    if (!currentStepDefinition) {
+  public executeNextStep(currentWorkflowState: WorkflowState): WorkflowState {
+    const stepToExecuteDefinition =
+      this.getStepUnderExecution(currentWorkflowState);
+
+    if (!stepToExecuteDefinition) {
       throw new IllegalArgumentException(
         `Step named '${currentWorkflowState.nextStepName}' not found in workflow definition '${this.workflowDefinition.workflowName}'`
       );
     }
 
     const { parameterTransformer, ...restOfIntegrationDetails } =
-      currentStepDefinition.integrationDetails;
+      stepToExecuteDefinition.integrationDetails;
 
     // Extract parameters from current workflow definition and workflow state using xform
     let userParameters;
@@ -58,7 +73,7 @@ class JustWorkflowItEngine {
 
     // Find executor for the current step
     const currentStepExecutorType =
-      currentStepDefinition.integrationDetails.type;
+      stepToExecuteDefinition.integrationDetails.type;
     const currentStepExecutor = this.stepExecutors.filter(
       (stepExecutor) => stepExecutor.type === currentStepExecutorType
     )[0];
@@ -82,13 +97,11 @@ class JustWorkflowItEngine {
       ...currentWorkflowState,
       userSpace: {
         ...currentWorkflowState.userSpace,
-        [`${currentStepDefinition.name}Parameters`]: userParameters,
-        [`${currentStepDefinition.name}Result`]: stepResult,
+        [`${stepToExecuteDefinition.name}Parameters`]: userParameters,
+        [`${stepToExecuteDefinition.name}Result`]: stepResult,
       },
-      nextStepName: currentStepDefinition.transitionToStep,
+      nextStepName: stepToExecuteDefinition.transitionToStep,
     };
-
-    console.log('newWorkflowState', newWorkflowState);
 
     return newWorkflowState;
   }

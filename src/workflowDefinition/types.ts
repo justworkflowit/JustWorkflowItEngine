@@ -2,15 +2,15 @@ import ParameterTransformerDefinition from './parameterTransformerTypes';
 
 export interface IntegrationDetails {
   type: string;
-  parameterTransformer: ParameterTransformerDefinition;
+  parameterTransformer?: ParameterTransformerDefinition;
   parameterDefinition: { $ref: string };
   resultDefinition: { $ref: string };
 }
 
 export interface StepDefinition {
   name: string;
-  retries: number;
-  timeoutSeconds: number;
+  retries?: number;
+  timeoutSeconds?: number;
   transitionToStep: string | null;
   integrationDetails: IntegrationDetails;
 }
