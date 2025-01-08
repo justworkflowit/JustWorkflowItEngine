@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import JustWorkflowItEngine from '../src';
 import StepExecutor, {
   StepExecutorArguments,
@@ -5,7 +7,7 @@ import StepExecutor, {
 import { WorkflowDefinition } from '../src/workflowDefinition/types';
 import WorkflowState from '../src/workflowState';
 
-const integrationTypeA = 'integrationTypeA';
+const simpleIntegration = 'simpleIntegration';
 
 const outputAPropertyKey = 'outputAPropertyKey';
 const outputA = {
@@ -14,7 +16,7 @@ const outputA = {
 
 const stepExecutorA: StepExecutor = {
   // TODO: let's type the step executor, let the user provide unknown if needed
-  type: integrationTypeA,
+  type: simpleIntegration,
   execute: (_args: StepExecutorArguments): Record<string, unknown> => outputA,
 };
 
@@ -33,7 +35,7 @@ const aWorkflowDefinition: WorkflowDefinition = {
       timeoutSeconds: 1000,
       transitionToStep: step2Name,
       integrationDetails: {
-        type: integrationTypeA,
+        type: simpleIntegration,
         parameterDefinition: {
           $ref: `#/definitions/${step1ParametersName}`,
         },
@@ -56,7 +58,7 @@ const aWorkflowDefinition: WorkflowDefinition = {
       timeoutSeconds: 1000,
       transitionToStep: null,
       integrationDetails: {
-        type: integrationTypeA,
+        type: simpleIntegration,
         parameterDefinition: {
           $ref: `#/definitions/${step2ParametersName}`,
         },
@@ -118,20 +120,48 @@ const aWorkflowDefinition: WorkflowDefinition = {
   },
 };
 
-test('run a basic workflow definition', () => {
-  const engine = new JustWorkflowItEngine({
-    workflowDefinition: JSON.stringify(aWorkflowDefinition),
-    stepExecutors: [stepExecutorA],
+describe('Workflow Engine Test Cases', () => {
+  test('run a basic workflow definition', () => {
+    const engine = new JustWorkflowItEngine({
+      workflowDefinition: JSON.stringify(aWorkflowDefinition),
+      stepExecutors: [stepExecutorA],
+    });
+
+    let currentWorkflowState: WorkflowState = {
+      nextStepName: aWorkflowDefinition.steps[0]!.name,
+      userSpace: {},
+    };
+
+    currentWorkflowState = engine.executeNextStep(currentWorkflowState);
+    expect(currentWorkflowState.nextStepName).toBe(step2Name);
+
+    currentWorkflowState = engine.executeNextStep(currentWorkflowState);
+    expect(currentWorkflowState.nextStepName).toBe(null);
   });
 
-  let currentWorkflowState: WorkflowState = {
-    nextStepName: 'firstStep', // TODO: should this be automated. Maybe in the class constructor definition
-    userSpace: {},
-  };
+  const testCasesDir = path.join(__dirname, 'workflowTestCases');
+  const files = fs
+    .readdirSync(testCasesDir)
+    .filter((file) => path.extname(file) === '.json');
 
-  currentWorkflowState = engine.executeNextStep(currentWorkflowState);
-  expect(currentWorkflowState.nextStepName).toBe(step2Name);
+  test.each(files)('run workflow test case: %s', (file) => {
+    const filePath = path.join(testCasesDir, file);
+    const workflowDefinition = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
-  currentWorkflowState = engine.executeNextStep(currentWorkflowState);
-  expect(currentWorkflowState.nextStepName).toBe(null);
+    const engine = new JustWorkflowItEngine({
+      workflowDefinition: JSON.stringify(workflowDefinition),
+      stepExecutors: [stepExecutorA],
+    });
+
+    let currentWorkflowState: WorkflowState = {
+      nextStepName: workflowDefinition.steps[0]?.name || null,
+      userSpace: {},
+    };
+
+    while (currentWorkflowState.nextStepName !== null) {
+      currentWorkflowState = engine.executeNextStep(currentWorkflowState);
+    }
+
+    expect(currentWorkflowState.nextStepName).toBe(null);
+  });
 });

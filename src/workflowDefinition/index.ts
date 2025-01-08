@@ -54,7 +54,7 @@ const workflowDefinitionSchema: JSONSchemaType<WorkflowDefinition> = {
         },
         integrationDetails: { $ref: '#/definitions/integrationDetailSchema' },
       },
-      required: ['name', 'retries', 'timeoutSeconds', 'integrationDetails'],
+      required: ['name', 'integrationDetails'],
       additionalProperties: false,
     },
     integrationDetailSchema: {

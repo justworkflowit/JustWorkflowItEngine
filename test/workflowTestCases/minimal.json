@@ -1,0 +1,26 @@
+{
+  "workflowName": "minimalWorkflow",
+  "steps": [
+    {
+      "name": "minimalStep",
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "parameterDefinition": {
+          "$ref": "#/definitions/emptyDefinition"
+        },
+        "resultDefinition": {
+          "$ref": "#/definitions/emptyDefinition"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "emptyDefinition": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+}

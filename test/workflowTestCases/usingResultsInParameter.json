@@ -1,0 +1,77 @@
+{
+  "workflowName": "usingResultsInParameterWorkflow",
+  "steps": [
+    {
+      "name": "firstStep",
+      "retries": 2,
+      "timeoutSeconds": 100,
+      "transitionToStep": "secondStep",
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "parameterDefinition": {
+          "$ref": "#/definitions/firstStepParameters"
+        },
+        "resultDefinition": {
+          "$ref": "#/definitions/firstStepResults"
+        }
+      }
+    },
+    {
+      "name": "secondStep",
+      "retries": 3,
+      "timeoutSeconds": 200,
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "parameterDefinition": {
+          "$ref": "#/definitions/secondStepParameters"
+        },
+        "resultDefinition": {
+          "$ref": "#/definitions/secondStepResults"
+        },
+        "parameterTransformer": {
+          "fieldset": [
+            {
+              "from": "firstStepResult.resultA",
+              "to": "parameterB"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "firstStepParameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "firstStepResults": {
+      "type": "object",
+      "properties": {
+        "resultA": {
+          "type": "string"
+        }
+      },
+      "required": ["resultA"],
+      "additionalProperties": false
+    },
+    "secondStepParameters": {
+      "type": "object",
+      "properties": {
+        "parameterB": {
+          "type": "string"
+        }
+      },
+      "required": ["parameterB"],
+      "additionalProperties": false
+    },
+    "secondStepResults": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+}

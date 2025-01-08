@@ -1,0 +1,41 @@
+{
+  "workflowName": "parametersOnlyWorkflow",
+  "steps": [
+    {
+      "name": "parametersStep",
+      "retries": 3,
+      "timeoutSeconds": 120,
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "parameterDefinition": {
+          "$ref": "#/definitions/onlyParameters"
+        },
+        "resultDefinition": {
+          "$ref": "#/definitions/emptyResults"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "onlyParameters": {
+      "type": "object",
+      "properties": {
+        "parameterA": {
+          "type": "string"
+        },
+        "parameterB": {
+          "type": "integer"
+        }
+      },
+      "required": ["parameterA"],
+      "additionalProperties": false
+    },
+    "emptyResults": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+}

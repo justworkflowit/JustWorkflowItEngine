@@ -43,15 +43,17 @@ class JustWorkflowItEngine {
     // Extract parameters from current workflow definition and workflow state using xform
     let userParameters;
 
-    try {
-      userParameters = mapToNewObject(
-        currentWorkflowState,
-        parameterTransformer
-      );
-    } catch (e) {
-      throw new IllegalArgumentException(
-        `Unable to parse user parameters. Exception: ${e}`
-      );
+    if (parameterTransformer) {
+      try {
+        userParameters = mapToNewObject(
+          currentWorkflowState,
+          parameterTransformer
+        );
+      } catch (e) {
+        throw new IllegalArgumentException(
+          `Unable to parse user parameters. Exception: ${e}`
+        );
+      }
     }
 
     // Find executor for the current step
