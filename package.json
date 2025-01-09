@@ -1,6 +1,6 @@
 {
   "name": "@justworkflowit/engine",
-  "version": "0.0.23-alpha.0",
+  "version": "0.0.24-alpha.0",
   "description": "The JustWorkflowIt Engine",
   "main": "dist/js/src/index.js",
   "types": "dist/types/src/index.d.ts",
