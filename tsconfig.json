@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "commonjs",
+    "module": "ESNext",
     "lib": ["es6"],
     "allowJs": true,
-    "outDir": "dist",
+    "outDir": "dist/js",
+    "declarationDir": "dist/types",
     "rootDir": ".",
     "strict": true,
     "noImplicitAny": true,
@@ -12,8 +13,12 @@
     "resolveJsonModule": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true
   },
-  "include": ["src", "global.d.ts", "test", "jest.config.ts"],
+  "include": ["src", "global.d.ts"],
   "exclude": ["node_modules", "plugins", "public"]
 }

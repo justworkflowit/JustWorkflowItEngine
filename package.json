@@ -2,8 +2,8 @@
   "name": "@justworkflowit/engine",
   "version": "0.0.23-alpha.0",
   "description": "The JustWorkflowIt Engine",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/js/src/index.js",
+  "types": "dist/types/src/index.d.ts",
   "scripts": {
     "test": "jest",
     "lint": "npx eslint . --ext .ts --fix && prettier --write \"**/*.*\" --config .prettierrc.json",
