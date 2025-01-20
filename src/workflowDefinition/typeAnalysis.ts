@@ -1,11 +1,18 @@
 import Ajv, { JSONSchemaType } from 'ajv';
-import { JSONSchema, StepDefinition, WorkflowDefinition } from './types';
+import { DefinitionSchema, StepDefinition, WorkflowDefinition } from './types';
 import { IllegalArgumentException } from '../exceptions';
+import { nameof } from '../utils';
 
 function getUserDefinition(
   workflowDefinition: WorkflowDefinition,
   $ref: string
-): JSONSchema {
+): DefinitionSchema {
+  if (!workflowDefinition.definitions) {
+    throw new Error(
+      `Expected '${nameof<WorkflowDefinition>('definitions')}' to be present`
+    );
+  }
+
   const matchingDefinitions: Array<string> = Object.keys(
     workflowDefinition.definitions
   ).filter(
@@ -67,9 +74,12 @@ export function performAnalysisOnTypes(
       inputWorkflowDefinition,
       step.integrationDetails.parameterDefinition.$ref
     );
-    console.log(userDefinition);
+    console.log(
+      'TODO: walk through all parameter and output definitions using execution data to validate that all type definitions have been set up correctly',
+      userDefinition
+    );
 
-    if (step.transitionToStep === null) {
+    if (!step.transitionToStep) {
       break;
     }
 

@@ -91,7 +91,7 @@ class JustWorkflowItEngine {
     const stepResult = currentStepExecutor.execute({
       integrationDetails: stepIntegrationDetails,
       parameters: userParameters,
-    }); // TODO: let's not pass the entire state, maybe just integration details and userParameters
+    });
 
     const newWorkflowState: WorkflowState = {
       ...currentWorkflowState,
@@ -100,7 +100,7 @@ class JustWorkflowItEngine {
         [`${stepToExecuteDefinition.name}Parameters`]: userParameters,
         [`${stepToExecuteDefinition.name}Result`]: stepResult,
       },
-      nextStepName: stepToExecuteDefinition.transitionToStep,
+      nextStepName: stepToExecuteDefinition.transitionToStep as string,
     };
 
     return newWorkflowState;

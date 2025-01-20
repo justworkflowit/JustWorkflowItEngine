@@ -1,3 +1,2 @@
-import JustWorkflowItEngine from './engine';
-
-export default JustWorkflowItEngine;
+export { default as JustWorkflowItEngine } from './engine';
+export * from './engine/stepExecutor';

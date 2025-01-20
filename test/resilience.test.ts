@@ -1,4 +1,4 @@
-import JustWorkflowItEngine from '../src';
+import { JustWorkflowItEngine } from '../src';
 import StepExecutor, {
   StepExecutorArguments,
 } from '../src/engine/stepExecutor';

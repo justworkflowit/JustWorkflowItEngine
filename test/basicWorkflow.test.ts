@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import JustWorkflowItEngine from '../src';
+import { JustWorkflowItEngine } from '../src';
 import StepExecutor, {
   StepExecutorArguments,
 } from '../src/engine/stepExecutor';
