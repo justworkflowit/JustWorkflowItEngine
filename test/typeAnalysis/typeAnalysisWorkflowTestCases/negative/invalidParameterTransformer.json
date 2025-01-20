@@ -1,5 +1,5 @@
 {
-  "workflowName": "usingResultsInParameterWorkflow",
+  "workflowName": "invalidParameterTransformer",
   "steps": [
     {
       "name": "firstStep",
@@ -32,7 +32,7 @@
         "parameterTransformer": {
           "fieldset": [
             {
-              "from": "firstStepResult.resultA",
+              "from": "firstStepResult.nonExistentProperty",
               "to": "parameterB"
             }
           ]

@@ -1,0 +1,32 @@
+{
+  "workflowName": "missingDefinitions",
+  "steps": [
+    {
+      "name": "firstStep",
+      "retries": 2,
+      "timeoutSeconds": 100,
+      "transitionToStep": "secondStep",
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "parameterDefinition": {
+          "$ref": "#/definitions/nonExistentParameters"
+        },
+        "resultDefinition": {
+          "$ref": "#/definitions/firstStepResults"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "firstStepResults": {
+      "type": "object",
+      "properties": {
+        "resultA": {
+          "type": "string"
+        }
+      },
+      "required": ["resultA"],
+      "additionalProperties": false
+    }
+  }
+}

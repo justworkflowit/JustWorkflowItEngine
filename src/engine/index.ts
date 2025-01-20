@@ -130,8 +130,8 @@ class JustWorkflowItEngine {
       ...currentWorkflowState,
       userSpace: {
         ...currentWorkflowState.userSpace,
-        [`${stepToExecuteDefinition.name}.Parameters`]: userParameters,
-        [`${stepToExecuteDefinition.name}.Result`]: stepResult,
+        [`${stepToExecuteDefinition.name}Parameters`]: userParameters,
+        [`${stepToExecuteDefinition.name}Result`]: stepResult,
       },
       nextStepName,
       executionHistory: [

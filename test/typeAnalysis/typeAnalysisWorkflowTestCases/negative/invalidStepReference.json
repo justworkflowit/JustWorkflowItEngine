@@ -1,11 +1,11 @@
 {
-  "workflowName": "usingResultsInParameterWorkflow",
+  "workflowName": "invalidStepReference",
   "steps": [
     {
       "name": "firstStep",
       "retries": 2,
       "timeoutSeconds": 100,
-      "transitionToStep": "secondStep",
+      "transitionToStep": "nonExistentStep",
       "integrationDetails": {
         "type": "simpleIntegration",
         "parameterDefinition": {

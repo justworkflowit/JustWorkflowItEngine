@@ -91,8 +91,8 @@ describe('Workflow Engine Test Cases with Retries', () => {
     expect(
       sampleEngineRunner.getCurrentWorkflowState().userSpace
     ).toMatchObject({
-      'failingStep.Parameters': undefined,
-      'failingStep.Result': {
+      failingStepParameters: undefined,
+      failingStepResult: {
         outputAPropertyKey: 'anOutputProperty',
       },
     });

@@ -1,5 +1,5 @@
 {
-  "workflowName": "usingResultsInParameterWorkflow",
+  "workflowName": "inconsistentDataTypes",
   "steps": [
     {
       "name": "firstStep",
@@ -61,7 +61,7 @@
       "type": "object",
       "properties": {
         "parameterB": {
-          "type": "string"
+          "type": "number"
         }
       },
       "required": ["parameterB"],

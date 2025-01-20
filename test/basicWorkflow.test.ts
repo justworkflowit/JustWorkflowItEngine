@@ -10,9 +10,9 @@ import { SampleEngineRunner } from '../src/samples/sampleEngineRunner';
 
 const simpleIntegration = 'simpleIntegration';
 
-const outputAPropertyKey = 'outputAPropertyKey';
+const outputAPropertyKey = 'outputPropertyA';
 const outputA = {
-  [outputAPropertyKey]: 'anOutputProperty',
+  [outputAPropertyKey]: 'anOutputPropertyValue',
 };
 
 const stepExecutorA: StepExecutor = {
@@ -46,7 +46,7 @@ const aWorkflowDefinition: WorkflowDefinition = {
         parameterTransformer: {
           fieldset: [
             {
-              to: 'newPropA',
+              to: 'inputPropertyA',
               withTemplate: 'a brand new field',
             },
           ],
@@ -70,7 +70,7 @@ const aWorkflowDefinition: WorkflowDefinition = {
           fieldset: [
             {
               from: `${step1Name}Result.${outputAPropertyKey}`,
-              to: 'newPropB',
+              to: 'inputPropertyB',
             },
           ],
         },
@@ -81,41 +81,41 @@ const aWorkflowDefinition: WorkflowDefinition = {
     [step1ParametersName]: {
       type: 'object',
       properties: {
-        a: {
+        inputPropertyA: {
           type: 'string',
         },
       },
-      required: ['name'],
+      required: ['inputPropertyA'],
       additionalProperties: false,
     },
     [step1ResultsName]: {
       type: 'object',
       properties: {
-        a: {
+        outputPropertyA: {
           type: 'string',
         },
       },
-      required: ['name'],
+      required: ['outputPropertyA'],
       additionalProperties: false,
     },
     [step2ParametersName]: {
       type: 'object',
       properties: {
-        a: {
+        inputPropertyB: {
           type: 'string',
         },
       },
-      required: ['name'],
+      required: ['inputPropertyB'],
       additionalProperties: false,
     },
     [step2ResultsName]: {
       type: 'object',
       properties: {
-        inputA: {
+        outputPropertyB: {
           type: 'string',
         },
       },
-      required: ['name'],
+      required: ['outputPropertyB'],
       additionalProperties: false,
     },
   },

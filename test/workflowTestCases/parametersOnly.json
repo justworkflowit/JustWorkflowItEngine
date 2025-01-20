@@ -11,6 +11,14 @@
         "parameterDefinition": {
           "$ref": "#/definitions/onlyParameters"
         },
+        "parameterTransformer": {
+          "fieldset": [
+            {
+              "to": "parameterA",
+              "withTemplate": "a brand new field"
+            }
+          ]
+        },
         "resultDefinition": {
           "$ref": "#/definitions/emptyResults"
         }
