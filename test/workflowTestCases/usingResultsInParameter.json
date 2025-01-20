@@ -32,7 +32,7 @@
         "parameterTransformer": {
           "fieldset": [
             {
-              "from": "firstStepResult.resultA",
+              "from": "firstStep.Result.resultA",
               "to": "parameterB"
             }
           ]

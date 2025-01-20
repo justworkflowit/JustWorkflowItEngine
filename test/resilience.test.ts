@@ -4,7 +4,7 @@ import StepExecutor, {
 } from '../src/engine/stepExecutor';
 import { SampleEngineRunner } from '../src/samples/sampleEngineRunner';
 import { WorkflowDefinition } from '../src/workflowDefinition/types';
-import WorkflowState from '../src/workflowState';
+import WorkflowState from '../src/engine/workflowState';
 
 describe('Workflow Engine Test Cases with Retries', () => {
   test('step executor retries on failure and succeeds', () => {
@@ -75,6 +75,7 @@ describe('Workflow Engine Test Cases with Retries', () => {
     const initialWorkflowState: WorkflowState = {
       nextStepName: workflowDefinition.steps[0]!.name,
       userSpace: {},
+      executionHistory: [],
     };
 
     const sampleEngineRunner = new SampleEngineRunner(
@@ -90,8 +91,8 @@ describe('Workflow Engine Test Cases with Retries', () => {
     expect(
       sampleEngineRunner.getCurrentWorkflowState().userSpace
     ).toMatchObject({
-      failingStepParameters: undefined,
-      failingStepResult: {
+      'failingStep.Parameters': undefined,
+      'failingStep.Result': {
         outputAPropertyKey: 'anOutputProperty',
       },
     });

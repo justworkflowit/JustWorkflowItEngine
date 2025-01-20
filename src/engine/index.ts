@@ -1,11 +1,13 @@
+import { v4 as uuidv4 } from 'uuid';
 import { IllegalArgumentException, IllegalStateException } from '../exceptions';
 import StepExecutor, { StepExecutorIntegrationDetails } from './stepExecutor';
-import WorkflowState from '../workflowState';
+import WorkflowState from './workflowState';
 import validateAndGetWorkflowDefinition from '../workflowDefinition';
 import {
   StepDefinition,
   WorkflowDefinition,
 } from '../workflowDefinition/types';
+import { ExecutionHistoryItem } from './executionHistoryItem';
 
 const xform = require('@perpk/json-xform');
 
@@ -88,19 +90,54 @@ class JustWorkflowItEngine {
     };
 
     // Execute the current step executor using the current workflow state
-    const stepResult = currentStepExecutor.execute({
-      integrationDetails: stepIntegrationDetails,
+    let stepResult;
+    let status: 'success' | 'failure' = 'success';
+    let error: string | undefined;
+    const startTimestamp = new Date().toISOString();
+
+    try {
+      stepResult = currentStepExecutor.execute({
+        integrationDetails: stepIntegrationDetails,
+        parameters: userParameters,
+      });
+    } catch (e) {
+      stepResult = null;
+      status = 'failure';
+      error = String(e);
+    }
+
+    const endTimestamp = new Date().toISOString();
+
+    const newExecutionHistoryItem: ExecutionHistoryItem = {
+      id: uuidv4(),
+      stepName: stepToExecuteDefinition.name,
+      stepExecutorType: stepToExecuteDefinition.integrationDetails.type,
       parameters: userParameters,
-    });
+      result: stepResult,
+      status,
+      startTimestamp,
+      endTimestamp,
+      error,
+    };
+
+    // If the step under execution fails, do not advance the next step to run
+    const nextStepName: string =
+      newExecutionHistoryItem.status === 'success'
+        ? (stepToExecuteDefinition.transitionToStep as string)
+        : stepToExecuteDefinition.name;
 
     const newWorkflowState: WorkflowState = {
       ...currentWorkflowState,
       userSpace: {
         ...currentWorkflowState.userSpace,
-        [`${stepToExecuteDefinition.name}Parameters`]: userParameters,
-        [`${stepToExecuteDefinition.name}Result`]: stepResult,
+        [`${stepToExecuteDefinition.name}.Parameters`]: userParameters,
+        [`${stepToExecuteDefinition.name}.Result`]: stepResult,
       },
-      nextStepName: stepToExecuteDefinition.transitionToStep as string,
+      nextStepName,
+      executionHistory: [
+        ...currentWorkflowState.executionHistory,
+        newExecutionHistoryItem,
+      ],
     };
 
     return newWorkflowState;

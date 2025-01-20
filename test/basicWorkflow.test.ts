@@ -5,7 +5,7 @@ import StepExecutor, {
   StepExecutorArguments,
 } from '../src/engine/stepExecutor';
 import { WorkflowDefinition } from '../src/workflowDefinition/types';
-import WorkflowState from '../src/workflowState';
+import WorkflowState from '../src/engine/workflowState';
 import { SampleEngineRunner } from '../src/samples/sampleEngineRunner';
 
 const simpleIntegration = 'simpleIntegration';
@@ -131,6 +131,7 @@ describe('Workflow Engine Test Cases', () => {
     let currentWorkflowState: WorkflowState = {
       nextStepName: aWorkflowDefinition.steps[0]!.name,
       userSpace: {},
+      executionHistory: [],
     };
 
     currentWorkflowState = engine.executeNextStep(currentWorkflowState);
@@ -157,6 +158,7 @@ describe('Workflow Engine Test Cases', () => {
     const initialWorkflowState: WorkflowState = {
       nextStepName: workflowDefinition.steps[0]!.name,
       userSpace: {},
+      executionHistory: [],
     };
 
     const sampleEngineRunner = new SampleEngineRunner(

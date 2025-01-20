@@ -1,5 +1,6 @@
 import JustWorkflowItEngine from '../engine';
-import WorkflowState from '../workflowState';
+import { ExecutionHistoryItem } from '../engine/executionHistoryItem';
+import WorkflowState from '../engine/workflowState';
 
 export class SampleEngineRunner {
   private engine: JustWorkflowItEngine;
@@ -15,24 +16,33 @@ export class SampleEngineRunner {
     let runAttempts = 0;
 
     while (this.currentWorkflowState.nextStepName) {
-      try {
-        this.currentWorkflowState = this.engine.executeNextStep(
-          this.currentWorkflowState
-        );
-      } catch (error) {
+      this.currentWorkflowState = this.engine.executeNextStep(
+        this.currentWorkflowState
+      );
+
+      const lastExecution: ExecutionHistoryItem =
+        this.currentWorkflowState.executionHistory[
+          this.currentWorkflowState.executionHistory.length - 1
+        ];
+
+      // if a step fails and retries are available, attempt a retry
+      if (lastExecution.status === 'failure') {
         const stepUnderExecution = this.engine.getStepUnderExecution(
           this.currentWorkflowState
         );
         if (
           stepUnderExecution.retries &&
-          stepUnderExecution.retries >= runAttempts
+          stepUnderExecution.retries > runAttempts
         ) {
           runAttempts += 1;
           continue;
+        } else {
+          console.error(`Step execution failed: ${lastExecution.error}`);
+          break;
         }
-
-        throw error;
       }
+
+      runAttempts = 0; // Reset run attempts for the next step
     }
   }
 
