@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { IllegalArgumentException, IllegalStateException } from '../exceptions';
-import StepExecutor, { StepExecutorIntegrationDetails } from './stepExecutor';
+import { StepExecutor, StepExecutorIntegrationDetails } from './stepExecutor';
 import WorkflowState from './workflowState';
 import validateAndGetWorkflowDefinition from '../workflowDefinition';
 import {

@@ -10,9 +10,7 @@ export interface StepExecutorArguments {
   parameters: unknown;
 }
 
-interface StepExecutor {
+export interface StepExecutor {
   type: string;
   execute(args: StepExecutorArguments): Record<string, unknown>;
 }
-
-export default StepExecutor;
