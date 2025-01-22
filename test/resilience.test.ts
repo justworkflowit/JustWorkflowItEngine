@@ -8,7 +8,7 @@ import { WorkflowDefinition } from '../src/workflowDefinition/types';
 import WorkflowState from '../src/engine/workflowState';
 
 describe('Workflow Engine Test Cases with Retries', () => {
-  test('step executor retries on failure and succeeds', () => {
+  test('step executor retries on failure and succeeds', async () => {
     const simpleIntegration = 'bdIntegration';
 
     let executionAttempts = 0;
@@ -19,13 +19,15 @@ describe('Workflow Engine Test Cases with Retries', () => {
 
     const firstFailThenSucceedStepExecutor: StepExecutor = {
       type: simpleIntegration,
-      execute: (_args: StepExecutorArguments): Record<string, unknown> => {
+      execute: (
+        _args: StepExecutorArguments
+      ): Promise<Record<string, unknown>> => {
         if (executionAttempts === 0) {
           executionAttempts += 1;
           throw new Error('Step execution failed on first attempt.');
         }
         executionAttempts += 1;
-        return outputA;
+        return Promise.resolve(outputA);
       },
     };
 
@@ -83,7 +85,7 @@ describe('Workflow Engine Test Cases with Retries', () => {
       engine,
       initialWorkflowState
     );
-    sampleEngineRunner.runUntilTerminalStep();
+    await sampleEngineRunner.runUntilTerminalStep();
 
     expect(executionAttempts).toBe(2);
     expect(sampleEngineRunner.getCurrentWorkflowState().nextStepName).toBe(

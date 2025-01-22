@@ -12,5 +12,5 @@ export interface StepExecutorArguments {
 
 export interface StepExecutor {
   type: string;
-  execute(args: StepExecutorArguments): Record<string, unknown>;
+  execute(args: StepExecutorArguments): Promise<Record<string, unknown>>;
 }

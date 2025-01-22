@@ -19,7 +19,8 @@ const outputA = {
 const stepExecutorA: StepExecutor = {
   // TODO: let's type the step executor, let the user provide unknown if needed
   type: simpleIntegration,
-  execute: (_args: StepExecutorArguments): Record<string, unknown> => outputA,
+  execute: (_args: StepExecutorArguments): Promise<Record<string, unknown>> =>
+    Promise.resolve(outputA),
 };
 
 const step1Name = 'firstStep';
@@ -123,7 +124,7 @@ const aWorkflowDefinition: WorkflowDefinition = {
 };
 
 describe('Workflow Engine Test Cases', () => {
-  test('run a basic workflow definition', () => {
+  test('run a basic workflow definition', async () => {
     const engine = new JustWorkflowItEngine({
       workflowDefinition: JSON.stringify(aWorkflowDefinition),
       stepExecutors: [stepExecutorA],
@@ -135,10 +136,10 @@ describe('Workflow Engine Test Cases', () => {
       executionHistory: [],
     };
 
-    currentWorkflowState = engine.executeNextStep(currentWorkflowState);
+    currentWorkflowState = await engine.executeNextStep(currentWorkflowState);
     expect(currentWorkflowState.nextStepName).toBe(step2Name);
 
-    currentWorkflowState = engine.executeNextStep(currentWorkflowState);
+    currentWorkflowState = await engine.executeNextStep(currentWorkflowState);
     expect(currentWorkflowState.nextStepName).toBe(null);
   });
 
@@ -147,7 +148,7 @@ describe('Workflow Engine Test Cases', () => {
     .readdirSync(testCasesDir)
     .filter((file) => path.extname(file) === '.json');
 
-  test.each(files)('run workflow test case: %s', (file) => {
+  test.each(files)('run workflow test case: %s', async (file) => {
     const filePath = path.join(testCasesDir, file);
     const workflowDefinition = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
@@ -167,7 +168,7 @@ describe('Workflow Engine Test Cases', () => {
       initialWorkflowState
     );
 
-    sampleEngineRunner.runUntilTerminalStep();
+    await sampleEngineRunner.runUntilTerminalStep();
 
     expect(sampleEngineRunner.getCurrentWorkflowState().nextStepName).toBe(
       null

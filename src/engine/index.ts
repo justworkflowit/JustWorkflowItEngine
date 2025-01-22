@@ -44,7 +44,9 @@ class JustWorkflowItEngine {
     )[0];
   }
 
-  public executeNextStep(currentWorkflowState: WorkflowState): WorkflowState {
+  public async executeNextStep(
+    currentWorkflowState: WorkflowState
+  ): Promise<WorkflowState> {
     const stepToExecuteDefinition =
       this.getStepUnderExecution(currentWorkflowState);
 
@@ -96,7 +98,7 @@ class JustWorkflowItEngine {
     const startTimestamp = new Date().toISOString();
 
     try {
-      stepResult = currentStepExecutor.execute({
+      stepResult = await currentStepExecutor.execute({
         integrationDetails: stepIntegrationDetails,
         parameters: userParameters,
       });

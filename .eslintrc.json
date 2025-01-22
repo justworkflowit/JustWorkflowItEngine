@@ -29,6 +29,7 @@
         "leadingUnderscore": "require"
       }
     ],
-    "no-continue": "off"
+    "no-continue": "off",
+    "no-await-in-loop": "off"
   }
 }

@@ -12,11 +12,11 @@ export class SampleEngineRunner {
     this.currentWorkflowState = initialState;
   }
 
-  public runUntilTerminalStep(): void {
+  public async runUntilTerminalStep(): Promise<void> {
     let runAttempts = 0;
 
     while (this.currentWorkflowState.nextStepName) {
-      this.currentWorkflowState = this.engine.executeNextStep(
+      this.currentWorkflowState = await this.engine.executeNextStep(
         this.currentWorkflowState
       );
 
