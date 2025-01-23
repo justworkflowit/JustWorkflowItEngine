@@ -2,8 +2,8 @@ export interface ExecutionHistoryItem {
   id: string;
   stepName: string;
   stepExecutorType: string;
-  parameters: Record<string, unknown>;
-  result: Record<string, unknown> | null;
+  input: Record<string, unknown>;
+  output: Record<string, unknown> | null;
   status: 'success' | 'failure';
   /**
    *  ISO 8601 format date string when step execution started

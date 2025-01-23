@@ -56,21 +56,18 @@ class JustWorkflowItEngine {
       );
     }
 
-    const { parameterTransformer, ...restOfIntegrationDetails } =
+    const { inputTransformer, ...restOfIntegrationDetails } =
       stepToExecuteDefinition.integrationDetails;
 
-    // Extract parameters from current workflow definition and workflow state using xform
-    let userParameters;
+    // Extract input from current workflow definition and workflow state using xform
+    let userInput;
 
-    if (parameterTransformer) {
+    if (inputTransformer) {
       try {
-        userParameters = mapToNewObject(
-          currentWorkflowState,
-          parameterTransformer
-        );
+        userInput = mapToNewObject(currentWorkflowState, inputTransformer);
       } catch (e) {
         throw new IllegalArgumentException(
-          `Unable to parse user parameters. Exception: ${e}`
+          `Unable to parse user input. Exception: ${e}`
         );
       }
     }
@@ -92,18 +89,18 @@ class JustWorkflowItEngine {
     };
 
     // Execute the current step executor using the current workflow state
-    let stepResult;
+    let stepOutput;
     let status: 'success' | 'failure' = 'success';
     let error: string | undefined;
     const startTimestamp = new Date().toISOString();
 
     try {
-      stepResult = await currentStepExecutor.execute({
+      stepOutput = await currentStepExecutor.execute({
         integrationDetails: stepIntegrationDetails,
-        parameters: userParameters,
+        input: userInput,
       });
     } catch (e) {
-      stepResult = null;
+      stepOutput = null;
       status = 'failure';
       error = String(e);
     }
@@ -114,8 +111,8 @@ class JustWorkflowItEngine {
       id: uuidv4(),
       stepName: stepToExecuteDefinition.name,
       stepExecutorType: stepToExecuteDefinition.integrationDetails.type,
-      parameters: userParameters,
-      result: stepResult,
+      input: userInput,
+      output: stepOutput,
       status,
       startTimestamp,
       endTimestamp,
@@ -132,8 +129,8 @@ class JustWorkflowItEngine {
       ...currentWorkflowState,
       executionData: {
         ...currentWorkflowState.executionData,
-        [`${stepToExecuteDefinition.name}Parameters`]: userParameters,
-        [`${stepToExecuteDefinition.name}Result`]: stepResult,
+        [`${stepToExecuteDefinition.name}Input`]: userInput,
+        [`${stepToExecuteDefinition.name}Output`]: stepOutput,
       },
       nextStepName,
       executionHistory: [

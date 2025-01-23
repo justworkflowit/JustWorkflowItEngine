@@ -19,11 +19,11 @@ export interface StepDefinition {
 }
 export interface IntegrationDetails {
   type: string;
-  parameterTransformer?: ParameterTransformerSchema;
-  parameterDefinition: RefSchema;
-  resultDefinition: RefSchema;
+  inputTransformer?: InputTransformerSchema;
+  inputDefinition: RefSchema;
+  outputDefinition: RefSchema;
 }
-export interface ParameterTransformerSchema {
+export interface InputTransformerSchema {
   fieldset: FieldsetSchema[];
 }
 export interface FieldsetSchema {

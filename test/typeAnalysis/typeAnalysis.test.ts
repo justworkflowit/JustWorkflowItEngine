@@ -19,12 +19,11 @@ const negativeFiles = fs
 // Map of expected errors for negative test cases
 const expectedErrors: Record<string, string> = {
   'inconsistentDataTypes.json': 'must be number',
-  'invalidParameterTransformer.json':
-    "must have required property 'parameterB'",
+  'invalidInputTransformer.json': "must have required property 'inputB'",
   'invalidStepReference.json': "No step found with name 'nonExistentStep'",
   'missingDefinitions.json':
-    "No definition found for reference '#/definitions/nonExistentParameters'",
-  'missingRequiredProperty.json': "must have required property 'parameterB'",
+    "No definition found for reference '#/definitions/nonExistentInput'",
+  'missingRequiredProperty.json': "must have required property 'inputB'",
 };
 
 describe('Workflow Definition Type Analysis - Positive Test Cases', () => {

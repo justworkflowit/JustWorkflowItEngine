@@ -8,11 +8,11 @@
       "transitionToStep": "nonExistentStep",
       "integrationDetails": {
         "type": "simpleIntegration",
-        "parameterDefinition": {
-          "$ref": "#/definitions/firstStepParameters"
+        "inputDefinition": {
+          "$ref": "#/definitions/firstStepInput"
         },
-        "resultDefinition": {
-          "$ref": "#/definitions/firstStepResults"
+        "outputDefinition": {
+          "$ref": "#/definitions/firstStepOutput"
         }
       }
     },
@@ -23,17 +23,17 @@
       "transitionToStep": null,
       "integrationDetails": {
         "type": "simpleIntegration",
-        "parameterDefinition": {
-          "$ref": "#/definitions/secondStepParameters"
+        "inputDefinition": {
+          "$ref": "#/definitions/secondStepInput"
         },
-        "resultDefinition": {
-          "$ref": "#/definitions/secondStepResults"
+        "outputDefinition": {
+          "$ref": "#/definitions/secondStepOutput"
         },
-        "parameterTransformer": {
+        "inputTransformer": {
           "fieldset": [
             {
-              "from": "firstStepResult.resultA",
-              "to": "parameterB"
+              "from": "firstStepOutput.outputA",
+              "to": "inputB"
             }
           ]
         }
@@ -41,33 +41,33 @@
     }
   ],
   "definitions": {
-    "firstStepParameters": {
+    "firstStepInput": {
       "type": "object",
       "properties": {},
       "required": [],
       "additionalProperties": false
     },
-    "firstStepResults": {
+    "firstStepOutput": {
       "type": "object",
       "properties": {
-        "resultA": {
+        "outputA": {
           "type": "string"
         }
       },
-      "required": ["resultA"],
+      "required": ["outputA"],
       "additionalProperties": false
     },
-    "secondStepParameters": {
+    "secondStepInput": {
       "type": "object",
       "properties": {
-        "parameterB": {
+        "inputB": {
           "type": "string"
         }
       },
-      "required": ["parameterB"],
+      "required": ["inputB"],
       "additionalProperties": false
     },
-    "secondStepResults": {
+    "secondStepOutput": {
       "type": "object",
       "properties": {},
       "required": [],

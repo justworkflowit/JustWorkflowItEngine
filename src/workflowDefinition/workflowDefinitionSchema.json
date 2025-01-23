@@ -56,17 +56,17 @@
       "type": "object",
       "properties": {
         "type": { "type": "string" },
-        "parameterTransformer": {
-          "$ref": "#/definitions/parameterTransformerSchema"
+        "inputTransformer": {
+          "$ref": "#/definitions/inputTransformerSchema"
         },
-        "parameterDefinition": {
+        "inputDefinition": {
           "$ref": "#/definitions/refSchema"
         },
-        "resultDefinition": {
+        "outputDefinition": {
           "$ref": "#/definitions/refSchema"
         }
       },
-      "required": ["type", "parameterDefinition", "resultDefinition"],
+      "required": ["type", "inputDefinition", "outputDefinition"],
       "additionalProperties": false
     },
     "refSchema": {
@@ -77,7 +77,7 @@
       "required": ["$ref"],
       "additionalProperties": false
     },
-    "parameterTransformerSchema": {
+    "inputTransformerSchema": {
       "type": "object",
       "properties": {
         "fieldset": {

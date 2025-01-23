@@ -8,24 +8,24 @@
       "transitionToStep": "secondStep",
       "integrationDetails": {
         "type": "simpleIntegration",
-        "parameterDefinition": {
-          "$ref": "#/definitions/nonExistentParameters"
+        "inputDefinition": {
+          "$ref": "#/definitions/nonExistentInput"
         },
-        "resultDefinition": {
-          "$ref": "#/definitions/firstStepResults"
+        "outputDefinition": {
+          "$ref": "#/definitions/firstStepOutput"
         }
       }
     }
   ],
   "definitions": {
-    "firstStepResults": {
+    "firstStepOutput": {
       "type": "object",
       "properties": {
-        "resultA": {
+        "outputA": {
           "type": "string"
         }
       },
-      "required": ["resultA"],
+      "required": ["outputA"],
       "additionalProperties": false
     }
   }

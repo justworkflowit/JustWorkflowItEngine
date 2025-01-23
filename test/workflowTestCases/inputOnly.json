@@ -1,45 +1,45 @@
 {
-  "workflowName": "parametersOnlyWorkflow",
+  "workflowName": "inputOnlyWorkflow",
   "steps": [
     {
-      "name": "parametersStep",
+      "name": "inputStep",
       "retries": 3,
       "timeoutSeconds": 120,
       "transitionToStep": null,
       "integrationDetails": {
         "type": "simpleIntegration",
-        "parameterDefinition": {
-          "$ref": "#/definitions/onlyParameters"
+        "inputDefinition": {
+          "$ref": "#/definitions/onlyInput"
         },
-        "parameterTransformer": {
+        "inputTransformer": {
           "fieldset": [
             {
-              "to": "parameterA",
+              "to": "inputA",
               "withTemplate": "a brand new field"
             }
           ]
         },
-        "resultDefinition": {
-          "$ref": "#/definitions/emptyResults"
+        "outputDefinition": {
+          "$ref": "#/definitions/emptyOutput"
         }
       }
     }
   ],
   "definitions": {
-    "onlyParameters": {
+    "onlyInput": {
       "type": "object",
       "properties": {
-        "parameterA": {
+        "inputA": {
           "type": "string"
         },
-        "parameterB": {
+        "inputB": {
           "type": "integer"
         }
       },
-      "required": ["parameterA"],
+      "required": ["inputA"],
       "additionalProperties": false
     },
-    "emptyResults": {
+    "emptyOutput": {
       "type": "object",
       "properties": {},
       "required": [],

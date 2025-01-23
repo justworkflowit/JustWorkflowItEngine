@@ -25,10 +25,10 @@ const stepExecutorA: StepExecutor = {
 
 const step1Name = 'firstStep';
 const step2Name = 'secondStep';
-const step1ParametersName = `${step1Name}Parameters`;
-const step1ResultsName = `${step1Name}Results`;
-const step2ParametersName = `${step2Name}Parameters`;
-const step2ResultsName = `${step2Name}Results`;
+const step1InputName = `${step1Name}Input`;
+const step1OutputName = `${step1Name}Output`;
+const step2InputName = `${step2Name}Input`;
+const step2OutputName = `${step2Name}Output`;
 const aWorkflowDefinition: WorkflowDefinition = {
   workflowName: 'aWorkflowDefinition',
   steps: [
@@ -39,13 +39,13 @@ const aWorkflowDefinition: WorkflowDefinition = {
       transitionToStep: step2Name,
       integrationDetails: {
         type: simpleIntegration,
-        parameterDefinition: {
-          $ref: `#/definitions/${step1ParametersName}`,
+        inputDefinition: {
+          $ref: `#/definitions/${step1InputName}`,
         },
-        resultDefinition: {
-          $ref: `#/definitions/${step1ResultsName}`,
+        outputDefinition: {
+          $ref: `#/definitions/${step1OutputName}`,
         },
-        parameterTransformer: {
+        inputTransformer: {
           fieldset: [
             {
               to: 'inputPropertyA',
@@ -62,16 +62,16 @@ const aWorkflowDefinition: WorkflowDefinition = {
       transitionToStep: null,
       integrationDetails: {
         type: simpleIntegration,
-        parameterDefinition: {
-          $ref: `#/definitions/${step2ParametersName}`,
+        inputDefinition: {
+          $ref: `#/definitions/${step2InputName}`,
         },
-        resultDefinition: {
-          $ref: `#/definitions/${step2ResultsName}`,
+        outputDefinition: {
+          $ref: `#/definitions/${step2OutputName}`,
         },
-        parameterTransformer: {
+        inputTransformer: {
           fieldset: [
             {
-              from: `${step1Name}Result.${outputAPropertyKey}`,
+              from: `${step1Name}Output.${outputAPropertyKey}`,
               to: 'inputPropertyB',
             },
           ],
@@ -80,7 +80,7 @@ const aWorkflowDefinition: WorkflowDefinition = {
     },
   ],
   definitions: {
-    [step1ParametersName]: {
+    [step1InputName]: {
       type: 'object',
       properties: {
         inputPropertyA: {
@@ -90,7 +90,7 @@ const aWorkflowDefinition: WorkflowDefinition = {
       required: ['inputPropertyA'],
       additionalProperties: false,
     },
-    [step1ResultsName]: {
+    [step1OutputName]: {
       type: 'object',
       properties: {
         outputPropertyA: {
@@ -100,7 +100,7 @@ const aWorkflowDefinition: WorkflowDefinition = {
       required: ['outputPropertyA'],
       additionalProperties: false,
     },
-    [step2ParametersName]: {
+    [step2InputName]: {
       type: 'object',
       properties: {
         inputPropertyB: {
@@ -110,7 +110,7 @@ const aWorkflowDefinition: WorkflowDefinition = {
       required: ['inputPropertyB'],
       additionalProperties: false,
     },
-    [step2ResultsName]: {
+    [step2OutputName]: {
       type: 'object',
       properties: {
         outputPropertyB: {

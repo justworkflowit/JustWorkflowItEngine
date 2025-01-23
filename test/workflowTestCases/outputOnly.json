@@ -1,40 +1,40 @@
 {
-  "workflowName": "resultsOnlyWorkflow",
+  "workflowName": "outputOnlyWorkflow",
   "steps": [
     {
-      "name": "resultsStep",
+      "name": "outputStep",
       "retries": 2,
       "timeoutSeconds": 300,
       "transitionToStep": null,
       "integrationDetails": {
         "type": "simpleIntegration",
-        "parameterDefinition": {
-          "$ref": "#/definitions/emptyParameters"
+        "inputDefinition": {
+          "$ref": "#/definitions/emptyInput"
         },
-        "resultDefinition": {
-          "$ref": "#/definitions/resultsOnlyResults"
+        "outputDefinition": {
+          "$ref": "#/definitions/outputOnlyOutput"
         }
       }
     }
   ],
   "definitions": {
-    "emptyParameters": {
+    "emptyInput": {
       "type": "object",
       "properties": {},
       "required": [],
       "additionalProperties": false
     },
-    "resultsOnlyResults": {
+    "outputOnlyOutput": {
       "type": "object",
       "properties": {
-        "resultA": {
+        "outputA": {
           "type": "string"
         },
-        "resultB": {
+        "outputB": {
           "type": "boolean"
         }
       },
-      "required": ["resultA"],
+      "required": ["outputA"],
       "additionalProperties": false
     }
   }

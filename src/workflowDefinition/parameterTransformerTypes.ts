@@ -22,8 +22,8 @@ interface FieldsetDefinition {
   fromEach?: FromEachDefinition;
 }
 
-interface ParameterTransformerDefinition {
+interface InputTransformerDefinition {
   fieldset: FieldsetDefinition[];
 }
 
-export default ParameterTransformerDefinition;
+export default InputTransformerDefinition;

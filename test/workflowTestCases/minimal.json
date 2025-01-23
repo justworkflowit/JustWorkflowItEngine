@@ -6,10 +6,10 @@
       "transitionToStep": null,
       "integrationDetails": {
         "type": "simpleIntegration",
-        "parameterDefinition": {
+        "inputDefinition": {
           "$ref": "#/definitions/emptyDefinition"
         },
-        "resultDefinition": {
+        "outputDefinition": {
           "$ref": "#/definitions/emptyDefinition"
         }
       }

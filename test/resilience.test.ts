@@ -41,23 +41,23 @@ describe('Workflow Engine Test Cases with Retries', () => {
           transitionToStep: null,
           integrationDetails: {
             type: simpleIntegration,
-            parameterDefinition: {
-              $ref: '#/definitions/failingStepParameters',
+            inputDefinition: {
+              $ref: '#/definitions/failingStepInput',
             },
-            resultDefinition: {
-              $ref: '#/definitions/failingStepResults',
+            outputDefinition: {
+              $ref: '#/definitions/failingStepOutput',
             },
           },
         },
       ],
       definitions: {
-        failingStepParameters: {
+        failingStepInput: {
           type: 'object',
           properties: {},
           required: [],
           additionalProperties: false,
         },
-        failingStepResults: {
+        failingStepOutput: {
           type: 'object',
           properties: {
             [outputAPropertyKey]: {
@@ -94,8 +94,8 @@ describe('Workflow Engine Test Cases with Retries', () => {
     expect(
       sampleEngineRunner.getCurrentWorkflowState().executionData
     ).toMatchObject({
-      failingStepParameters: undefined,
-      failingStepResult: {
+      failingStepInput: undefined,
+      failingStepOutput: {
         outputAPropertyKey: 'anOutputProperty',
       },
     });

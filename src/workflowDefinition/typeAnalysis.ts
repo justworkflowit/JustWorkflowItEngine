@@ -1,7 +1,7 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 import { JSONSchemaFaker, Schema } from 'json-schema-faker';
 import {
-  ParameterTransformerSchema,
+  InputTransformerSchema,
   StepDefinition,
   WorkflowDefinition,
 } from './types';
@@ -63,7 +63,7 @@ function validateSchema(
 
 function generateDataFromSchema(
   schema: Schema,
-  transformer?: ParameterTransformerSchema,
+  transformer?: InputTransformerSchema,
   data?: Record<string, unknown>
 ): Record<string, unknown> {
   return transformer
@@ -92,72 +92,72 @@ export function performAnalysisOnTypes(
   );
 
   inputWorkflowDefinition.steps.forEach((step) => {
-    const { parameterDefinition, resultDefinition, parameterTransformer } =
+    const { inputDefinition, outputDefinition, inputTransformer } =
       step.integrationDetails;
 
-    if (parameterDefinition) {
-      const userParameters = generateDataFromSchema(
-        getUserDefinition(inputWorkflowDefinition, parameterDefinition.$ref),
-        parameterTransformer,
+    if (inputDefinition) {
+      const userInput = generateDataFromSchema(
+        getUserDefinition(inputWorkflowDefinition, inputDefinition.$ref),
+        inputTransformer,
         executionData
       );
 
       validateSchema(
         ajv,
-        getUserDefinition(inputWorkflowDefinition, parameterDefinition.$ref),
-        userParameters,
-        `at step '${step.name}' for parameter definition`
+        getUserDefinition(inputWorkflowDefinition, inputDefinition.$ref),
+        userInput,
+        `at step '${step.name}' for input definition`
       );
 
-      executionData[`${step.name}Parameters`] = userParameters;
+      executionData[`${step.name}Input`] = userInput;
     }
 
-    if (resultDefinition) {
-      const userResults = generateDataFromSchema(
-        getUserDefinition(inputWorkflowDefinition, resultDefinition.$ref)
+    if (outputDefinition) {
+      const userOutput = generateDataFromSchema(
+        getUserDefinition(inputWorkflowDefinition, outputDefinition.$ref)
       );
 
       validateSchema(
         ajv,
-        getUserDefinition(inputWorkflowDefinition, resultDefinition.$ref),
-        userResults,
-        `at step '${step.name}' for result definition`
+        getUserDefinition(inputWorkflowDefinition, outputDefinition.$ref),
+        userOutput,
+        `at step '${step.name}' for output definition`
       );
 
-      executionData[`${step.name}Result`] = userResults;
+      executionData[`${step.name}Output`] = userOutput;
     }
   });
 
   let step = inputWorkflowDefinition.steps[0];
   while (step) {
-    const { parameterTransformer, parameterDefinition, resultDefinition } =
+    const { inputTransformer, inputDefinition, outputDefinition } =
       step.integrationDetails;
 
-    if (parameterDefinition) {
-      const userParameters = generateDataFromSchema(
-        getUserDefinition(inputWorkflowDefinition, parameterDefinition.$ref),
-        parameterTransformer,
+    if (inputDefinition) {
+      const userInput = generateDataFromSchema(
+        getUserDefinition(inputWorkflowDefinition, inputDefinition.$ref),
+        inputTransformer,
         executionData
       );
 
       validateSchema(
         ajv,
-        getUserDefinition(inputWorkflowDefinition, parameterDefinition.$ref),
-        userParameters,
-        `in step named '${step.name}' for parameters`
+        getUserDefinition(inputWorkflowDefinition, inputDefinition.$ref),
+        userInput,
+        `in step named '${step.name}' for input`
       );
     }
 
-    if (resultDefinition) {
-      const userResults = generateDataFromSchema(
-        getUserDefinition(inputWorkflowDefinition, resultDefinition.$ref)
+    if (outputDefinition) {
+      const userOutput = generateDataFromSchema(
+        getUserDefinition(inputWorkflowDefinition, outputDefinition.$ref)
       );
 
       validateSchema(
         ajv,
-        getUserDefinition(inputWorkflowDefinition, resultDefinition.$ref),
-        userResults,
-        `at step '${step.name}' for result definition`
+        getUserDefinition(inputWorkflowDefinition, outputDefinition.$ref),
+        userOutput,
+        `at step '${step.name}' for output definition`
       );
     }
 
