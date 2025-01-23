@@ -77,7 +77,7 @@ describe('Workflow Engine Test Cases with Retries', () => {
 
     const initialWorkflowState: WorkflowState = {
       nextStepName: workflowDefinition.steps[0]!.name,
-      userSpace: {},
+      executionData: {},
       executionHistory: [],
     };
 
@@ -92,7 +92,7 @@ describe('Workflow Engine Test Cases with Retries', () => {
       null
     );
     expect(
-      sampleEngineRunner.getCurrentWorkflowState().userSpace
+      sampleEngineRunner.getCurrentWorkflowState().executionData
     ).toMatchObject({
       failingStepParameters: undefined,
       failingStepResult: {

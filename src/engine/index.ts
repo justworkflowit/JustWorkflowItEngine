@@ -130,8 +130,8 @@ class JustWorkflowItEngine {
 
     const newWorkflowState: WorkflowState = {
       ...currentWorkflowState,
-      userSpace: {
-        ...currentWorkflowState.userSpace,
+      executionData: {
+        ...currentWorkflowState.executionData,
         [`${stepToExecuteDefinition.name}Parameters`]: userParameters,
         [`${stepToExecuteDefinition.name}Result`]: stepResult,
       },

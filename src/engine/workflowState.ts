@@ -2,7 +2,7 @@ import { ExecutionHistoryItem } from './executionHistoryItem';
 
 interface WorkflowState {
   nextStepName: string | null;
-  userSpace: {
+  executionData: {
     [key: string]: any;
   };
   executionHistory: ExecutionHistoryItem[];
