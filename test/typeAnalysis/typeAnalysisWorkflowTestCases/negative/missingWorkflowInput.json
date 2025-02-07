@@ -1,0 +1,28 @@
+{
+  "workflowName": "missingWorkflowInput",
+  "steps": [
+    {
+      "name": "stepOne",
+      "retries": 1,
+      "timeoutSeconds": 50,
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/workflowInput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepOneOutput"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "stepOneOutput": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+}

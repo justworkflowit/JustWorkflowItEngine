@@ -4,7 +4,7 @@ import {
   StepExecutorArguments,
 } from '../src/engine/stepExecutor';
 import { SampleEngineRunner } from '../src/samples/sampleEngineRunner';
-import { WorkflowDefinition } from '../src/workflowDefinition/types';
+import { JustWorkflowItWorkflowDefinition } from '../src/workflowDefinition/types';
 import WorkflowState from '../src/engine/workflowState';
 
 describe('Workflow Engine Test Cases with Retries', () => {
@@ -31,7 +31,7 @@ describe('Workflow Engine Test Cases with Retries', () => {
       },
     };
 
-    const workflowDefinition: WorkflowDefinition = {
+    const workflowDefinition: JustWorkflowItWorkflowDefinition = {
       workflowName: 'retryWorkflow',
       steps: [
         {

@@ -5,7 +5,7 @@ import WorkflowState from './workflowState';
 import validateAndGetWorkflowDefinition from '../workflowDefinition';
 import {
   StepDefinition,
-  WorkflowDefinition,
+  JustWorkflowItWorkflowDefinition,
 } from '../workflowDefinition/types';
 import { ExecutionHistoryItem } from './executionHistoryItem';
 
@@ -19,7 +19,7 @@ interface JustWorkflowItEngineConstructorArgs {
 }
 
 class JustWorkflowItEngine {
-  workflowDefinition: WorkflowDefinition;
+  workflowDefinition: JustWorkflowItWorkflowDefinition;
 
   stepExecutors: Array<StepExecutor>;
 

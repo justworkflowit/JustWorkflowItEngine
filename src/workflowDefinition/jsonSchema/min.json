@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "min.json",
+
+  "title": "min",
+  "description": "Return the minimum from a list of values.",
+
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["min"],
+  "properties": {
+    "min": {
+      "$ref": "one-or-more-args.json"
+    }
+  },
+  "examples": [{ "min": [1, 2, 3] }]
+}

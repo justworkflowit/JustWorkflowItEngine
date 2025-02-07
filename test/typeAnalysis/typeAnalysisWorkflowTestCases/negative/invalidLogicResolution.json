@@ -1,0 +1,42 @@
+{
+  "workflowName": "invalidWorkflowInputReference",
+  "steps": [
+    {
+      "name": "stepOne",
+      "retries": 2,
+      "timeoutSeconds": 100,
+      "transitionToStep": {
+        "logic": {
+          "all": ["stepTwo"]
+        }
+      },
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/workflowInput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepOneOutput"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "workflowInput": {
+      "type": "object",
+      "properties": {
+        "existingProperty": {
+          "type": "string"
+        }
+      },
+      "required": ["existingProperty"],
+      "additionalProperties": false
+    },
+    "stepOneOutput": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+}

@@ -5,7 +5,7 @@ import {
   StepExecutor,
   StepExecutorArguments,
 } from '../src/engine/stepExecutor';
-import { WorkflowDefinition } from '../src/workflowDefinition/types';
+import { JustWorkflowItWorkflowDefinition } from '../src/workflowDefinition/types';
 import WorkflowState from '../src/engine/workflowState';
 import { SampleEngineRunner } from '../src/samples/sampleEngineRunner';
 
@@ -29,7 +29,7 @@ const step1InputName = `${step1Name}Input`;
 const step1OutputName = `${step1Name}Output`;
 const step2InputName = `${step2Name}Input`;
 const step2OutputName = `${step2Name}Output`;
-const aWorkflowDefinition: WorkflowDefinition = {
+const aWorkflowDefinition: JustWorkflowItWorkflowDefinition = {
   workflowName: 'aWorkflowDefinition',
   steps: [
     {

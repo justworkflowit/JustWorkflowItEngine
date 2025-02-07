@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "all-operators.json",
+
+  "title": "All Operators",
+  "description": "Any valid JSON Logic data source, expect primitive types.",
+
+  "oneOf": [
+    { "$ref": "variable.json" },
+    { "$ref": "missing.json" },
+    { "$ref": "missing_some.json" },
+
+    { "$ref": "add.json" },
+    { "$ref": "divide.json" },
+    { "$ref": "modulo.json" },
+    { "$ref": "multiply.json" },
+    { "$ref": "subtract.json" },
+
+    { "$ref": "all.json" },
+    { "$ref": "filter.json" },
+    { "$ref": "map.json" },
+    { "$ref": "merge.json" },
+    { "$ref": "none.json" },
+    { "$ref": "reduce.json" },
+    { "$ref": "some.json" },
+
+    { "$ref": "and.json" },
+    { "$ref": "equal.json" },
+    { "$ref": "if.json" },
+    { "$ref": "not.json" },
+    { "$ref": "notEqual.json" },
+    { "$ref": "notnot.json" },
+    { "$ref": "or.json" },
+    { "$ref": "strictEqual.json" },
+    { "$ref": "strictNotEqual.json" },
+
+    { "$ref": "in.json" },
+    { "$ref": "log.json" },
+    { "$ref": "method.json" },
+
+    { "$ref": "greater.json" },
+    { "$ref": "greaterEqual.json" },
+    { "$ref": "less.json" },
+    { "$ref": "lessEqual.json" },
+    { "$ref": "max.json" },
+    { "$ref": "min.json" },
+
+    { "$ref": "cat.json" },
+    { "$ref": "substr.json" }
+  ]
+}

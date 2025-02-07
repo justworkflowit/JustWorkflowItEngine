@@ -1,5 +1,6 @@
 {
-  "$id": "WorkflowDefinition",
+  "$id": "JustWorkflowItWorkflowDefinition",
+  "title": "JustWorkflowIt Workflow Definition",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
@@ -12,11 +13,26 @@
   },
   "definitions": {
     "definitionsSchema": {
-      "type": "object",
-      "additionalProperties": {
-        "$ref": "#/definitions/definitionSchema"
-      },
-      "required": []
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "workflowInput": {
+              "$ref": "#/definitions/definitionSchema"
+            }
+          },
+          "additionalProperties": {
+            "$ref": "#/definitions/definitionSchema"
+          },
+          "required": ["workflowInput"]
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/definitionSchema"
+          }
+        }
+      ]
     },
     "definitionSchema": {
       "type": "object",
@@ -26,8 +42,7 @@
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/definitionSchema"
-          },
-          "required": []
+          }
         },
         "items": { "$ref": "#/definitions/definitionSchema" },
         "required": { "type": "array", "items": { "type": "string" } },
@@ -43,7 +58,11 @@
         "retries": { "type": "integer" },
         "timeoutSeconds": { "type": "integer" },
         "transitionToStep": {
-          "oneOf": [{ "type": "null" }, { "type": "string" }]
+          "anyOf": [
+            { "$ref": "json-logic.json" },
+            { "type": "string" },
+            { "type": "null" }
+          ]
         },
         "integrationDetails": {
           "$ref": "#/definitions/integrationDetails"
@@ -57,7 +76,7 @@
       "properties": {
         "type": { "type": "string" },
         "inputTransformer": {
-          "$ref": "#/definitions/inputTransformerSchema"
+          "$ref": "#/definitions/jsonXformSchema"
         },
         "inputDefinition": {
           "$ref": "#/definitions/refSchema"
@@ -77,8 +96,10 @@
       "required": ["$ref"],
       "additionalProperties": false
     },
-    "inputTransformerSchema": {
+    "jsonXformSchema": {
+      "title": "JSON-xform Schema",
       "type": "object",
+      "description": "https://github.com/perpk/json-xform",
       "properties": {
         "fieldset": {
           "type": "array",

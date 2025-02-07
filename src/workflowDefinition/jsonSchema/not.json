@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "not.json",
+
+  "title": "!",
+  "description": "Logical negation (“not”). Takes just one argument.",
+
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["!"],
+  "properties": {
+    "!": {
+      "$ref": "unary-arg.json"
+    }
+  },
+  "examples": [{ "!": [true] }, { "!": true }]
+}

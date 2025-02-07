@@ -1,9 +1,10 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 import { JSONSchemaFaker, Schema } from 'json-schema-faker';
 import {
-  InputTransformerSchema,
+  JSONLogicSchema,
+  JSONXformSchema,
   StepDefinition,
-  WorkflowDefinition,
+  JustWorkflowItWorkflowDefinition,
 } from './types';
 import { IllegalArgumentException } from '../exceptions';
 import { nameof } from '../utils';
@@ -13,12 +14,12 @@ const xform = require('@perpk/json-xform');
 const { mapToNewObject } = xform;
 
 function getUserDefinition(
-  workflowDefinition: WorkflowDefinition,
+  workflowDefinition: JustWorkflowItWorkflowDefinition,
   $ref: string
 ): Schema {
   if (!workflowDefinition.definitions) {
     throw new Error(
-      `Expected '${nameof<WorkflowDefinition>('definitions')}' to be present`
+      `Expected '${nameof<JustWorkflowItWorkflowDefinition>('definitions')}' to be present`
     );
   }
 
@@ -33,7 +34,7 @@ function getUserDefinition(
 }
 
 function getStepByName(
-  workflowDefinition: WorkflowDefinition,
+  workflowDefinition: JustWorkflowItWorkflowDefinition,
   stepName: string
 ): StepDefinition {
   const step = workflowDefinition.steps.find(
@@ -63,7 +64,7 @@ function validateSchema(
 
 function generateDataFromSchema(
   schema: Schema,
-  transformer?: InputTransformerSchema,
+  transformer?: JSONXformSchema,
   data?: Record<string, unknown>
 ): Record<string, unknown> {
   return transformer
@@ -71,8 +72,40 @@ function generateDataFromSchema(
     : JSONSchemaFaker.generate(schema);
 }
 
+function extractSteps(steps: Set<string>, logicNode: any): void {
+  if (typeof logicNode === 'string') {
+    steps.add(logicNode);
+  } else if (Array.isArray(logicNode)) {
+    logicNode.forEach(extractSteps);
+  } else if (typeof logicNode === 'object') {
+    Object.values(logicNode).forEach((node) => extractSteps(steps, node));
+  }
+}
+
+function getNextSteps(transitionToStep: string | JSONLogicSchema): string[] {
+  if (!transitionToStep) {
+    return [];
+  }
+
+  if (typeof transitionToStep === 'string') {
+    return [transitionToStep];
+  }
+
+  if (typeof transitionToStep === 'object' && transitionToStep) {
+    // Extract possible step names from JSON Logic
+    const steps = new Set<string>();
+
+    extractSteps(steps, transitionToStep);
+    return Array.from(steps);
+  }
+
+  throw new Error(
+    `Invalid transitionToStep format: ${JSON.stringify(transitionToStep)}`
+  );
+}
+
 export function performAnalysisOnTypes(
-  inputWorkflowDefinition: WorkflowDefinition,
+  inputWorkflowDefinition: JustWorkflowItWorkflowDefinition,
   ajv: Ajv
 ): void {
   const executionData: Record<string, unknown> = {};
@@ -90,6 +123,21 @@ export function performAnalysisOnTypes(
     {},
     'for user-defined definitions'
   );
+
+  if (inputWorkflowDefinition.definitions.workflowInput) {
+    const userInput = generateDataFromSchema(
+      getUserDefinition(inputWorkflowDefinition, '#/definitions/workflowInput')
+    );
+
+    validateSchema(
+      ajv,
+      getUserDefinition(inputWorkflowDefinition, '#/definitions/workflowInput'),
+      userInput,
+      `for workflowInput definition`
+    );
+
+    executionData.workflowInput = userInput;
+  }
 
   inputWorkflowDefinition.steps.forEach((step) => {
     const { inputDefinition, outputDefinition, inputTransformer } =
@@ -128,8 +176,18 @@ export function performAnalysisOnTypes(
     }
   });
 
-  let step = inputWorkflowDefinition.steps[0];
-  while (step) {
+  // Track visited steps to avoid infinite loops
+  const visitedSteps = new Set<string>();
+  const stepsToProcess = [inputWorkflowDefinition.steps[0]];
+
+  while (stepsToProcess.length > 0) {
+    const step = stepsToProcess.pop();
+    if (!step || visitedSteps.has(step.name)) {
+      continue;
+    }
+
+    visitedSteps.add(step.name);
+
     const { inputTransformer, inputDefinition, outputDefinition } =
       step.integrationDetails;
 
@@ -160,11 +218,11 @@ export function performAnalysisOnTypes(
         `at step '${step.name}' for output definition`
       );
     }
-
-    if (!step.transitionToStep) {
-      break;
+    if (step.transitionToStep) {
+      const nextSteps = getNextSteps(step.transitionToStep);
+      nextSteps.forEach((nextStep) => {
+        stepsToProcess.push(getStepByName(inputWorkflowDefinition, nextStep));
+      });
     }
-
-    step = getStepByName(inputWorkflowDefinition, step.transitionToStep);
   }
 }
