@@ -28,7 +28,7 @@ const expectedErrors: Record<string, string> = {
     "must have required property 'existingProperty'",
   'missingWorkflowInput.json':
     "No definition found for reference '#/definitions/workflowInput'",
-  'invalidLogicResolution.json': 'test',
+  'invalidLogicResolution.json': "No step found with name 'stepTwo'",
 };
 
 describe('Workflow Definition Type Analysis - Positive Test Cases', () => {

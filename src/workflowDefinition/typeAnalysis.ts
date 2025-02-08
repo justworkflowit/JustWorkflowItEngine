@@ -72,13 +72,46 @@ function generateDataFromSchema(
     : JSONSchemaFaker.generate(schema);
 }
 
-function extractSteps(steps: Set<string>, logicNode: any): void {
+function extractStepsFromJsonLogicStatement(
+  steps: Set<string>,
+  logicNode: any
+): void {
+  if (!logicNode) return;
+
   if (typeof logicNode === 'string') {
     steps.add(logicNode);
-  } else if (Array.isArray(logicNode)) {
-    logicNode.forEach(extractSteps);
-  } else if (typeof logicNode === 'object') {
-    Object.values(logicNode).forEach((node) => extractSteps(steps, node));
+    return;
+  }
+
+  if (Array.isArray(logicNode)) {
+    logicNode.forEach((node) =>
+      extractStepsFromJsonLogicStatement(steps, node)
+    );
+    return;
+  }
+
+  if (typeof logicNode === 'object') {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key of Object.keys(logicNode)) {
+      if (Object.prototype.hasOwnProperty.call(logicNode, key)) {
+        const value = logicNode[key];
+
+        if (key === 'if' || key === '?:') {
+          // Handle if conditions (condition, then, else)
+          if (Array.isArray(value) && value.length >= 3) {
+            extractStepsFromJsonLogicStatement(steps, value[1]); // "then" branch
+            extractStepsFromJsonLogicStatement(steps, value[2]); // "else" branch
+          }
+        } else if (key === 'or' || key === 'and') {
+          // Handle logical operations (collect possible steps)
+          if (Array.isArray(value)) {
+            value.forEach((v) => extractStepsFromJsonLogicStatement(steps, v));
+          }
+        } else {
+          extractStepsFromJsonLogicStatement(steps, value);
+        }
+      }
+    }
   }
 }
 
@@ -95,7 +128,7 @@ function getNextSteps(transitionToStep: string | JSONLogicSchema): string[] {
     // Extract possible step names from JSON Logic
     const steps = new Set<string>();
 
-    extractSteps(steps, transitionToStep);
+    extractStepsFromJsonLogicStatement(steps, transitionToStep);
     return Array.from(steps);
   }
 
