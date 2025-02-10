@@ -12,7 +12,8 @@
     "generate-types": "ts-node ./bin/generate-types.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "src/workflowDefinition/jsonSchema"
   ],
   "repository": {
     "type": "git",
