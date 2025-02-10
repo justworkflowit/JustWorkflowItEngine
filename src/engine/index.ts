@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import jsonLogic, { AdditionalOperation, RulesLogic } from 'json-logic-js';
 import { IllegalArgumentException, IllegalStateException } from '../exceptions';
 import { StepExecutor, StepExecutorIntegrationDetails } from './stepExecutor';
 import WorkflowState from './workflowState';
@@ -33,15 +34,23 @@ class JustWorkflowItEngine {
   public getStepUnderExecution(
     currentWorkflowState: WorkflowState
   ): StepDefinition {
-    if (currentWorkflowState.nextStepName === null) {
+    if (!currentWorkflowState.nextStepName) {
       throw new IllegalStateException(
-        'Workflow State indicates that workflow has run to completion, no steps left to execute.'
+        `Workflow State indicates that workflow has run to completion, no steps left to execute. ${JSON.stringify(currentWorkflowState, null, 2)}`
       );
     }
 
-    return this.workflowDefinition.steps.filter(
+    const stepUnderExecution = this.workflowDefinition.steps.find(
       (step) => step.name === currentWorkflowState.nextStepName
-    )[0];
+    );
+
+    if (!stepUnderExecution) {
+      throw new IllegalStateException(
+        'Workflow State points to a step that does not exist'
+      );
+    }
+
+    return stepUnderExecution;
   }
 
   public async executeNextStep(
@@ -59,9 +68,7 @@ class JustWorkflowItEngine {
     const { inputTransformer, ...restOfIntegrationDetails } =
       stepToExecuteDefinition.integrationDetails;
 
-    // Extract input from current workflow definition and workflow state using xform
     let userInput;
-
     if (inputTransformer) {
       try {
         userInput = mapToNewObject(currentWorkflowState, inputTransformer);
@@ -75,9 +82,9 @@ class JustWorkflowItEngine {
     // Find executor for the current step
     const currentStepExecutorType =
       stepToExecuteDefinition.integrationDetails.type;
-    const currentStepExecutor = this.stepExecutors.filter(
+    const currentStepExecutor = this.stepExecutors.find(
       (stepExecutor) => stepExecutor.type === currentStepExecutorType
-    )[0];
+    );
     if (!currentStepExecutor) {
       throw new IllegalArgumentException(
         `Expected to find step executor of type '${currentStepExecutorType}', not found.`
@@ -88,12 +95,12 @@ class JustWorkflowItEngine {
       ...restOfIntegrationDetails,
     };
 
-    // Execute the current step executor using the current workflow state
     let stepOutput;
     let status: 'success' | 'failure' = 'success';
     let error: string | undefined;
     const startTimestamp = new Date().toISOString();
 
+    let nextStepName: string | null = null;
     try {
       stepOutput = await currentStepExecutor.execute({
         integrationDetails: stepIntegrationDetails,
@@ -103,6 +110,7 @@ class JustWorkflowItEngine {
       stepOutput = null;
       status = 'failure';
       error = String(e);
+      nextStepName = currentWorkflowState.nextStepName;
     }
 
     const endTimestamp = new Date().toISOString();
@@ -119,19 +127,32 @@ class JustWorkflowItEngine {
       error,
     };
 
-    // If the step under execution fails, do not advance the next step to run
-    const nextStepName: string =
-      newExecutionHistoryItem.status === 'success'
-        ? (stepToExecuteDefinition.transitionToStep as string)
-        : stepToExecuteDefinition.name;
+    const newExecutionData = {
+      ...currentWorkflowState.executionData,
+      [`${stepToExecuteDefinition.name}Input`]: userInput,
+      [`${stepToExecuteDefinition.name}Output`]: stepOutput,
+    };
+    // Evaluate JSON Logic for next step
+    if (status === 'success' && stepToExecuteDefinition.transitionToStep) {
+      if (typeof stepToExecuteDefinition.transitionToStep === 'string') {
+        nextStepName = stepToExecuteDefinition.transitionToStep;
+      } else {
+        const transitionLogic =
+          stepToExecuteDefinition.transitionToStep as RulesLogic<AdditionalOperation>;
+        try {
+          nextStepName = jsonLogic.apply(transitionLogic, newExecutionData);
+        } catch (e) {
+          throw new IllegalArgumentException(
+            `Invalid transition logic: ${JSON.stringify(transitionLogic)}. Error: ${e}`
+          );
+        }
+      }
+    }
 
+    // If no valid next step is determined, workflow is complete
     const newWorkflowState: WorkflowState = {
       ...currentWorkflowState,
-      executionData: {
-        ...currentWorkflowState.executionData,
-        [`${stepToExecuteDefinition.name}Input`]: userInput,
-        [`${stepToExecuteDefinition.name}Output`]: stepOutput,
-      },
+      executionData: newExecutionData,
       nextStepName,
       executionHistory: [
         ...currentWorkflowState.executionHistory,

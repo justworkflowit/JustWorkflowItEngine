@@ -5,11 +5,7 @@
       "name": "stepOne",
       "retries": 2,
       "timeoutSeconds": 100,
-      "transitionToStep": {
-        "logic": {
-          "all": ["stepTwo"]
-        }
-      },
+      "transitionToStep": { "if": [true, "stepTwo", null] },
       "integrationDetails": {
         "type": "simpleIntegration",
         "inputDefinition": {

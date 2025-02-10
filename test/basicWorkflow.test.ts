@@ -143,13 +143,23 @@ describe('Workflow Engine Test Cases', () => {
     expect(currentWorkflowState.nextStepName).toBe(null);
   });
 
-  const testCasesDir = path.join(__dirname, 'workflowTestCases');
-  const files = fs
-    .readdirSync(testCasesDir)
-    .filter((file) => path.extname(file) === '.json');
+  const testCasesDirOne = path.join(__dirname, 'workflowTestCases');
+  const testCasesDirTwo = path.join(
+    __dirname,
+    'typeAnalysis/typeAnalysisWorkflowTestCases/positive'
+  );
 
-  test.each(files)('run workflow test case: %s', async (file) => {
-    const filePath = path.join(testCasesDir, file);
+  // Get JSON test case files from both directories
+  const testCaseFiles = [
+    ...fs
+      .readdirSync(testCasesDirOne)
+      .map((file) => path.join(testCasesDirOne, file)),
+    ...fs
+      .readdirSync(testCasesDirTwo)
+      .map((file) => path.join(testCasesDirTwo, file)),
+  ].filter((file) => path.extname(file) === '.json');
+
+  test.each(testCaseFiles)('run workflow test case: %s', async (filePath) => {
     const workflowDefinition = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
     const engine = new JustWorkflowItEngine({

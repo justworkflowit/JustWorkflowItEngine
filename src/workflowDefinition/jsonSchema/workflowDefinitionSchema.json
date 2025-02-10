@@ -13,7 +13,7 @@
   },
   "definitions": {
     "definitionsSchema": {
-      "oneOf": [
+      "anyOf": [
         {
           "type": "object",
           "properties": {
@@ -58,10 +58,13 @@
         "retries": { "type": "integer" },
         "timeoutSeconds": { "type": "integer" },
         "transitionToStep": {
-          "anyOf": [
-            { "$ref": "json-logic.json" },
+          "oneOf": [
             { "type": "string" },
-            { "type": "null" }
+            { "type": "null" },
+            {
+              "type": "object",
+              "$ref": "json-logic.json"
+            }
           ]
         },
         "integrationDetails": {

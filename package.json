@@ -31,6 +31,7 @@
   "homepage": "https://github.com/nkorai/JustWorkflowItEngine#readme",
   "devDependencies": {
     "@types/jest": "^29.5.12",
+    "@types/json-logic-js": "^2.0.8",
     "@types/node": "^20.12.5",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^7.5.0",

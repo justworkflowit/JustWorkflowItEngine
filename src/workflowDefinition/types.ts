@@ -221,7 +221,7 @@ export interface StepDefinition {
   name: string
   retries?: number
   timeoutSeconds?: number
-  transitionToStep?: JSONLogicSchema | string | null
+  transitionToStep?: string | null | JSONLogicSchema
   integrationDetails: IntegrationDetails
 }
 /**
