@@ -1,4 +1,6 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-param-reassign */
+import Ajv from 'ajv';
 import { JSONSchemaFaker, Schema } from 'json-schema-faker';
 import {
   JSONLogicSchema,
@@ -72,6 +74,22 @@ function generateDataFromSchema(
     : JSONSchemaFaker.generate(schema);
 }
 
+function getValueByJsonXformSchemaPath(
+  data: Record<string, unknown>,
+  path: string | undefined
+): unknown {
+  if (!path) {
+    return undefined;
+  }
+
+  return path.split('.').reduce<unknown>((acc, key) => {
+    if (acc && typeof acc === 'object' && key in acc) {
+      return (acc as Record<string, unknown>)[key];
+    }
+    return undefined;
+  }, data);
+}
+
 function extractStepsFromJsonLogicStatement(
   steps: Set<string>,
   logicNode: any
@@ -91,25 +109,19 @@ function extractStepsFromJsonLogicStatement(
   }
 
   if (typeof logicNode === 'object') {
-    // eslint-disable-next-line no-restricted-syntax
     for (const key of Object.keys(logicNode)) {
-      if (Object.prototype.hasOwnProperty.call(logicNode, key)) {
-        const value = logicNode[key];
-
-        if (key === 'if' || key === '?:') {
-          // Handle if conditions (condition, then, else)
-          if (Array.isArray(value) && value.length >= 3) {
-            extractStepsFromJsonLogicStatement(steps, value[1]); // "then" branch
-            extractStepsFromJsonLogicStatement(steps, value[2]); // "else" branch
-          }
-        } else if (key === 'or' || key === 'and') {
-          // Handle logical operations (collect possible steps)
-          if (Array.isArray(value)) {
-            value.forEach((v) => extractStepsFromJsonLogicStatement(steps, v));
-          }
-        } else {
-          extractStepsFromJsonLogicStatement(steps, value);
+      const value = logicNode[key];
+      if (key === 'if' || key === '?:') {
+        if (Array.isArray(value) && value.length >= 3) {
+          extractStepsFromJsonLogicStatement(steps, value[1]);
+          extractStepsFromJsonLogicStatement(steps, value[2]);
         }
+      } else if (key === 'or' || key === 'and') {
+        if (Array.isArray(value)) {
+          value.forEach((v) => extractStepsFromJsonLogicStatement(steps, v));
+        }
+      } else {
+        extractStepsFromJsonLogicStatement(steps, value);
       }
     }
   }
@@ -124,10 +136,8 @@ function getNextSteps(transitionToStep: string | JSONLogicSchema): string[] {
     return [transitionToStep];
   }
 
-  if (typeof transitionToStep === 'object' && transitionToStep) {
-    // Extract possible step names from JSON Logic
+  if (typeof transitionToStep === 'object') {
     const steps = new Set<string>();
-
     extractStepsFromJsonLogicStatement(steps, transitionToStep);
     return Array.from(steps);
   }
@@ -137,125 +147,122 @@ function getNextSteps(transitionToStep: string | JSONLogicSchema): string[] {
   );
 }
 
+function applyInputTransformer(
+  stepName: string,
+  inputTransformer: JSONXformSchema,
+  executionData: Record<string, unknown>,
+  traversalSteps: Array<string>
+): Record<string, unknown> {
+  const transformedData: Record<string, unknown> = mapToNewObject(
+    executionData || {},
+    inputTransformer
+  );
+  for (const field of inputTransformer.fieldset) {
+    // Some additional validation just to be nice, may have to heavily improve this in the future to actually fully implement the JSON xform source lookup, which does not sound fun.
+    if (field.from) {
+      const sourceValue = getValueByJsonXformSchemaPath(
+        executionData,
+        field.from
+      );
+      if (sourceValue === undefined) {
+        throw new Error(
+          `Transformation error: Missing expected field '${field.from}' in execution data. The graph traversal path taken: ${traversalSteps.join(' -> ')}`
+        );
+      }
+    }
+  }
+  return {
+    ...executionData,
+    [`${stepName}Input`]: transformedData,
+  };
+}
+
+function traverseSteps(
+  inputWorkflowDefinition: JustWorkflowItWorkflowDefinition,
+  ajv: Ajv,
+  currentStep: StepDefinition,
+  executionData: Record<string, unknown>,
+  visitedSteps: Array<string>
+): void {
+  if (new Set(visitedSteps).has(currentStep.name)) {
+    return;
+  }
+  visitedSteps.push(currentStep.name);
+
+  const { inputDefinition, outputDefinition, inputTransformer } =
+    currentStep.integrationDetails;
+
+  if (inputTransformer) {
+    executionData = applyInputTransformer(
+      currentStep.name,
+      inputTransformer,
+      executionData,
+      visitedSteps
+    );
+  }
+
+  if (inputDefinition) {
+    const schema = getUserDefinition(
+      inputWorkflowDefinition,
+      inputDefinition.$ref
+    );
+    const userInput = generateDataFromSchema(
+      schema,
+      inputTransformer,
+      executionData
+    );
+    validateSchema(
+      ajv,
+      schema,
+      userInput,
+      `step '${currentStep.name}' input validation`
+    );
+    executionData[`${currentStep.name}Input`] = userInput;
+  }
+
+  if (outputDefinition) {
+    const schema = getUserDefinition(
+      inputWorkflowDefinition,
+      outputDefinition.$ref
+    );
+    const userOutput = generateDataFromSchema(schema);
+    validateSchema(
+      ajv,
+      schema,
+      userOutput,
+      `step '${currentStep.name}' output validation`
+    );
+    executionData[`${currentStep.name}Output`] = userOutput;
+  }
+
+  if (currentStep.transitionToStep) {
+    const nextSteps = getNextSteps(currentStep.transitionToStep);
+    for (const nextStepName of nextSteps) {
+      const nextStep = getStepByName(inputWorkflowDefinition, nextStepName);
+      traverseSteps(
+        inputWorkflowDefinition,
+        ajv,
+        nextStep,
+        { ...executionData },
+        new Array(...visitedSteps)
+      );
+    }
+  }
+}
+
 export function performAnalysisOnTypes(
   inputWorkflowDefinition: JustWorkflowItWorkflowDefinition,
   ajv: Ajv
 ): void {
-  const executionData: Record<string, unknown> = {};
+  if (inputWorkflowDefinition.steps.length === 0) {
+    throw new Error('Workflow has no steps defined.');
+  }
 
-  const emptySchemaForUserDefinitionValidation: JSONSchemaType<{}> = {
-    $schema: 'http://json-schema.org/draft-07/schema#',
-    type: 'object',
-    properties: {},
-    definitions: inputWorkflowDefinition.definitions as any,
-  };
-
-  validateSchema(
+  traverseSteps(
+    inputWorkflowDefinition,
     ajv,
-    emptySchemaForUserDefinitionValidation as Schema,
+    inputWorkflowDefinition.steps[0],
     {},
-    'for user-defined definitions'
+    []
   );
-
-  if (inputWorkflowDefinition.definitions.workflowInput) {
-    const userInput = generateDataFromSchema(
-      getUserDefinition(inputWorkflowDefinition, '#/definitions/workflowInput')
-    );
-
-    validateSchema(
-      ajv,
-      getUserDefinition(inputWorkflowDefinition, '#/definitions/workflowInput'),
-      userInput,
-      `for workflowInput definition`
-    );
-
-    executionData.workflowInput = userInput;
-  }
-
-  inputWorkflowDefinition.steps.forEach((step) => {
-    const { inputDefinition, outputDefinition, inputTransformer } =
-      step.integrationDetails;
-
-    if (inputDefinition) {
-      const userInput = generateDataFromSchema(
-        getUserDefinition(inputWorkflowDefinition, inputDefinition.$ref),
-        inputTransformer,
-        executionData
-      );
-
-      validateSchema(
-        ajv,
-        getUserDefinition(inputWorkflowDefinition, inputDefinition.$ref),
-        userInput,
-        `at step '${step.name}' for input definition`
-      );
-
-      executionData[`${step.name}Input`] = userInput;
-    }
-
-    if (outputDefinition) {
-      const userOutput = generateDataFromSchema(
-        getUserDefinition(inputWorkflowDefinition, outputDefinition.$ref)
-      );
-
-      validateSchema(
-        ajv,
-        getUserDefinition(inputWorkflowDefinition, outputDefinition.$ref),
-        userOutput,
-        `at step '${step.name}' for output definition`
-      );
-
-      executionData[`${step.name}Output`] = userOutput;
-    }
-  });
-
-  // Track visited steps to avoid infinite loops
-  const visitedSteps = new Set<string>();
-  const stepsToProcess = [inputWorkflowDefinition.steps[0]];
-
-  while (stepsToProcess.length > 0) {
-    const step = stepsToProcess.pop();
-    if (!step || visitedSteps.has(step.name)) {
-      continue;
-    }
-
-    visitedSteps.add(step.name);
-
-    const { inputTransformer, inputDefinition, outputDefinition } =
-      step.integrationDetails;
-
-    if (inputDefinition) {
-      const userInput = generateDataFromSchema(
-        getUserDefinition(inputWorkflowDefinition, inputDefinition.$ref),
-        inputTransformer,
-        executionData
-      );
-
-      validateSchema(
-        ajv,
-        getUserDefinition(inputWorkflowDefinition, inputDefinition.$ref),
-        userInput,
-        `in step named '${step.name}' for input`
-      );
-    }
-
-    if (outputDefinition) {
-      const userOutput = generateDataFromSchema(
-        getUserDefinition(inputWorkflowDefinition, outputDefinition.$ref)
-      );
-
-      validateSchema(
-        ajv,
-        getUserDefinition(inputWorkflowDefinition, outputDefinition.$ref),
-        userOutput,
-        `at step '${step.name}' for output definition`
-      );
-    }
-    if (step.transitionToStep) {
-      const nextSteps = getNextSteps(step.transitionToStep);
-      nextSteps.forEach((nextStep) => {
-        stepsToProcess.push(getStepByName(inputWorkflowDefinition, nextStep));
-      });
-    }
-  }
 }

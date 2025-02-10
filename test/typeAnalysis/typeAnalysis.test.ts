@@ -4,7 +4,7 @@ import path from 'path';
 import { JustWorkflowItWorkflowDefinition } from '../../src/workflowDefinition/types';
 import { performAnalysisOnTypes } from '../../src/workflowDefinition/typeAnalysis';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 const testCasesDir = path.join(__dirname, 'typeAnalysisWorkflowTestCases');
 const positiveTestCasesDir = path.join(testCasesDir, 'positive');
 const negativeTestCasesDir = path.join(testCasesDir, 'negative');
@@ -19,16 +19,20 @@ const negativeFiles = fs
 // Map of expected errors for negative test cases
 const expectedErrors: Record<string, string> = {
   'inconsistentDataTypes.json': 'must be number',
-  'invalidInputTransformer.json': "must have required property 'inputB'",
+  'invalidInputTransformer.json':
+    "Transformation error: Missing expected field 'firstStepOutput.nonExistentProperty' in execution data. The graph traversal path taken: firstStep -> secondStep",
   'invalidStepReference.json': "No step found with name 'nonExistentStep'",
   'missingDefinitions.json':
     "No definition found for reference '#/definitions/nonExistentInput'",
-  'missingRequiredProperty.json': "must have required property 'inputB'",
+  'missingRequiredProperty.json':
+    "Transformation error: Missing expected field 'firstStepOutput.nonExistentProperty' in execution data. The graph traversal path taken: firstStep -> secondStep",
   'invalidPropertyReferenceWorkflowInput.json':
-    "must have required property 'existingProperty'",
+    "Transformation error: Missing expected field 'workflowInput.missingProperty' in execution data. The graph traversal path taken: stepOne",
   'missingWorkflowInput.json':
     "No definition found for reference '#/definitions/workflowInput'",
   'invalidLogicResolution.json': "No step found with name 'stepTwo'",
+  'invalidWorkflowInputReferenceBasedOnPathLogic.json':
+    "Transformation error: Missing expected field 'stepTwoOutput.someProperty' in execution data. The graph traversal path taken: stepOne -> stepThree",
 };
 
 describe('Workflow Definition Type Analysis - Positive Test Cases', () => {
