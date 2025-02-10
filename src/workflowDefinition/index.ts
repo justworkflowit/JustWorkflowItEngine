@@ -1,12 +1,11 @@
 import Ajv from 'ajv';
-import { readdirSync, readFileSync, realpathSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { IllegalArgumentException, IllegalStateException } from '../exceptions';
 import { performAnalysisOnTypes } from './typeAnalysis';
 import { JustWorkflowItWorkflowDefinition } from './types';
 
-const resolvedBaseDir = realpathSync(__dirname);
-const schemaDir = join(resolvedBaseDir, 'jsonSchema');
+const schemaDir = join(__dirname, 'jsonSchema');
 const schemaFiles = readdirSync(schemaDir).filter((file) =>
   file.endsWith('.json')
 );
