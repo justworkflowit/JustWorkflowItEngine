@@ -7,13 +7,13 @@
   "scripts": {
     "test": "jest",
     "lint": "npx eslint . --ext .ts --fix && prettier --write \"**/*.*\" --config .prettierrc.json",
-    "build": "rm -rf dist && npm run lint && npm run generate-types && npm run test && tsc",
+    "build": "rm -rf dist && npm run lint && npm run generate-types && npm run test && tsc && node bin/copySchemas.js",
     "prepare": "npm run build",
     "generate-types": "ts-node ./bin/generate-types.js"
   },
   "files": [
     "dist",
-    "src/workflowDefinition/jsonSchema"
+    "dist/js/src/workflowDefinition/jsonSchema"
   ],
   "repository": {
     "type": "git",
