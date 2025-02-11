@@ -2,20 +2,20 @@
   "name": "@justworkflowit/engine",
   "version": "0.0.42-alpha.0",
   "description": "The JustWorkflowIt Engine",
-  "type": "module",
+  "types": "./dist/types/src/index.d.ts",
   "exports": {
     "import": "./dist/esm/src/index.js",
-    "require": "./dist/cjs/src/index.cjs",
+    "require": "./dist/cjs/src/index.js",
     "browser": "./dist/esm/src/browser.js"
   },
   "scripts": {
     "test": "jest",
     "lint": "npx eslint . --ext .ts --fix && prettier --write \"**/*.*\" --config .prettierrc.json",
-    "build": "rm -rf dist && npm run generate-types && npm run lint && npm run test && npm run build:esm && npm run build:cjs && ts-node ./bin/fix-imports.js && webpack --config webpack.config.cjs",
+    "build": "rm -rf dist && npm run generate-types && npm run lint && npm run test && npm run build:esm && npm run build:cjs && webpack --config webpack.config.cjs",
     "build:esm": "tsc --project tsconfig.esm.json",
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "prepare": "npm run build",
-    "generate-types": "ts-node ./bin/generate-schemas.js && ts-node ./bin/generate-types.js"
+    "generate-types": "ts-node ./bin/generate-schemas.mjs && ts-node ./bin/generate-types.mjs"
   },
   "files": [
     "dist"

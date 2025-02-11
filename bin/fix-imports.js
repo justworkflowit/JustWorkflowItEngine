@@ -1,11 +1,17 @@
-import { readdirSync, readFileSync, writeFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import {
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  statSync,
+} from 'fs';
+import { join, extname } from 'path';
 
 const esmDir = join(process.cwd(), 'dist/esm/src');
 const cjsDir = join(process.cwd(), 'dist/cjs/src');
 
 function fixImports(dir, isEsm = false) {
-  console.log(`Beginning run for ${dir}`);
+  console.log(`Processing: ${dir}`);
   if (!existsSync(dir)) {
     console.log(`❌ Directory not found: ${dir}`);
     return;
@@ -14,22 +20,47 @@ function fixImports(dir, isEsm = false) {
   const files = readdirSync(dir);
   files.forEach((file) => {
     const filePath = join(dir, file);
-    if (file.endsWith('.js') || file.endsWith('.cjs')) {
+
+    // If it's a directory, recurse
+    if (statSync(filePath).isDirectory()) {
+      fixImports(filePath, isEsm);
+      return;
+    }
+
+    // Process only .js or .cjs files
+    const ext = extname(file);
+    if (ext === '.js' || ext === '.cjs') {
       let content = readFileSync(filePath, 'utf8');
 
-      // Fix ESM imports (`import ... from './module'`)
+      // Handle ESM imports (`import ... from './module'`)
       if (isEsm) {
-        content = content.replace(/(from\s+['"]\..*?)(['"])/g, '$1.js$2');
+        content = content.replace(
+          /(from\s+['"])(\.\/[^'"]+?)(['"])/g,
+          (match, prefix, importPath, suffix) => {
+            const fullPath = join(dir, importPath);
+            if (existsSync(fullPath) && statSync(fullPath).isDirectory()) {
+              return `${prefix}${importPath}/index.js${suffix}`;
+            }
+            return `${prefix}${importPath}.js${suffix}`;
+          }
+        );
       }
-      // Fix CJS imports (`require("./module")`)
+      // Handle CJS imports (`require("./module")`)
       else {
-        content = content.replace(/(require\(['"]\..*?)(['"]\))/g, '$1.js$2');
+        content = content.replace(
+          /(require\(['"])(\.\/[^'"]+?)(['"]\))/g,
+          (match, prefix, importPath, suffix) => {
+            const fullPath = join(dir, importPath);
+            if (existsSync(fullPath) && statSync(fullPath).isDirectory()) {
+              return `${prefix}${importPath}/index.js${suffix}`;
+            }
+            return `${prefix}${importPath}.js${suffix}`;
+          }
+        );
       }
 
       writeFileSync(filePath, content);
       console.log(`✅ Fixed imports in ${filePath}`);
-    } else if (!file.includes('.')) {
-      fixImports(filePath, isEsm);
     }
   });
 }
@@ -37,4 +68,6 @@ function fixImports(dir, isEsm = false) {
 // Fix both ESM and CJS builds
 fixImports(esmDir, true);
 fixImports(cjsDir, false);
-console.log('✅ All imports fixed to include .js extensions');
+console.log(
+  '✅ All imports fixed to include .js extensions or /index.js when necessary'
+);
