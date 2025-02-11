@@ -1,15 +1,18 @@
-const fs = require('fs');
-const path = require('path');
-const { compileFromFile } = require('json-schema-to-typescript');
+import { writeFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { compileFromFile } from 'json-schema-to-typescript';
 
-const schemaPath = path.resolve(
-  __dirname,
+// Get __dirname equivalent in ESM
+const filename = fileURLToPath(import.meta.url);
+const dir_name = dirname(filename);
+
+const schemaPath = resolve(
+  dir_name,
   '../src/workflowDefinition/jsonSchema/workflowDefinitionSchema.json'
 );
-const outputPath = path.resolve(
-  __dirname,
-  '../src/workflowDefinition/types.ts'
-);
+const outputPath = resolve(dir_name, '../src/workflowDefinition/types.ts');
 
 const options = {
   style: {
@@ -21,5 +24,5 @@ const options = {
 };
 
 compileFromFile(schemaPath, options)
-  .then((ts) => fs.writeFileSync(outputPath, ts))
+  .then((ts) => writeFileSync(outputPath, ts))
   .catch((error) => console.error('Error generating TypeScript types:', error));

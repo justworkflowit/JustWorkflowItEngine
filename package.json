@@ -4,12 +4,18 @@
   "description": "The JustWorkflowIt Engine",
   "main": "dist/js/src/index.js",
   "types": "dist/types/src/index.d.ts",
+  "type": "module",
+  "exports": {
+    "import": "./dist/js/src/index.js",
+    "require": "./dist/js/src/index.cjs",
+    "browser": "./dist/js/src/browser.js"
+  },
   "scripts": {
     "test": "jest",
     "lint": "npx eslint . --ext .ts --fix && prettier --write \"**/*.*\" --config .prettierrc.json",
-    "build": "rm -rf dist && npm run lint && npm run generate-types && npm run test && tsc && node bin/copySchemas.js",
+    "build": "rm -rf dist && npm run generate-types && npm run lint && npm run test && tsc && webpack --config webpack.config.cjs",
     "prepare": "npm run build",
-    "generate-types": "ts-node ./bin/generate-types.js"
+    "generate-types": "ts-node ./bin/generate-schemas.js && ts-node ./bin/generate-types.js"
   },
   "files": [
     "dist",
@@ -37,6 +43,7 @@
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
     "@typescript-eslint/parser": "^7.5.0",
+    "buffer": "^6.0.3",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
@@ -49,9 +56,13 @@
     "json-schema-to-typescript": "^15.0.4",
     "nodemon": "^3.1.0",
     "prettier": "^3.2.5",
+    "process": "^0.11.10",
     "ts-jest": "^29.1.2",
+    "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
   },
   "dependencies": {
     "@perpk/json-xform": "^1.3.0",

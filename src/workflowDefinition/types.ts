@@ -8,7 +8,7 @@
 /**
  * Build complex rules, serialize them as JSON, share them between front-end and back-end.
  */
-export type JSONLogicSchema = AllOperators | All1
+export type JSONLogicSchema = AllOperators | All1;
 /**
  * Any valid JSON Logic data source, expect primitive types.
  */
@@ -47,7 +47,7 @@ export type AllOperators =
   | Max
   | Min
   | Cat
-  | Substr
+  | Substr;
 /**
  * Retrieve data from the provided data object.
  */
@@ -61,111 +61,114 @@ export type Var1 =
   | Reduce
   | Pointer1
   | EntireDataObject
-  | Null
+  | Null;
 /**
  * Schema to access properties of an object or items of an array by index.
  */
-export type Pointer = Property | Index
+export type Pointer = Property | Index;
 /**
  * The key passed to var can use dot-notation to get the property of a property (to any depth you need):
  */
-export type Property = string
+export type Property = string;
 /**
  * You can also use the var operator to access an array by numeric index.
  */
-export type Index = number
+export type Index = number;
 /**
  * The if statement typically takes 3 arguments: a condition (if), what to do if it’s true (then), and what to do if it’s false (else), like: {"if" : [ true, "yes", "no" ]}.
  * If can also take more than 3 arguments, and will pair up arguments like if/then elseif/then elseif/then else.
  */
 export type If =
   | {
-      if: OrMoreArgs
+      if: OrMoreArgs;
     }
   | {
-      '?:': OrMoreArgs
-    }
+      '?:': OrMoreArgs;
+    };
 /**
  * With 1 or more arguments.
  */
-export type OrMoreArgs = SingleArray | SingleArg
+export type OrMoreArgs = SingleArray | SingleArg;
 /**
  * Any valid JSON Logic data source.
  */
-export type All = AllOperators | All1
+export type All = AllOperators | All1;
 /**
  * Any valid JSON data type.
  */
-export type All1 = (boolean | null | number | string | unknown[]) | NoLogic
+export type All1 = (boolean | null | number | string | unknown[]) | NoLogic;
 /**
  * Any valid JSON object which is not a logic rule.
  */
-export type NoLogic = EmptyObject | NonLogicSingleKeyObject | NonLogicMultipleKeyObject
+export type NoLogic =
+  | EmptyObject
+  | NonLogicSingleKeyObject
+  | NonLogicMultipleKeyObject;
 export type NonLogicSingleKeyObject = {
-  [k: string]: unknown | undefined
-}
+  [k: string]: unknown | undefined;
+};
 /**
  * An array with 1 or more elements.
  */
-export type SingleArray = All[]
+export type SingleArray = All[];
 /**
  * Note: 1 or more operators can also take a single, non array argument:
  */
-export type SingleArg = AllOperators | All2
+export type SingleArg = AllOperators | All2;
 /**
  * Any valid JSON data type, except array primitive.
  */
-export type All2 = (boolean | null | number | string) | NoLogic
+export type All2 = (boolean | null | number | string) | NoLogic;
 /**
  * You can supply a default, as the second argument, for values that might be missing in the data object.
  */
-export type Default = (boolean | null | number | string | unknown[]) | NoLogic
+export type Default = (boolean | null | number | string | unknown[]) | NoLogic;
 /**
  * Up to two args of valid JSON Logic data source.
  */
-export type BinaryArg = Array | SingleArg1
+export type BinaryArg = Array | SingleArg1;
 /**
  * An array with one or two elements.
  *
  * @minItems 1
  * @maxItems 2
  */
-export type Array = [All] | [All, All]
+export type Array = [All] | [All, All];
 /**
  * Note: binary operators can also take a single, non array argument:
  */
-export type SingleArg1 = AllOperators | All2
+export type SingleArg1 = AllOperators | All2;
 /**
  * Up to three args of valid JSON Logic data source.
  */
-export type TrinaryArgs = Array1 | SingleArg2
+export type TrinaryArgs = Array1 | SingleArg2;
 /**
  * An array with one or three elements.
  *
  * @minItems 1
  * @maxItems 3
  */
-export type Array1 = [All] | [All, All] | [All, All, All]
+export type Array1 = [All] | [All, All] | [All, All, All];
 /**
  * Note: trinary operators can also take a single, non array argument:
  */
-export type SingleArg2 = AllOperators | All2
+export type SingleArg2 = AllOperators | All2;
 /**
  * Schema to access properties of an object or items of an array by index.
  */
-export type Pointer1 = Property | Index
+export type Pointer1 = Property | Index;
 /**
  * You can also use var with an empty string to get the entire data object – which is really useful in map, filter, and reduce rules.
  */
-export type EntireDataObject = ''
+export type EntireDataObject = '';
 /**
  * Unknown null.
  */
-export type Null = null
+export type Null = null;
 /**
  * Takes a minimum number of data keys that are required
  */
-export type NeedCount = number
+export type NeedCount = number;
 /**
  * Retrieve data from the provided data object.
  */
@@ -179,80 +182,80 @@ export type Var2 =
   | Reduce
   | Pointer1
   | EntireDataObject
-  | Null
+  | Null;
 /**
  * Only one valid JSON Logic data source.
  */
-export type UnaryArg = SingleArray1 | SingleArg3
+export type UnaryArg = SingleArray1 | SingleArg3;
 /**
  * An array with just one element.
  *
  * @minItems 1
  * @maxItems 1
  */
-export type SingleArray1 = [All]
+export type SingleArray1 = [All];
 /**
  * Note: unary operators can also take a single, non array argument:
  */
-export type SingleArg3 = AllOperators | All2
+export type SingleArg3 = AllOperators | All2;
 /**
  * This interface was referenced by `JustWorkflowItWorkflowDefinition`'s JSON-Schema
  * via the `definition` "definitionsSchema".
  */
 export type DefinitionsSchema =
   | {
-      workflowInput: DefinitionSchema
-      [k: string]: DefinitionSchema
+      workflowInput: DefinitionSchema;
+      [k: string]: DefinitionSchema;
     }
   | {
-      [k: string]: DefinitionSchema
-    }
+      [k: string]: DefinitionSchema;
+    };
 
 export interface JustWorkflowItWorkflowDefinition {
-  workflowName: string
-  steps: StepDefinition[]
-  definitions: DefinitionsSchema
+  workflowName: string;
+  steps: StepDefinition[];
+  definitions: DefinitionsSchema;
 }
 /**
  * This interface was referenced by `JustWorkflowItWorkflowDefinition`'s JSON-Schema
  * via the `definition` "stepDefinition".
  */
 export interface StepDefinition {
-  name: string
-  retries?: number
-  timeoutSeconds?: number
-  transitionToStep?: string | null | JSONLogicSchema
-  integrationDetails: IntegrationDetails
+  name: string;
+  retries?: number;
+  timeoutSeconds?: number;
+  transitionToStep?: string | null | JSONLogicSchema;
+  integrationDetails: IntegrationDetails;
 }
 /**
  * Retrieve data from the provided data object.
  */
 export interface Var {
-  var: Var1
+  var: Var1;
 }
 export interface EmptyObject {
-  [k: string]: unknown | undefined
+  [k: string]: unknown | undefined;
 }
 export interface NonLogicMultipleKeyObject {
-  [k: string]: unknown | undefined
+  [k: string]: unknown | undefined;
 }
 /**
  * You can use map to perform an action on every member of an array. Note, that inside the logic being used to map, var operations are relative to the array element being worked on.
  */
 export interface Map {
-  map: BinaryArg
+  map: BinaryArg;
 }
 /**
  * Takes one or more arrays, and merges them into one array. If arguments aren’t arrays, they get cast to arrays.
  */
 export interface Merge {
-  merge: OrMoreArgs
+  merge: OrMoreArgs;
 }
 /**
  * You can use filter to keep only elements of the array that pass a test. Note, that inside the logic being used to map, var operations are relative to the array element being worked on.
  */
 export interface Filter {
-  filter: BinaryArg
+  filter: BinaryArg;
 }
 /**
  * You can use reduce to combine all the elements in an array into a single value, like adding up a list of numbers. Note, that inside the logic being used to reduce, var operations only have access to an object like: {
@@ -261,13 +264,13 @@ export interface Filter {
  * }
  */
 export interface Reduce {
-  reduce: TrinaryArgs
+  reduce: TrinaryArgs;
 }
 /**
  * Takes an array of data keys to search for (same format as var). Returns an array of any keys that are missing from the data object, or an empty array.
  */
 export interface Missing {
-  missing: Var1
+  missing: Var1;
 }
 /**
  * Takes a minimum number of data keys that are required, and an array of keys to search for (same format as var or missing). Returns an empty array if the minimum is met, or an array of the missing keys otherwise.
@@ -277,37 +280,37 @@ export interface MissingSome {
    * @minItems 2
    * @maxItems 2
    */
-  missing_some: [NeedCount, Var2]
+  missing_some: [NeedCount, Var2];
 }
 /**
  * Addition. Because addition is associative, it happily take as many args as you want. Passing just one argument to + casts it to a number.
  */
 export interface NoName {
-  '+': OrMoreArgs
+  '+': OrMoreArgs;
 }
 /**
  * Division.
  */
 export interface NoName1 {
-  '/': BinaryArg
+  '/': BinaryArg;
 }
 /**
  * Module. Finds the remainder after the first argument is divided by the second argument.
  */
 export interface NoName2 {
-  '%': BinaryArg
+  '%': BinaryArg;
 }
 /**
  * Multiplication. Because multiplication is associative, it happily take as many args as you want.
  */
 export interface NoName3 {
-  '*': OrMoreArgs
+  '*': OrMoreArgs;
 }
 /**
  * Subtraction. Passing just one argument to - returns its arithmetic negative (additive inverse).
  */
 export interface NoName4 {
-  '-': BinaryArg
+  '-': BinaryArg;
 }
 /**
  * These operations take an array, and perform a test on each member of that array.
@@ -315,7 +318,7 @@ export interface NoName4 {
  * It can be useful to use {"var":""} to get the entire array element within the test.
  */
 export interface All3 {
-  all: BinaryArg
+  all: BinaryArg;
 }
 /**
  * These operations take an array, and perform a test on each member of that array.
@@ -323,7 +326,7 @@ export interface All3 {
  * It can be useful to use {"var":""} to get the entire array element within the test.
  */
 export interface None {
-  none: BinaryArg
+  none: BinaryArg;
 }
 /**
  * These operations take an array, and perform a test on each member of that array.
@@ -331,117 +334,117 @@ export interface None {
  * It can be useful to use {"var":""} to get the entire array element within the test.
  */
 export interface Some {
-  some: BinaryArg
+  some: BinaryArg;
 }
 /**
  * and can be used for simple boolean tests, with 1 or more arguments. At a more sophisticated level, and returns the first falsy argument, or the last argument.
  */
 export interface And {
-  and: OrMoreArgs
+  and: OrMoreArgs;
 }
 /**
  * Tests equality, with type coercion. Requires two arguments.
  */
 export interface Equal {
-  '==': BinaryArg
+  '==': BinaryArg;
 }
 /**
  * Logical negation (“not”). Takes just one argument.
  */
 export interface NoName5 {
-  '!': UnaryArg
+  '!': UnaryArg;
 }
 /**
  * Tests not-equal, with type coercion. Requires two arguments.
  */
 export interface NotEqual {
-  '!=': BinaryArg
+  '!=': BinaryArg;
 }
 /**
  * Double negation, or “cast to a boolean.” Takes a single argument.
  */
 export interface NoName6 {
-  '!!': UnaryArg
+  '!!': UnaryArg;
 }
 /**
  * or can be used for simple boolean tests, with 1 or more arguments. At a more sophisticated level, or returns the first truthy argument, or the last argument.
  */
 export interface Or {
-  or: OrMoreArgs
+  or: OrMoreArgs;
 }
 /**
  * Tests strict equality. Requires two arguments.
  */
 export interface StrictEqual {
-  '===': BinaryArg
+  '===': BinaryArg;
 }
 /**
  * Tests strict not-equal. Requires two arguments.
  */
 export interface StrictNotEqual {
-  '!==': BinaryArg
+  '!==': BinaryArg;
 }
 /**
  * If the second argument is an array, tests that the first argument is a member of the array: {"in":[ "Ringo", ["John", "Paul", "George", "Ringo"] ]}.
  * If the second argument is a string, tests that the first argument is a substring: {"in":["Spring", "Springfield"]}.
  */
 export interface In {
-  in: BinaryArg
+  in: BinaryArg;
 }
 /**
  * Logs the first value to console, then passes it through unmodified.
  */
 export interface Log {
-  log: All
+  log: All;
 }
 /**
  * If your rule needs to call a method on an object, you can use the built-in method operation.
  *  You can also pass an array of arguments into the method.
  */
 export interface Method {
-  method: OrMoreArgs
+  method: OrMoreArgs;
 }
 /**
  * Greater than.
  */
 export interface NoName7 {
-  '>': BinaryArg
+  '>': BinaryArg;
 }
 /**
  * Greater than or equal to.
  */
 export interface NoName8 {
-  '>=': BinaryArg
+  '>=': BinaryArg;
 }
 /**
  * Less than. You can use a special case of < to test that one value is exclusively between two others.
  */
 export interface NoName9 {
-  '<': TrinaryArgs
+  '<': TrinaryArgs;
 }
 /**
  * Less than or equal to. You can use a special case of <= to test that one value is inclusively between two others.
  */
 export interface NoName10 {
-  '<=': TrinaryArgs
+  '<=': TrinaryArgs;
 }
 /**
  * Return the maximum from a list of values.
  */
 export interface Max {
-  max: OrMoreArgs
+  max: OrMoreArgs;
 }
 /**
  * Return the minimum from a list of values.
  */
 export interface Min {
-  min: OrMoreArgs
+  min: OrMoreArgs;
 }
 /**
  * Concatenate all the supplied arguments. Note that this is not a join or implode operation, there is no “glue” string.
  */
 export interface Cat {
-  cat: OrMoreArgs
+  cat: OrMoreArgs;
 }
 /**
  * Get a portion of a string.
@@ -452,17 +455,17 @@ export interface Cat {
  * Give a negative length to stop that many characters before the end.
  */
 export interface Substr {
-  substr: TrinaryArgs
+  substr: TrinaryArgs;
 }
 /**
  * This interface was referenced by `JustWorkflowItWorkflowDefinition`'s JSON-Schema
  * via the `definition` "integrationDetails".
  */
 export interface IntegrationDetails {
-  type: string
-  inputTransformer?: JSONXformSchema
-  inputDefinition: RefSchema
-  outputDefinition: RefSchema
+  type: string;
+  inputTransformer?: JSONXformSchema;
+  inputDefinition: RefSchema;
+  outputDefinition: RefSchema;
 }
 /**
  * https://github.com/perpk/json-xform
@@ -471,48 +474,48 @@ export interface IntegrationDetails {
  * via the `definition` "jsonXformSchema".
  */
 export interface JSONXformSchema {
-  fieldset: FieldsetSchema[]
+  fieldset: FieldsetSchema[];
 }
 /**
  * This interface was referenced by `JustWorkflowItWorkflowDefinition`'s JSON-Schema
  * via the `definition` "fieldsetSchema".
  */
 export interface FieldsetSchema {
-  from?: string
-  to?: string
-  valueToKey?: boolean
-  withValueFrom?: string
-  withTemplate?: string
-  toArray?: boolean
+  from?: string;
+  to?: string;
+  valueToKey?: boolean;
+  withValueFrom?: string;
+  withTemplate?: string;
+  toArray?: boolean;
   via?: {
-    type: 'date' | 'commands'
-    sourceFormat?: string
-    format?: string
-  }
+    type: 'date' | 'commands';
+    sourceFormat?: string;
+    format?: string;
+  };
   fromEach?: {
-    field: string
-    to?: string
-    flatten?: boolean
-    fieldset?: FieldsetSchema[]
-  }
+    field: string;
+    to?: string;
+    flatten?: boolean;
+    fieldset?: FieldsetSchema[];
+  };
 }
 /**
  * This interface was referenced by `JustWorkflowItWorkflowDefinition`'s JSON-Schema
  * via the `definition` "refSchema".
  */
 export interface RefSchema {
-  $ref: string
+  $ref: string;
 }
 /**
  * This interface was referenced by `JustWorkflowItWorkflowDefinition`'s JSON-Schema
  * via the `definition` "definitionSchema".
  */
 export interface DefinitionSchema {
-  type: string
+  type: string;
   properties?: {
-    [k: string]: DefinitionSchema
-  }
-  items?: DefinitionSchema
-  required?: string[]
-  additionalProperties?: boolean
+    [k: string]: DefinitionSchema;
+  };
+  items?: DefinitionSchema;
+  required?: string[];
+  additionalProperties?: boolean;
 }

@@ -4,7 +4,7 @@ import path from 'path';
 import { JustWorkflowItWorkflowDefinition } from '../../src/workflowDefinition/types';
 import { performAnalysisOnTypes } from '../../src/workflowDefinition/typeAnalysis';
 
-const ajv = new Ajv({ allowUnionTypes: true });
+const ajv = new Ajv({ allowUnionTypes: true, strictTuples: false });
 const testCasesDir = path.join(__dirname, 'typeAnalysisWorkflowTestCases');
 const positiveTestCasesDir = path.join(testCasesDir, 'positive');
 const negativeTestCasesDir = path.join(testCasesDir, 'negative');

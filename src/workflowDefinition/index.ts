@@ -1,25 +1,16 @@
 import Ajv from 'ajv';
-import { readdirSync, readFileSync } from 'fs';
-import { join } from 'path';
-import { IllegalArgumentException, IllegalStateException } from '../exceptions';
-import { performAnalysisOnTypes } from './typeAnalysis';
+import schemas from '../preloadedSchemas';
 import { JustWorkflowItWorkflowDefinition } from './types';
-
-const schemaDir = join(__dirname, 'jsonSchema');
-const schemaFiles = readdirSync(schemaDir).filter((file) =>
-  file.endsWith('.json')
-);
 
 const ajv = new Ajv({
   allowUnionTypes: true,
+  strictTuples: false,
 });
 
-// eslint-disable-next-line no-restricted-syntax
-for (const file of schemaFiles) {
-  const schemaPath = join(schemaDir, file);
-  const schema = JSON.parse(readFileSync(schemaPath, 'utf-8'));
-  ajv.addSchema(schema, schema.$id || file);
-}
+// Register schemas
+Object.entries(schemas).forEach(([key, schema]) => {
+  ajv.addSchema(schema, key);
+});
 
 function validateAndGetWorkflowDefinition(
   inputWorkflowDefinitionString: string
@@ -30,18 +21,16 @@ function validateAndGetWorkflowDefinition(
     'JustWorkflowItWorkflowDefinition'
   );
   if (!validateWorkflowDefinition) {
-    throw new IllegalStateException(
-      'This should never happen, something went wrong loading schemas from file'
+    throw new Error(
+      'This should never happen, something went wrong loading schemas'
     );
   }
 
   if (!validateWorkflowDefinition(inputWorkflowDefinition)) {
-    throw new IllegalArgumentException(
+    throw new Error(
       JSON.stringify(validateWorkflowDefinition.errors || 'Schema not found')
     );
   }
-
-  performAnalysisOnTypes(inputWorkflowDefinition, ajv);
 
   return inputWorkflowDefinition;
 }

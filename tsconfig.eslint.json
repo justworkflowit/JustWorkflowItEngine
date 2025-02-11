@@ -5,7 +5,8 @@
     "global.d.ts",
     "test",
     "jest.config.ts",
-    "bin/generate-types.js"
+    "bin/**/*.js",
+    "webpack.config.cjs"
   ],
   "exclude": ["node_modules", "plugins", "public"]
 }
