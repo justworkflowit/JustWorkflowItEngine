@@ -13,7 +13,7 @@
   "scripts": {
     "test": "jest",
     "lint": "npx eslint . --ext .ts --fix && prettier --write \"**/*.*\" --config .prettierrc.json",
-    "build": "rm -rf dist && npm run generate-types && npm run lint && npm run test && tsc && webpack --config webpack.config.cjs",
+    "build": "rm -rf dist && npm run generate-types && npm run lint && npm run test && tsc && ts-node ./bin/fix-imports.js && webpack --config webpack.config.cjs",
     "prepare": "npm run build",
     "generate-types": "ts-node ./bin/generate-schemas.js && ts-node ./bin/generate-types.js"
   },
