@@ -2,24 +2,23 @@
   "name": "@justworkflowit/engine",
   "version": "0.0.41-alpha.0",
   "description": "The JustWorkflowIt Engine",
-  "main": "dist/js/src/index.js",
-  "types": "dist/types/src/index.d.ts",
   "type": "module",
   "exports": {
-    "import": "./dist/js/src/index.js",
-    "require": "./dist/js/src/index.cjs",
-    "browser": "./dist/js/src/browser.js"
+    "import": "./dist/esm/src/index.js",
+    "require": "./dist/cjs/src/index.cjs",
+    "browser": "./dist/esm/src/browser.js"
   },
   "scripts": {
     "test": "jest",
     "lint": "npx eslint . --ext .ts --fix && prettier --write \"**/*.*\" --config .prettierrc.json",
-    "build": "rm -rf dist && npm run generate-types && npm run lint && npm run test && tsc && ts-node ./bin/fix-imports.js && webpack --config webpack.config.cjs",
+    "build": "rm -rf dist && npm run generate-types && npm run lint && npm run test && npm run build:esm && npm run build:cjs && ts-node ./bin/fix-imports.js && webpack --config webpack.config.cjs",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
     "prepare": "npm run build",
     "generate-types": "ts-node ./bin/generate-schemas.js && ts-node ./bin/generate-types.js"
   },
   "files": [
-    "dist",
-    "dist/js/src/workflowDefinition/jsonSchema"
+    "dist"
   ],
   "repository": {
     "type": "git",

@@ -13,7 +13,7 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js'],
     alias: {
-      preloadedSchemas: path.resolve(__dirname, 'dist/js/src/preloadedSchemas.js'), // Alias to compiled JS
+      preloadedSchemas: path.resolve(__dirname, 'dist/esm/src/preloadedSchemas.js'), // Alias to compiled JS
     },
     fallback: {
       fs: false,
