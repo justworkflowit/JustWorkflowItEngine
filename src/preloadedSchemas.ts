@@ -242,7 +242,7 @@ export default {
   'any.json': {
     $schema: 'http://json-schema.org/draft-07/schema#',
     $id: 'any.json',
-    title: 'All',
+    title: 'JSONLogicSchema',
     description: 'Any valid JSON Logic data source.',
     oneOf: [
       {
@@ -1551,7 +1551,17 @@ export default {
               },
               {
                 type: 'object',
-                $ref: 'json-logic.json',
+                properties: {
+                  if: {
+                    type: 'array',
+                    minItems: 3,
+                    items: {
+                      $ref: 'any.json',
+                    },
+                  },
+                },
+                required: ['if'],
+                additionalProperties: false,
               },
             ],
           },

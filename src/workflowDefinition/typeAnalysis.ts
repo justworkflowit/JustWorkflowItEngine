@@ -3,10 +3,10 @@
 import Ajv from 'ajv';
 import { JSONSchemaFaker, Schema } from 'json-schema-faker';
 import {
-  JSONLogicSchema,
   JSONXformSchema,
   StepDefinition,
   JustWorkflowItWorkflowDefinition,
+  JSONLogicSchema,
 } from './types';
 import { IllegalArgumentException } from '../exceptions';
 import { nameof } from '../utils';

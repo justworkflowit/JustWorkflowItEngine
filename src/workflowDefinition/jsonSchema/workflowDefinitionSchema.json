@@ -63,7 +63,15 @@
             { "type": "null" },
             {
               "type": "object",
-              "$ref": "json-logic.json"
+              "properties": {
+                "if": {
+                  "type": "array",
+                  "minItems": 3,
+                  "items": { "$ref": "any.json" }
+                }
+              },
+              "required": ["if"],
+              "additionalProperties": false
             }
           ]
         },

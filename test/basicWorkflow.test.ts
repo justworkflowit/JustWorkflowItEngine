@@ -144,29 +144,40 @@ describe('Workflow Engine Test Cases', () => {
     expect(currentWorkflowState.nextStepName).toBe(null);
   });
 
-  const testCasesDirOne = path.join(__dirname, 'workflowTestCases');
-  const testCasesDirTwo = path.join(
+  const positiveTestCasesDirOne = path.join(
+    __dirname,
+    'workflowTestCases/positive'
+  );
+  const positiveTestCasesDirTwo = path.join(
     __dirname,
     'typeAnalysis/typeAnalysisWorkflowTestCases/positive'
   );
-  const negativeTestCasesDir = path.join(
+  const negativeTestCasesDirOne = path.join(
+    __dirname,
+    'workflowTestCases/negative'
+  );
+  const negativeTestCasesDirTwo = path.join(
     __dirname,
     'typeAnalysis/typeAnalysisWorkflowTestCases/negative'
   );
 
   const positiveTestCaseFiles = [
     ...fs
-      .readdirSync(testCasesDirOne)
-      .map((file) => path.join(testCasesDirOne, file)),
+      .readdirSync(positiveTestCasesDirOne)
+      .map((file) => path.join(positiveTestCasesDirOne, file)),
     ...fs
-      .readdirSync(testCasesDirTwo)
-      .map((file) => path.join(testCasesDirTwo, file)),
+      .readdirSync(positiveTestCasesDirTwo)
+      .map((file) => path.join(positiveTestCasesDirTwo, file)),
   ].filter((file) => path.extname(file) === '.json');
 
-  const negativeTestCaseFiles = fs
-    .readdirSync(negativeTestCasesDir)
-    .map((file) => path.join(negativeTestCasesDir, file))
-    .filter((file) => path.extname(file) === '.json');
+  const negativeTestCaseFiles = [
+    ...fs
+      .readdirSync(negativeTestCasesDirOne)
+      .map((file) => path.join(negativeTestCasesDirOne, file)),
+    ...fs
+      .readdirSync(negativeTestCasesDirTwo)
+      .map((file) => path.join(negativeTestCasesDirTwo, file)),
+  ].filter((file) => path.extname(file) === '.json');
 
   // Positive Workflow Execution Tests
   test.each(positiveTestCaseFiles)(

@@ -13,7 +13,7 @@ export const expectedErrors: Record<string, string> = {
     "Transformation error: Missing expected field 'workflowInput.missingProperty' in execution data. The graph traversal path taken: stepOne",
   'missingWorkflowInput.json':
     "No definition found for reference '#/definitions/workflowInput'",
-  'invalidLogicResolution.json': "No step found with name 'stepTwo'",
+  'invalidLogicResolution.json': "must have required property 'if'",
   'invalidWorkflowInputReferenceBasedOnPathLogic.json':
     "Transformation error: Missing expected field 'stepTwoOutput.someProperty' in execution data. The graph traversal path taken: stepOne -> stepThree",
   'invalidLogicReferenceToNonExistentStep.json':

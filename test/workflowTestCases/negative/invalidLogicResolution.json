@@ -6,9 +6,11 @@
       "retries": 2,
       "timeoutSeconds": 100,
       "transitionToStep": {
-        "logic": {
-          "all": ["stepTwo"]
-        }
+        "or": [
+          { "==": [{ "var": "stepOneResult.someProperty" }, "value"] },
+          "stepTwo",
+          "stepThree"
+        ]
       },
       "integrationDetails": {
         "type": "simpleIntegration",

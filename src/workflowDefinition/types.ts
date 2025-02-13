@@ -6,9 +6,9 @@
  */
 
 /**
- * Build complex rules, serialize them as JSON, share them between front-end and back-end.
+ * Any valid JSON Logic data source.
  */
-export type JSONLogicSchema = AllOperators | All1;
+export type JSONLogicSchema = AllOperators | All2;
 /**
  * Any valid JSON Logic data source, expect primitive types.
  */
@@ -21,7 +21,7 @@ export type AllOperators =
   | NoName2
   | NoName3
   | NoName4
-  | All3
+  | All1
   | Filter
   | Map
   | Merge
@@ -90,13 +90,17 @@ export type If =
  */
 export type OrMoreArgs = SingleArray | SingleArg;
 /**
- * Any valid JSON Logic data source.
+ * An array with 1 or more elements.
  */
-export type All = AllOperators | All1;
+export type SingleArray = JSONLogicSchema[];
 /**
- * Any valid JSON data type.
+ * Note: 1 or more operators can also take a single, non array argument:
  */
-export type All1 = (boolean | null | number | string | unknown[]) | NoLogic;
+export type SingleArg = AllOperators | All;
+/**
+ * Any valid JSON data type, except array primitive.
+ */
+export type All = (boolean | null | number | string) | NoLogic;
 /**
  * Any valid JSON object which is not a logic rule.
  */
@@ -106,19 +110,9 @@ export type NoLogic =
   | NonLogicMultipleKeyObject;
 export type NonLogicSingleKeyObject = {
   [k: string]: unknown | undefined;
+} & {
+  [k: string]: unknown | undefined;
 };
-/**
- * An array with 1 or more elements.
- */
-export type SingleArray = All[];
-/**
- * Note: 1 or more operators can also take a single, non array argument:
- */
-export type SingleArg = AllOperators | All2;
-/**
- * Any valid JSON data type, except array primitive.
- */
-export type All2 = (boolean | null | number | string) | NoLogic;
 /**
  * You can supply a default, as the second argument, for values that might be missing in the data object.
  */
@@ -133,11 +127,11 @@ export type BinaryArg = Array | SingleArg1;
  * @minItems 1
  * @maxItems 2
  */
-export type Array = [All] | [All, All];
+export type Array = [JSONLogicSchema] | [JSONLogicSchema, JSONLogicSchema];
 /**
  * Note: binary operators can also take a single, non array argument:
  */
-export type SingleArg1 = AllOperators | All2;
+export type SingleArg1 = AllOperators | All;
 /**
  * Up to three args of valid JSON Logic data source.
  */
@@ -148,11 +142,14 @@ export type TrinaryArgs = Array1 | SingleArg2;
  * @minItems 1
  * @maxItems 3
  */
-export type Array1 = [All] | [All, All] | [All, All, All];
+export type Array1 =
+  | [JSONLogicSchema]
+  | [JSONLogicSchema, JSONLogicSchema]
+  | [JSONLogicSchema, JSONLogicSchema, JSONLogicSchema];
 /**
  * Note: trinary operators can also take a single, non array argument:
  */
-export type SingleArg2 = AllOperators | All2;
+export type SingleArg2 = AllOperators | All;
 /**
  * Schema to access properties of an object or items of an array by index.
  */
@@ -193,11 +190,15 @@ export type UnaryArg = SingleArray1 | SingleArg3;
  * @minItems 1
  * @maxItems 1
  */
-export type SingleArray1 = [All];
+export type SingleArray1 = [JSONLogicSchema];
 /**
  * Note: unary operators can also take a single, non array argument:
  */
-export type SingleArg3 = AllOperators | All2;
+export type SingleArg3 = AllOperators | All;
+/**
+ * Any valid JSON data type.
+ */
+export type All2 = (boolean | null | number | string | unknown[]) | NoLogic;
 /**
  * This interface was referenced by `JustWorkflowItWorkflowDefinition`'s JSON-Schema
  * via the `definition` "definitionsSchema".
@@ -224,7 +225,20 @@ export interface StepDefinition {
   name: string;
   retries?: number;
   timeoutSeconds?: number;
-  transitionToStep?: string | null | JSONLogicSchema;
+  transitionToStep?:
+    | string
+    | null
+    | {
+        /**
+         * @minItems 3
+         */
+        if: [
+          JSONLogicSchema,
+          JSONLogicSchema,
+          JSONLogicSchema,
+          ...JSONLogicSchema[],
+        ];
+      };
   integrationDetails: IntegrationDetails;
 }
 /**
@@ -317,7 +331,7 @@ export interface NoName4 {
  * The most interesting part of these operations is that inside the test code, var operations are relative to the array element being tested.
  * It can be useful to use {"var":""} to get the entire array element within the test.
  */
-export interface All3 {
+export interface All1 {
   all: BinaryArg;
 }
 /**
@@ -395,7 +409,7 @@ export interface In {
  * Logs the first value to console, then passes it through unmodified.
  */
 export interface Log {
-  log: All;
+  log: JSONLogicSchema;
 }
 /**
  * If your rule needs to call a method on an object, you can use the built-in method operation.
