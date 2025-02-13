@@ -1,0 +1,230 @@
+{
+  "workflowName": "deepNestedIf",
+  "steps": [
+    {
+      "name": "stepOne",
+      "retries": 2,
+      "timeoutSeconds": 100,
+      "transitionToStep": {
+        "if": [
+          {
+            "and": [
+              {
+                "!==": [
+                  { "var": "stepOneResult.someProperty" },
+                  "unexpectedValue"
+                ]
+              },
+              { "<": [{ "var": "stepOneResult.someNumber" }, 10] }
+            ]
+          },
+          "stepTwo",
+          {
+            "if": [
+              {
+                "or": [
+                  {
+                    "==": [
+                      { "var": "stepOneResult.someProperty" },
+                      "specialCase"
+                    ]
+                  },
+                  { ">": [{ "var": "stepOneResult.someNumber" }, 100] }
+                ]
+              },
+              "stepThree",
+              "stepFour"
+            ]
+          }
+        ]
+      },
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/workflowInput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepOneOutput"
+        }
+      }
+    },
+    {
+      "name": "stepTwo",
+      "retries": 3,
+      "timeoutSeconds": 120,
+      "transitionToStep": "stepFive",
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/stepOneOutput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepTwoOutput"
+        }
+      }
+    },
+    {
+      "name": "stepThree",
+      "retries": 3,
+      "timeoutSeconds": 120,
+      "transitionToStep": "stepSix",
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/stepTwoOutput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepThreeOutput"
+        }
+      }
+    },
+    {
+      "name": "stepFour",
+      "retries": 1,
+      "timeoutSeconds": 90,
+      "transitionToStep": "stepSeven",
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/stepThreeOutput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepFourOutput"
+        }
+      }
+    },
+    {
+      "name": "stepFive",
+      "retries": 2,
+      "timeoutSeconds": 110,
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/stepTwoOutput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepFiveOutput"
+        }
+      }
+    },
+    {
+      "name": "stepSix",
+      "retries": 2,
+      "timeoutSeconds": 110,
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/stepThreeOutput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepSixOutput"
+        }
+      }
+    },
+    {
+      "name": "stepSeven",
+      "retries": 2,
+      "timeoutSeconds": 110,
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/stepFourOutput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepSevenOutput"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "workflowInput": {
+      "type": "object",
+      "properties": {
+        "someProperty": {
+          "type": "string"
+        },
+        "someNumber": {
+          "type": "number"
+        }
+      },
+      "required": ["someProperty", "someNumber"],
+      "additionalProperties": false
+    },
+    "stepOneOutput": {
+      "type": "object",
+      "properties": {
+        "someProperty": {
+          "type": "string"
+        },
+        "someNumber": {
+          "type": "number"
+        }
+      },
+      "required": ["someProperty", "someNumber"],
+      "additionalProperties": false
+    },
+    "stepTwoOutput": {
+      "type": "object",
+      "properties": {
+        "anotherProperty": {
+          "type": "string"
+        }
+      },
+      "required": ["anotherProperty"],
+      "additionalProperties": false
+    },
+    "stepThreeOutput": {
+      "type": "object",
+      "properties": {
+        "finalValue": {
+          "type": "boolean"
+        }
+      },
+      "required": ["finalValue"],
+      "additionalProperties": false
+    },
+    "stepFourOutput": {
+      "type": "object",
+      "properties": {
+        "finalCheck": {
+          "type": "boolean"
+        }
+      },
+      "required": ["finalCheck"],
+      "additionalProperties": false
+    },
+    "stepFiveOutput": {
+      "type": "object",
+      "properties": {
+        "stepFiveResult": {
+          "type": "string"
+        }
+      },
+      "required": ["stepFiveResult"],
+      "additionalProperties": false
+    },
+    "stepSixOutput": {
+      "type": "object",
+      "properties": {
+        "stepSixResult": {
+          "type": "boolean"
+        }
+      },
+      "required": ["stepSixResult"],
+      "additionalProperties": false
+    },
+    "stepSevenOutput": {
+      "type": "object",
+      "properties": {
+        "stepSevenResult": {
+          "type": "number"
+        }
+      },
+      "required": ["stepSevenResult"],
+      "additionalProperties": false
+    }
+  }
+}

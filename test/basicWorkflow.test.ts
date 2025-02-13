@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { expectedErrors } from './typeAnalysis/expectedErrors';
 import { JustWorkflowItEngine } from '../src';
 import {
   StepExecutor,
@@ -148,9 +149,12 @@ describe('Workflow Engine Test Cases', () => {
     __dirname,
     'typeAnalysis/typeAnalysisWorkflowTestCases/positive'
   );
+  const negativeTestCasesDir = path.join(
+    __dirname,
+    'typeAnalysis/typeAnalysisWorkflowTestCases/negative'
+  );
 
-  // Get JSON test case files from both directories
-  const testCaseFiles = [
+  const positiveTestCaseFiles = [
     ...fs
       .readdirSync(testCasesDirOne)
       .map((file) => path.join(testCasesDirOne, file)),
@@ -159,29 +163,62 @@ describe('Workflow Engine Test Cases', () => {
       .map((file) => path.join(testCasesDirTwo, file)),
   ].filter((file) => path.extname(file) === '.json');
 
-  test.each(testCaseFiles)('run workflow test case: %s', async (filePath) => {
-    const workflowDefinition = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  const negativeTestCaseFiles = fs
+    .readdirSync(negativeTestCasesDir)
+    .map((file) => path.join(negativeTestCasesDir, file))
+    .filter((file) => path.extname(file) === '.json');
 
-    const engine = new JustWorkflowItEngine({
-      workflowDefinition: JSON.stringify(workflowDefinition),
-      stepExecutors: [stepExecutorA],
-    });
+  // Positive Workflow Execution Tests
+  test.each(positiveTestCaseFiles)(
+    'run workflow test case: %s',
+    async (filePath) => {
+      const workflowDefinition = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
-    const initialWorkflowState: WorkflowState = {
-      nextStepName: workflowDefinition.steps[0]!.name,
-      executionData: {},
-      executionHistory: [],
-    };
+      const engine = new JustWorkflowItEngine({
+        workflowDefinition: JSON.stringify(workflowDefinition),
+        stepExecutors: [stepExecutorA],
+      });
 
-    const sampleEngineRunner = new SampleEngineRunner(
-      engine,
-      initialWorkflowState
-    );
+      const initialWorkflowState: WorkflowState = {
+        nextStepName: workflowDefinition.steps[0]!.name,
+        executionData: {},
+        executionHistory: [],
+      };
 
-    await sampleEngineRunner.runUntilTerminalStep();
+      const sampleEngineRunner = new SampleEngineRunner(
+        engine,
+        initialWorkflowState
+      );
+      await sampleEngineRunner.runUntilTerminalStep();
 
-    expect(sampleEngineRunner.getCurrentWorkflowState().nextStepName).toBe(
-      null
-    );
-  });
+      expect(sampleEngineRunner.getCurrentWorkflowState().nextStepName).toBe(
+        null
+      );
+    }
+  );
+
+  // Negative Workflow Definition Tests
+  test.each(negativeTestCaseFiles)(
+    'validate workflow definition: %s',
+    (filePath) => {
+      const workflowDefinition: JustWorkflowItWorkflowDefinition = JSON.parse(
+        fs.readFileSync(filePath, 'utf-8')
+      );
+
+      const expectedError = expectedErrors[path.basename(filePath)];
+      if (!expectedError) {
+        throw new Error(
+          `No expected error found for test case file: ${filePath}`
+        );
+      }
+
+      expect(() => {
+        // eslint-disable-next-line no-new
+        new JustWorkflowItEngine({
+          workflowDefinition: JSON.stringify(workflowDefinition),
+          stepExecutors: [stepExecutorA],
+        });
+      }).toThrow(expectedError);
+    }
+  );
 });

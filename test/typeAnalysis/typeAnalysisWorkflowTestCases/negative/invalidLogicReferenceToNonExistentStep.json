@@ -1,0 +1,95 @@
+{
+  "workflowName": "branchingLogic",
+  "steps": [
+    {
+      "name": "stepOne",
+      "retries": 2,
+      "timeoutSeconds": 100,
+      "transitionToStep": {
+        "if": [
+          {
+            "!==": [
+              {
+                "var": "stepOneResult.existingProperty"
+              },
+              "this will not be the returned value"
+            ]
+          },
+          "stepThree",
+          "doesntExist"
+        ]
+      },
+      "integrationDetails": {
+        "type": "noopIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/workflowInput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepOneOutput"
+        }
+      }
+    },
+    {
+      "name": "stepTwo",
+      "retries": 3,
+      "timeoutSeconds": 120,
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "noopIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/stepOneOutput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepTwoOutput"
+        }
+      }
+    },
+    {
+      "name": "stepThree",
+      "retries": 3,
+      "timeoutSeconds": 120,
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "noopIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/stepOneOutput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepTwoOutput"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "workflowInput": {
+      "type": "object",
+      "properties": {
+        "existingProperty": {
+          "type": "string"
+        }
+      },
+      "required": ["existingProperty"],
+      "additionalProperties": false
+    },
+    "stepOneOutput": {
+      "type": "object",
+      "properties": {
+        "someProperty": {
+          "type": "string"
+        }
+      },
+      "required": ["someProperty"],
+      "additionalProperties": false
+    },
+    "stepTwoOutput": {
+      "type": "object",
+      "properties": {
+        "anotherProperty": {
+          "type": "string"
+        }
+      },
+      "required": ["anotherProperty"],
+      "additionalProperties": false
+    }
+  }
+}

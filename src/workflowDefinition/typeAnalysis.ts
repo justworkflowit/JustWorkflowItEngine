@@ -96,6 +96,7 @@ function extractStepsFromJsonLogicStatement(
 ): void {
   if (!logicNode) return;
 
+  // Base Case: Only add strings, ignoring numbers
   if (typeof logicNode === 'string') {
     steps.add(logicNode);
     return;
@@ -111,10 +112,15 @@ function extractStepsFromJsonLogicStatement(
   if (typeof logicNode === 'object') {
     for (const key of Object.keys(logicNode)) {
       const value = logicNode[key];
+
       if (key === 'if' || key === '?:') {
         if (Array.isArray(value) && value.length >= 3) {
-          extractStepsFromJsonLogicStatement(steps, value[1]);
-          extractStepsFromJsonLogicStatement(steps, value[2]);
+          for (let i = 1; i < value.length; i += 2) {
+            extractStepsFromJsonLogicStatement(steps, value[i]);
+          }
+          if (value.length % 2 === 1) {
+            extractStepsFromJsonLogicStatement(steps, value[value.length - 1]);
+          }
         }
       } else if (key === 'or' || key === 'and') {
         if (Array.isArray(value)) {

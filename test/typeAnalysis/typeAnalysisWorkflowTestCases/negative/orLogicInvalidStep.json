@@ -1,0 +1,86 @@
+{
+  "workflowName": "orLogicInvalidStep",
+  "steps": [
+    {
+      "name": "stepOne",
+      "retries": 2,
+      "timeoutSeconds": 100,
+      "transitionToStep": {
+        "if": [
+          {
+            "or": [
+              {
+                "==": [{ "var": "stepOneResult.someProperty" }, "specialValue"]
+              },
+              { "<": [{ "var": "stepOneResult.someNumber" }, 50] }
+            ]
+          },
+          "stepTwo",
+          "invalidStep"
+        ]
+      },
+      "integrationDetails": {
+        "type": "noopIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/workflowInput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepOneOutput"
+        }
+      }
+    },
+    {
+      "name": "stepTwo",
+      "retries": 3,
+      "timeoutSeconds": 120,
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "noopIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/stepOneOutput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/stepTwoOutput"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "workflowInput": {
+      "type": "object",
+      "properties": {
+        "someProperty": {
+          "type": "string"
+        },
+        "someNumber": {
+          "type": "number"
+        }
+      },
+      "required": ["someProperty", "someNumber"],
+      "additionalProperties": false
+    },
+    "stepOneOutput": {
+      "type": "object",
+      "properties": {
+        "someProperty": {
+          "type": "string"
+        },
+        "someNumber": {
+          "type": "number"
+        }
+      },
+      "required": ["someProperty", "someNumber"],
+      "additionalProperties": false
+    },
+    "stepTwoOutput": {
+      "type": "object",
+      "properties": {
+        "anotherProperty": {
+          "type": "string"
+        }
+      },
+      "required": ["anotherProperty"],
+      "additionalProperties": false
+    }
+  }
+}
