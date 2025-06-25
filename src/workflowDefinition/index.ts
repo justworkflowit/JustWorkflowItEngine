@@ -50,7 +50,7 @@ function validateAndGetWorkflowDefinition(
   });
 
   if (stepExecutorErrors.length > 0) {
-    throw new Error(JSON.stringify(stepExecutorErrors));
+    throw new Error(stepExecutorErrors.join(', '));
   }
 
   return inputWorkflowDefinition;

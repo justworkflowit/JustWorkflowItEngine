@@ -1,0 +1,38 @@
+{
+  "workflowName": "invalidStepReference",
+  "steps": [
+    {
+      "name": "firstStep",
+      "retries": 2,
+      "timeoutSeconds": 100,
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "NonExistentSimpleIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/firstStepInput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/firstStepOutput"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "firstStepInput": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "firstStepOutput": {
+      "type": "object",
+      "properties": {
+        "outputA": {
+          "type": "string"
+        }
+      },
+      "required": ["outputA"],
+      "additionalProperties": false
+    }
+  }
+}
