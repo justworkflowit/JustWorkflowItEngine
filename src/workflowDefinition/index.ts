@@ -49,6 +49,10 @@ function validateAndGetWorkflowDefinition(
     }
   });
 
+  if (stepExecutorErrors.length > 0) {
+    throw new Error(JSON.stringify(stepExecutorErrors));
+  }
+
   return inputWorkflowDefinition;
 }
 
