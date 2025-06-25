@@ -25,10 +25,12 @@ class JustWorkflowItEngine {
   stepExecutors: Array<StepExecutor>;
 
   constructor(constructorArgs: JustWorkflowItEngineConstructorArgs) {
-    this.workflowDefinition = validateAndGetWorkflowDefinition(
-      constructorArgs.workflowDefinition
-    );
     this.stepExecutors = constructorArgs.stepExecutors;
+
+    this.workflowDefinition = validateAndGetWorkflowDefinition(
+      constructorArgs.workflowDefinition,
+      this.stepExecutors
+    );
   }
 
   public getStepUnderExecution(
