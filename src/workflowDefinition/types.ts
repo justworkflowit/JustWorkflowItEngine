@@ -480,6 +480,12 @@ export interface IntegrationDetails {
   inputTransformer?: JSONXformSchema;
   inputDefinition: RefSchema;
   outputDefinition: RefSchema;
+  /**
+   * Static configuration for the step executor, validated against the executor's configDefinition.
+   */
+  config?: {
+    [k: string]: unknown | undefined;
+  };
 }
 /**
  * https://github.com/perpk/json-xform

@@ -20,5 +20,5 @@ export const expectedErrors: Record<string, string> = {
     "No step found with name 'doesntExist'",
   'orLogicInvalidStep.json': "No step found with name 'invalidStep'",
   'invalidStepTypes.json':
-    "Step 'firstStep' has an invalid step executor type: 'NonExistentSimpleIntegration'. Valid types are: simpleIntegration",
+    "No registered step executor found for type 'NonExistentSimpleIntegration'",
 };

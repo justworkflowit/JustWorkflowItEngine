@@ -4,6 +4,10 @@ import path from 'path';
 import { JustWorkflowItWorkflowDefinition } from '../../src/workflowDefinition/types';
 import { performAnalysisOnTypes } from '../../src/workflowDefinition/typeAnalysis';
 import { expectedErrors } from './expectedErrors';
+import {
+  StepExecutor,
+  StepExecutorArguments,
+} from '../../src/engine/stepExecutor';
 
 const ajv = new Ajv({ allowUnionTypes: true, strictTuples: false });
 const testCasesDir = path.join(__dirname, 'typeAnalysisWorkflowTestCases');
@@ -17,6 +21,22 @@ const negativeFiles = fs
   .readdirSync(negativeTestCasesDir)
   .filter((file) => path.extname(file) === '.json');
 
+const stepExecutorA: StepExecutor = {
+  // TODO: let's type the step executor, let the user provide unknown if needed
+  type: 'simpleIntegration',
+  execute: (_args: StepExecutorArguments): Promise<Record<string, unknown>> =>
+    Promise.resolve({}),
+};
+
+const stepExecutorB: StepExecutor = {
+  // TODO: let's type the step executor, let the user provide unknown if needed
+  type: 'noopIntegration',
+  execute: (_args: StepExecutorArguments): Promise<Record<string, unknown>> =>
+    Promise.resolve({}),
+};
+
+const stepExecutors = [stepExecutorA, stepExecutorB];
+
 describe('Workflow Definition Type Analysis - Positive Test Cases', () => {
   test.each(positiveFiles)('validate workflow definition: %s', (file) => {
     const filePath = path.join(positiveTestCasesDir, file);
@@ -24,7 +44,9 @@ describe('Workflow Definition Type Analysis - Positive Test Cases', () => {
       fs.readFileSync(filePath, 'utf-8')
     );
 
-    expect(() => performAnalysisOnTypes(workflowDefinition, ajv)).not.toThrow();
+    expect(() =>
+      performAnalysisOnTypes(workflowDefinition, ajv, stepExecutors)
+    ).not.toThrow();
   });
 });
 
@@ -41,7 +63,7 @@ describe('Workflow Definition Type Analysis - Negative Test Cases', () => {
     }
 
     expect(() => {
-      performAnalysisOnTypes(workflowDefinition, ajv);
+      performAnalysisOnTypes(workflowDefinition, ajv, stepExecutors);
     }).toThrow(expectedError);
   });
 });

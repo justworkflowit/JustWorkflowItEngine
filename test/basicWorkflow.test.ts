@@ -24,6 +24,15 @@ const stepExecutorA: StepExecutor = {
     Promise.resolve(outputA),
 };
 
+const stepExecutorB: StepExecutor = {
+  // TODO: let's type the step executor, let the user provide unknown if needed
+  type: 'noopIntegration',
+  execute: (_args: StepExecutorArguments): Promise<Record<string, unknown>> =>
+    Promise.resolve({}),
+};
+
+const stepExecutors = [stepExecutorA, stepExecutorB];
+
 const step1Name = 'firstStep';
 const step2Name = 'secondStep';
 const step1InputName = `${step1Name}Input`;
@@ -128,7 +137,7 @@ describe('Workflow Engine Test Cases', () => {
   test('run a basic workflow definition', async () => {
     const engine = new JustWorkflowItEngine({
       workflowDefinition: JSON.stringify(aWorkflowDefinition),
-      stepExecutors: [stepExecutorA],
+      stepExecutors,
     });
 
     let currentWorkflowState: WorkflowState = {
@@ -187,7 +196,7 @@ describe('Workflow Engine Test Cases', () => {
 
       const engine = new JustWorkflowItEngine({
         workflowDefinition: JSON.stringify(workflowDefinition),
-        stepExecutors: [stepExecutorA],
+        stepExecutors,
       });
 
       const initialWorkflowState: WorkflowState = {
@@ -227,7 +236,7 @@ describe('Workflow Engine Test Cases', () => {
         // eslint-disable-next-line no-new
         new JustWorkflowItEngine({
           workflowDefinition: JSON.stringify(workflowDefinition),
-          stepExecutors: [stepExecutorA],
+          stepExecutors,
         });
       }).toThrow(expectedError);
     }

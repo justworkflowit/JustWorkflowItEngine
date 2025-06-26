@@ -1587,6 +1587,12 @@ export default {
           outputDefinition: {
             $ref: '#/definitions/refSchema',
           },
+          config: {
+            type: 'object',
+            description:
+              "Static configuration for the step executor, validated against the executor's configDefinition.",
+            additionalProperties: true,
+          },
         },
         required: ['type', 'inputDefinition', 'outputDefinition'],
         additionalProperties: false,

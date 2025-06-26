@@ -10,6 +10,7 @@ import {
 } from './types';
 import { IllegalArgumentException } from '../exceptions';
 import { nameof } from '../utils';
+import { StepExecutor } from '../engine/stepExecutor';
 
 const xform = require('@perpk/json-xform');
 
@@ -71,7 +72,7 @@ function generateDataFromSchema(
 ): Record<string, unknown> {
   return transformer
     ? mapToNewObject(data || {}, transformer)
-    : JSONSchemaFaker.generate(schema);
+    : (JSONSchemaFaker.generate(schema) as Record<string, unknown>);
 }
 
 function getValueByJsonXformSchemaPath(
@@ -186,6 +187,7 @@ function applyInputTransformer(
 function traverseSteps(
   inputWorkflowDefinition: JustWorkflowItWorkflowDefinition,
   ajv: Ajv,
+  stepExecutors: Array<StepExecutor>,
   currentStep: StepDefinition,
   executionData: Record<string, unknown>,
   visitedSteps: Array<string>
@@ -195,8 +197,37 @@ function traverseSteps(
   }
   visitedSteps.push(currentStep.name);
 
-  const { inputDefinition, outputDefinition, inputTransformer } =
+  const { type, inputDefinition, outputDefinition, inputTransformer, config } =
     currentStep.integrationDetails;
+
+  const matchingExecutors = stepExecutors.filter(
+    (stepExecutor) => stepExecutor.type === currentStep.integrationDetails.type
+  );
+  if (matchingExecutors.length > 1) {
+    throw new Error(
+      `Multiple registered step executors found for type '${type}'`
+    );
+  }
+
+  const executor = matchingExecutors[0];
+  if (!executor) {
+    throw new Error(`No registered step executor found for type '${type}'`);
+  }
+
+  if (executor.configDefinition) {
+    if (!config) {
+      throw new IllegalArgumentException(
+        `Missing required config for step '${currentStep.name}' of type '${type}'`
+      );
+    }
+
+    validateSchema(
+      ajv,
+      executor.configDefinition as Schema,
+      config,
+      `step '${currentStep.name}' config validation`
+    );
+  }
 
   if (inputTransformer) {
     executionData = applyInputTransformer(
@@ -248,6 +279,7 @@ function traverseSteps(
       traverseSteps(
         inputWorkflowDefinition,
         ajv,
+        stepExecutors,
         nextStep,
         { ...executionData },
         new Array(...visitedSteps)
@@ -258,7 +290,8 @@ function traverseSteps(
 
 export function performAnalysisOnTypes(
   inputWorkflowDefinition: JustWorkflowItWorkflowDefinition,
-  ajv: Ajv
+  ajv: Ajv,
+  stepExecutors: Array<StepExecutor>
 ): void {
   if (inputWorkflowDefinition.steps.length === 0) {
     throw new Error('Workflow has no steps defined.');
@@ -267,6 +300,7 @@ export function performAnalysisOnTypes(
   traverseSteps(
     inputWorkflowDefinition,
     ajv,
+    stepExecutors,
     inputWorkflowDefinition.steps[0],
     {},
     []

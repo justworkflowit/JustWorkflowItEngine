@@ -37,21 +37,7 @@ function validateAndGetWorkflowDefinition(
     );
   }
 
-  performAnalysisOnTypes(inputWorkflowDefinition, ajv);
-
-  const validStepExecutors = stepExecutors.map((executor) => executor.type);
-  const stepExecutorErrors: Array<string> = [];
-  inputWorkflowDefinition.steps.forEach((step) => {
-    if (!validStepExecutors.includes(step.integrationDetails.type)) {
-      stepExecutorErrors.push(
-        `Step '${step.name}' has an invalid step executor type: '${step.integrationDetails.type}'. Valid types are: ${validStepExecutors.join(', ')}`
-      );
-    }
-  });
-
-  if (stepExecutorErrors.length > 0) {
-    throw new Error(stepExecutorErrors.join(', '));
-  }
+  performAnalysisOnTypes(inputWorkflowDefinition, ajv, stepExecutors);
 
   return inputWorkflowDefinition;
 }

@@ -1,4 +1,7 @@
-import { IntegrationDetails } from '../workflowDefinition/types';
+import {
+  DefinitionSchema,
+  IntegrationDetails,
+} from '../workflowDefinition/types';
 
 export type StepExecutorIntegrationDetails = Omit<
   IntegrationDetails,
@@ -12,5 +15,6 @@ export interface StepExecutorArguments {
 
 export interface StepExecutor {
   type: string;
+  configDefinition?: DefinitionSchema;
   execute(args: StepExecutorArguments): Promise<Record<string, unknown>>;
 }
