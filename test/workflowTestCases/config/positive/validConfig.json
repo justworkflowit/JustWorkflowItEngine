@@ -1,0 +1,30 @@
+{
+  "workflowName": "validWorkflow",
+  "steps": [
+    {
+      "name": "validStep",
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "config": {
+          "env": "dev",
+          "token": "abcdefghij"
+        },
+        "inputDefinition": {
+          "$ref": "#/definitions/emptyDefinition"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/emptyDefinition"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "emptyDefinition": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+}

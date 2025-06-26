@@ -10,6 +10,7 @@
   },
   "scripts": {
     "test": "jest",
+    "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand",
     "lint": "npx eslint . --ext .ts --fix && prettier --write \"**/*.*\" --config .prettierrc.json",
     "build": "rm -rf dist && npm run generate-types && npm run lint && npm run test && npm run build:esm && npm run build:cjs && webpack --config webpack.config.cjs",
     "build:esm": "tsc --project tsconfig.esm.json",

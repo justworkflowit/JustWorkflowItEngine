@@ -1,0 +1,29 @@
+{
+  "workflowName": "invalidWorkflow",
+  "steps": [
+    {
+      "name": "invalidStep",
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "config": {
+          "env": "prod"
+        },
+        "inputDefinition": {
+          "$ref": "#/definitions/emptyDefinition"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/emptyDefinition"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "emptyDefinition": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+}
