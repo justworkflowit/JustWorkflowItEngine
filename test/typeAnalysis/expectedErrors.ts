@@ -21,5 +21,6 @@ export const expectedErrors: Record<string, string> = {
   'orLogicInvalidStep.json': "No step found with name 'invalidStep'",
   'invalidStepTypes.json':
     "No registered step executor found for type 'NonExistentSimpleIntegration'",
-  'missingConfigProperty.json': "Validation failed step 'invalidStep' config validation: [{\"instancePath\":\"\",\"schemaPath\":\"#/required\",\"keyword\":\"required\",\"params\":{\"missingProperty\":\"token\"},\"message\":\"must have required property 'token'\"}]. Used data '{\"env\":\"prod\"}'"
+  'missingConfigProperty.json':
+    'Validation failed step \'invalidStep\' config validation: [{"instancePath":"","schemaPath":"#/required","keyword":"required","params":{"missingProperty":"token"},"message":"must have required property \'token\'"}]. Used data \'{"env":"prod"}\'',
 };

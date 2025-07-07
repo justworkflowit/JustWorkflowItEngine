@@ -3,6 +3,7 @@
   "version": "0.0.51-alpha.0",
   "description": "The JustWorkflowIt Engine",
   "types": "./dist/types/src/index.d.ts",
+  "browser": "./dist/esm/src/browser.js",
   "exports": {
     "import": "./dist/esm/src/index.js",
     "require": "./dist/cjs/src/index.js",
