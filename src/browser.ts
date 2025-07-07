@@ -9,3 +9,4 @@ Object.entries(schemas).forEach(([key, schema]) => {
 });
 
 export { ajv };
+export * from './index';
