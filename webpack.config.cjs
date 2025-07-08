@@ -13,13 +13,15 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js'],
     alias: {
-      preloadedSchemas: path.resolve(__dirname, 'dist/esm/src/preloadedSchemas.js'), // Alias to compiled JS
+      preloadedSchemas: path.resolve(__dirname, 'dist/esm/src/preloadedSchemas.js'),
+      'process/browser': require.resolve('process/browser.js'),
     },
     fallback: {
       fs: false,
       path: false,
-      process: require.resolve('process'),
-      buffer: require.resolve('buffer'),
+      process: require.resolve('process/browser'),
+      buffer: require.resolve('buffer/'),
+      stream: require.resolve('stream-browserify'),
     },
   },
   module: {
