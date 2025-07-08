@@ -1,18 +1,7 @@
-import Ajv from 'ajv';
-import schemas from '../preloadedSchemas';
 import { JustWorkflowItWorkflowDefinition } from './types';
 import { performAnalysisOnTypes } from './typeAnalysis';
 import { StepExecutor } from '../engine/stepExecutor';
-
-const ajv = new Ajv({
-  allowUnionTypes: true,
-  strictTuples: false,
-});
-
-// Register schemas
-Object.entries(schemas).forEach(([key, schema]) => {
-  ajv.addSchema(schema, key);
-});
+import { getAjv } from './ajvInitialize';
 
 function validateAndGetWorkflowDefinition(
   inputWorkflowDefinitionString: string,
@@ -22,6 +11,7 @@ function validateAndGetWorkflowDefinition(
     inputWorkflowDefinitionString
   ) as JustWorkflowItWorkflowDefinition;
 
+  const ajv = getAjv();
   const validateWorkflowDefinition = ajv.getSchema(
     'JustWorkflowItWorkflowDefinition'
   );

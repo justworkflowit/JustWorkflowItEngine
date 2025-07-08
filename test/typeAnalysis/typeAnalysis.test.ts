@@ -1,6 +1,6 @@
-import Ajv from 'ajv';
 import fs from 'fs';
 import path from 'path';
+import { getAjv } from '../../src/workflowDefinition/ajvInitialize';
 import { JustWorkflowItWorkflowDefinition } from '../../src/workflowDefinition/types';
 import { performAnalysisOnTypes } from '../../src/workflowDefinition/typeAnalysis';
 import { expectedErrors } from './expectedErrors';
@@ -9,7 +9,8 @@ import {
   StepExecutorArguments,
 } from '../../src/engine/stepExecutor';
 
-const ajv = new Ajv({ allowUnionTypes: true, strictTuples: false });
+const ajv = getAjv();
+
 const testCasesDir = path.join(__dirname, 'typeAnalysisWorkflowTestCases');
 const positiveTestCasesDir = path.join(testCasesDir, 'positive');
 const negativeTestCasesDir = path.join(testCasesDir, 'negative');

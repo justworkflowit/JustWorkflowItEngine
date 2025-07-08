@@ -293,7 +293,10 @@ export function performAnalysisOnTypes(
   ajv: Ajv,
   stepExecutors: Array<StepExecutor>
 ): void {
-  if (inputWorkflowDefinition.steps.length === 0) {
+  if (
+    !inputWorkflowDefinition.steps ||
+    inputWorkflowDefinition.steps.length === 0
+  ) {
     throw new Error('Workflow has no steps defined.');
   }
 

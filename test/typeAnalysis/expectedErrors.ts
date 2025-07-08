@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 // Map of expected errors for negative test cases
 export const expectedErrors: Record<string, string> = {
+  'empty.json': 'Workflow has no steps defined.',
   'inconsistentDataTypes.json': 'must be number',
   'invalidInputTransformer.json':
     "Transformation error: Missing expected field 'firstStepOutput.nonExistentProperty' in execution data. The graph traversal path taken: firstStep -> secondStep",

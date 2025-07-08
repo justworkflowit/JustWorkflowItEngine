@@ -217,6 +217,12 @@ describe('Workflow Engine Test Cases', () => {
     }
   );
 
+  // Map of expected errors for negative test cases
+  const expectedErrorsOverride: Record<string, string> = {
+    'empty.json':
+      '[{"instancePath":"","schemaPath":"#/required","keyword":"required","params":{"missingProperty":"workflowName"},"message":"must have required property \'workflowName\'"}]',
+  };
+
   // Negative Workflow Definition Tests
   test.each(negativeTestCaseFiles)(
     'validate workflow definition: %s',
@@ -225,7 +231,11 @@ describe('Workflow Engine Test Cases', () => {
         fs.readFileSync(filePath, 'utf-8')
       );
 
-      const expectedError = expectedErrors[path.basename(filePath)];
+      const consolidatedExpectedErrors = {
+        ...expectedErrors,
+        ...expectedErrorsOverride,
+      };
+      const expectedError = consolidatedExpectedErrors[path.basename(filePath)];
       if (!expectedError) {
         throw new Error(
           `No expected error found for test case file: ${filePath}`
