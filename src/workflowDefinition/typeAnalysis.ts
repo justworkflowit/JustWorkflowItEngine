@@ -1,7 +1,11 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-param-reassign */
 import Ajv from 'ajv';
-import { JSONSchemaFaker, Schema } from 'json-schema-faker';
+import {
+  JSONSchemaFaker,
+  JSONSchemaFakerDefine,
+  Schema,
+} from 'json-schema-faker';
 import {
   JSONXformSchema,
   StepDefinition,
@@ -299,6 +303,10 @@ export function performAnalysisOnTypes(
   ) {
     throw new Error('Workflow has no steps defined.');
   }
+
+  Object.entries(inputWorkflowDefinition.definitions).forEach(([key, def]) => {
+    JSONSchemaFaker.define(key, def as unknown as JSONSchemaFakerDefine);
+  });
 
   traverseSteps(
     inputWorkflowDefinition,
