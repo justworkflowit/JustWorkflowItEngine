@@ -10,10 +10,6 @@ import {
 } from '../workflowDefinition/types';
 import { ExecutionHistoryItem } from './executionHistoryItem';
 
-const xform = require('@perpk/json-xform');
-
-const { mapToNewObject } = xform;
-
 interface JustWorkflowItEngineConstructorArgs {
   workflowDefinition: string;
   stepExecutors: Array<StepExecutor>;
@@ -73,6 +69,9 @@ class JustWorkflowItEngine {
     let userInput;
     if (inputTransformer) {
       try {
+        // eslint-disable-next-line global-require
+        const xform = require('@perpk/json-xform');
+        const { mapToNewObject } = xform;
         userInput = mapToNewObject(currentWorkflowState, inputTransformer);
       } catch (e) {
         throw new IllegalArgumentException(

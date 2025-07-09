@@ -16,10 +16,6 @@ import { IllegalArgumentException } from '../exceptions';
 import { nameof } from '../utils';
 import { StepExecutor } from '../engine/stepExecutor';
 
-const xform = require('@perpk/json-xform');
-
-const { mapToNewObject } = xform;
-
 function getUserDefinition(
   workflowDefinition: JustWorkflowItWorkflowDefinition,
   $ref: string
@@ -74,9 +70,13 @@ function generateDataFromSchema(
   transformer?: JSONXformSchema,
   data?: Record<string, unknown>
 ): Record<string, unknown> {
-  return transformer
-    ? mapToNewObject(data || {}, transformer)
-    : (JSONSchemaFaker.generate(schema) as Record<string, unknown>);
+  if (transformer) {
+    // eslint-disable-next-line global-require
+    const xform = require('@perpk/json-xform');
+    const { mapToNewObject } = xform;
+    return mapToNewObject(data || {}, transformer);
+  }
+  return JSONSchemaFaker.generate(schema) as Record<string, unknown>;
 }
 
 function getValueByJsonXformSchemaPath(
@@ -164,6 +164,9 @@ function applyInputTransformer(
   executionData: Record<string, unknown>,
   traversalSteps: Array<string>
 ): Record<string, unknown> {
+  // eslint-disable-next-line global-require
+  const xform = require('@perpk/json-xform');
+  const { mapToNewObject } = xform;
   const transformedData: Record<string, unknown> = mapToNewObject(
     executionData || {},
     inputTransformer
