@@ -70,7 +70,7 @@ class JustWorkflowItEngine {
     if (inputTransformer) {
       try {
         // eslint-disable-next-line global-require
-        const xform = require('@perpk/json-xform');
+        const xform = require('@nkorai/json-xform');
         const { mapToNewObject } = xform;
         userInput = mapToNewObject(currentWorkflowState, inputTransformer);
       } catch (e) {
