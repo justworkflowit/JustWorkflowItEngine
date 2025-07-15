@@ -13,6 +13,7 @@ import { ExecutionHistoryItem } from './executionHistoryItem';
 interface JustWorkflowItEngineConstructorArgs {
   workflowDefinition: string;
   stepExecutors: Array<StepExecutor>;
+  workflowInput?: Record<string, unknown>;
 }
 
 class JustWorkflowItEngine {
@@ -20,9 +21,12 @@ class JustWorkflowItEngine {
 
   stepExecutors: Array<StepExecutor>;
 
+  workflowInput?: Record<string, unknown>;
+
   constructor(constructorArgs: JustWorkflowItEngineConstructorArgs) {
     this.stepExecutors = constructorArgs.stepExecutors;
-
+    this.workflowInput = constructorArgs.workflowInput;
+    // ToDO validate workflow input type
     this.workflowDefinition = validateAndGetWorkflowDefinition(
       constructorArgs.workflowDefinition,
       this.stepExecutors
@@ -54,6 +58,14 @@ class JustWorkflowItEngine {
   public async executeNextStep(
     currentWorkflowState: WorkflowState
   ): Promise<WorkflowState> {
+    if (
+      this.workflowInput &&
+      !currentWorkflowState.executionData.workflowInput
+    ) {
+      // eslint-disable-next-line no-param-reassign
+      currentWorkflowState.executionData.workflowInput = this.workflowInput;
+    }
+
     const stepToExecuteDefinition =
       this.getStepUnderExecution(currentWorkflowState);
 
@@ -72,7 +84,10 @@ class JustWorkflowItEngine {
         // eslint-disable-next-line global-require
         const xform = require('@nkorai/json-xform');
         const { mapToNewObject } = xform;
-        userInput = mapToNewObject(currentWorkflowState, inputTransformer);
+        userInput = mapToNewObject(
+          currentWorkflowState.executionData,
+          inputTransformer
+        );
       } catch (e) {
         throw new IllegalArgumentException(
           `Unable to parse user input. Exception: ${e}`

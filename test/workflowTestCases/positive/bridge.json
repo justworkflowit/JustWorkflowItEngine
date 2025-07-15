@@ -1,0 +1,336 @@
+{
+  "workflowName": "BusinessInformationAggregator",
+  "steps": [
+    {
+      "name": "GetBusinessById",
+      "transitionToStep": "WebScrapeBusinessInformation",
+      "integrationDetails": {
+        "type": "noopIntegration",
+        "config": {
+          "region": "us-east-1",
+          "functionName": "BridgeAppProdGetBusinessByIdLambda",
+          "accountId": "547534196569"
+        },
+        "inputTransformer": {
+          "fieldset": [
+            {
+              "to": "businessId",
+              "withTemplate": "b22e90ac-b4eb-4909-aa2d-86410d855129"
+            }
+          ]
+        },
+        "inputDefinition": {
+          "$ref": "#/definitions/getBusinessByIdInput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/getBusinessByIdOutput"
+        }
+      }
+    },
+    {
+      "name": "WebScrapeBusinessInformation",
+      "transitionToStep": "SaveBusinessInformation",
+      "integrationDetails": {
+        "type": "noopIntegration",
+        "config": {
+          "region": "us-east-1",
+          "functionName": "BridgeAppProdBusinessInformationScraperLambda",
+          "accountId": "547534196569"
+        },
+        "inputTransformer": {
+          "fieldset": [
+            {
+              "from": "GetBusinessByIdOutput.businessId",
+              "to": "businessId"
+            },
+            {
+              "from": "GetBusinessByIdOutput.businessName",
+              "to": "businessName"
+            },
+            {
+              "from": "GetBusinessByIdOutput.businessWebsite",
+              "to": "businessWebsite"
+            },
+            {
+              "from": "GetBusinessByIdOutput.businessNeighborhood",
+              "to": "businessNeighborhood"
+            },
+            {
+              "from": "GetBusinessByIdOutput.businessAddress",
+              "to": "businessAddress"
+            },
+            {
+              "from": "GetBusinessByIdOutput.businessEventListUrl",
+              "to": "businessEventListUrl"
+            }
+          ]
+        },
+        "inputDefinition": {
+          "$ref": "#/definitions/webScrapeBusinessInformationInput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/getBusinessByIdOutput"
+        }
+      }
+    },
+    {
+      "name": "SaveBusinessInformation",
+      "transitionToStep": "ScrapeEventListInformation",
+      "integrationDetails": {
+        "type": "noopIntegration",
+        "config": {
+          "region": "us-east-1",
+          "functionName": "BridgeAppProdSaveBusinessLambda",
+          "accountId": "547534196569"
+        },
+        "inputTransformer": {
+          "fieldset": [
+            {
+              "from": "WebScrapeBusinessInformationOutput",
+              "to": "business"
+            }
+          ]
+        },
+        "inputDefinition": {
+          "$ref": "#/definitions/saveBusinessInput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/getBusinessByIdOutput"
+        }
+      }
+    },
+    {
+      "name": "ScrapeEventListInformation",
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "noopIntegration",
+        "config": {
+          "region": "us-east-1",
+          "functionName": "BridgeAppProdEventListScraperLambda",
+          "accountId": "547534196569"
+        },
+        "inputTransformer": {
+          "fieldset": [
+            {
+              "from": "GetBusinessByIdOutput.businessId",
+              "to": "businessId"
+            },
+            {
+              "from": "GetBusinessByIdOutput.businessName",
+              "to": "businessName"
+            },
+            {
+              "from": "GetBusinessByIdOutput.businessWebsite",
+              "to": "businessWebsite"
+            },
+            {
+              "from": "GetBusinessByIdOutput.businessNeighborhood",
+              "to": "businessNeighborhood"
+            },
+            {
+              "from": "GetBusinessByIdOutput.businessAddress",
+              "to": "businessAddress"
+            },
+            {
+              "from": "GetBusinessByIdOutput.businessEventListUrl",
+              "to": "businessEventListUrl"
+            }
+          ]
+        },
+        "inputDefinition": {
+          "$ref": "#/definitions/getBusinessByIdOutput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/getBusinessByIdOutput"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "workflowInput": {
+      "type": "object",
+      "properties": {
+        "businessId": {
+          "type": "string"
+        }
+      },
+      "required": ["businessId"]
+    },
+    "getBusinessByIdInput": {
+      "type": "object",
+      "properties": {
+        "businessId": {
+          "type": "string"
+        }
+      },
+      "required": ["businessId"],
+      "additionalProperties": false
+    },
+    "getBusinessByIdOutput": {
+      "type": "object",
+      "properties": {
+        "businessId": {
+          "type": "string"
+        },
+        "businessName": {
+          "type": "string"
+        },
+        "businessWebsite": {
+          "type": "string"
+        },
+        "businessNeighborhood": {
+          "type": "string"
+        },
+        "businessAddress": {
+          "type": "string"
+        },
+        "businessEventListUrl": {
+          "type": "string"
+        },
+        "businessPlatform": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "businessId",
+        "businessName",
+        "businessWebsite",
+        "businessNeighborhood",
+        "businessAddress",
+        "businessEventListUrl"
+      ],
+      "additionalProperties": false
+    },
+    "webScrapeBusinessInformationInput": {
+      "type": "object",
+      "properties": {
+        "businessId": {
+          "type": "string"
+        },
+        "businessName": {
+          "type": "string"
+        },
+        "businessWebsite": {
+          "type": "string"
+        },
+        "businessNeighborhood": {
+          "type": "string"
+        },
+        "businessAddress": {
+          "type": "string"
+        },
+        "businessEventListUrl": {
+          "type": "string"
+        },
+        "businessPlatform": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "businessId",
+        "businessName",
+        "businessWebsite",
+        "businessNeighborhood",
+        "businessAddress",
+        "businessEventListUrl"
+      ],
+      "additionalProperties": false
+    },
+    "saveBusinessInput": {
+      "type": "object",
+      "properties": {
+        "business": {
+          "type": "object",
+          "properties": {
+            "businessId": {
+              "type": "string"
+            },
+            "businessName": {
+              "type": "string"
+            },
+            "businessWebsite": {
+              "type": "string"
+            },
+            "businessNeighborhood": {
+              "type": "string"
+            },
+            "businessAddress": {
+              "type": "string"
+            },
+            "businessEventListUrl": {
+              "type": "string"
+            },
+            "businessPlatform": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "businessId",
+            "businessName",
+            "businessWebsite",
+            "businessNeighborhood",
+            "businessAddress",
+            "businessEventListUrl"
+          ]
+        }
+      },
+      "required": ["business"],
+      "additionalProperties": false
+    },
+    "scrapeEventListInformationOutput": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string"
+        },
+        "eventName": {
+          "type": "string"
+        },
+        "eventStartTime": {
+          "type": "string"
+        },
+        "eventEndTime": {
+          "type": "string"
+        },
+        "eventHostName": {
+          "type": "string"
+        },
+        "eventAddress": {
+          "type": "string"
+        },
+        "eventNeighborhood": {
+          "type": "string"
+        },
+        "eventCategories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "searchTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "eventImageUrl": {
+          "type": "string"
+        },
+        "eventLinkUrl": {
+          "type": "string"
+        },
+        "eventDescription": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "eventId",
+        "eventName",
+        "eventStartTime",
+        "eventHostName",
+        "eventAddress"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

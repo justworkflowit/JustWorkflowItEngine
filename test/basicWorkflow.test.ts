@@ -193,7 +193,6 @@ describe('Workflow Engine Test Cases', () => {
     'run workflow test case: %s',
     async (filePath) => {
       const workflowDefinition = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-
       const engine = new JustWorkflowItEngine({
         workflowDefinition: JSON.stringify(workflowDefinition),
         stepExecutors,
