@@ -12,7 +12,7 @@
     "test": "jest",
     "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand",
     "lint": "npx eslint . --ext .ts --fix && prettier --write \"**/*.*\" --config .prettierrc.json",
-    "build": "rm -rf dist && npm run generate-types && npm run lint && npm run test && npm run build:esm && npm run build:cjs && webpack --config webpack.config.cjs",
+    "build": "rm -rf dist && npm run generate-types && npm run lint && npm run test && npm run build:esm && npm run build:cjs",
     "build:esm": "tsc --project tsconfig.esm.json",
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "prepare": "npm run build",
@@ -67,6 +67,7 @@
   },
   "dependencies": {
     "@nkorai/json-xform": "^1.3.2-nk.0",
+    "@perpk/json-xform": "^1.3.0",
     "ajv": "^8.12.0",
     "json-logic-js": "^2.0.5",
     "json-schema-faker": "^0.5.8",

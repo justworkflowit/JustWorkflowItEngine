@@ -72,7 +72,7 @@ function generateDataFromSchema(
 ): Record<string, unknown> {
   if (transformer) {
     // eslint-disable-next-line global-require
-    const xform = require('@nkorai/json-xform');
+    const xform = require('@perpk/json-xform');
     const { mapToNewObject } = xform;
     return mapToNewObject(data || {}, transformer);
   }
@@ -165,7 +165,7 @@ function applyInputTransformer(
   traversalSteps: Array<string>
 ): Record<string, unknown> {
   // eslint-disable-next-line global-require
-  const xform = require('@nkorai/json-xform');
+  const xform = require('@perpk/json-xform');
   const { mapToNewObject } = xform;
   const transformedData: Record<string, unknown> = mapToNewObject(
     executionData || {},
