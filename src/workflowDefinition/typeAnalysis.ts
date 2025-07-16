@@ -4,6 +4,7 @@ import Ajv from 'ajv';
 import {
   JSONSchemaFaker,
   JSONSchemaFakerDefine,
+  JSONSchemaFakerRefs,
   Schema,
 } from 'json-schema-faker';
 import {
@@ -11,6 +12,7 @@ import {
   StepDefinition,
   JustWorkflowItWorkflowDefinition,
   JSONLogicSchema,
+  DefinitionSchema,
 } from './types';
 import { IllegalArgumentException } from '../exceptions';
 import { nameof } from '../utils';
@@ -51,13 +53,22 @@ function getStepByName(
   return step;
 }
 
-function validateSchema(
+function validateSingleObjectSchema(
   ajv: Ajv,
-  schema: Schema,
+  singleObjectSchema: Schema,
+  singleObjectSchemaRef: string | undefined,
+  allDefinitions: Record<string, DefinitionSchema>,
   data: Record<string, unknown>,
   context: string
 ): void {
-  const validate = ajv.compile(schema);
+  singleObjectSchema.definitions = JSON.parse(JSON.stringify(allDefinitions));
+
+  if (singleObjectSchemaRef) {
+    const definitionKey = singleObjectSchemaRef.replace('#/definitions/', '');
+    delete singleObjectSchema.definitions?.[definitionKey];
+  }
+
+  const validate = ajv.compile(singleObjectSchema);
   if (!validate(data)) {
     throw new IllegalArgumentException(
       `Validation failed ${context}: ${JSON.stringify(validate.errors)}. Used data '${JSON.stringify(data)}'`
@@ -67,6 +78,7 @@ function validateSchema(
 
 function generateDataFromSchema(
   schema: Schema,
+  allDefinitions: Record<string, DefinitionSchema>,
   transformer?: JSONXformSchema,
   data?: Record<string, unknown>
 ): Record<string, unknown> {
@@ -76,7 +88,20 @@ function generateDataFromSchema(
     const { mapToNewObject } = xform;
     return mapToNewObject(data || {}, transformer);
   }
-  return JSONSchemaFaker.generate(schema) as Record<string, unknown>;
+  const jsonSchemaFakerRefs: JSONSchemaFakerRefs = Object.entries(
+    allDefinitions
+  ).reduce(
+    (acc, [key, value]) => {
+      acc[`#/definitions/${key}`] = value as Schema;
+      return acc;
+    },
+    {} as Record<string, Schema>
+  );
+
+  return JSONSchemaFaker.generate(schema, jsonSchemaFakerRefs) as Record<
+    string,
+    unknown
+  >;
 }
 
 function getValueByJsonXformSchemaPath(
@@ -228,9 +253,11 @@ function traverseSteps(
       );
     }
 
-    validateSchema(
+    validateSingleObjectSchema(
       ajv,
       executor.configDefinition as Schema,
+      executor.configDefinition.$ref,
+      inputWorkflowDefinition.definitions,
       config,
       `step '${currentStep.name}' config validation`
     );
@@ -246,18 +273,21 @@ function traverseSteps(
   }
 
   if (inputDefinition) {
-    const schema = getUserDefinition(
+    const singleObjectSchema = getUserDefinition(
       inputWorkflowDefinition,
       inputDefinition.$ref
     );
     const userInput = generateDataFromSchema(
-      schema,
+      singleObjectSchema,
+      inputWorkflowDefinition.definitions,
       inputTransformer,
       executionData
     );
-    validateSchema(
+    validateSingleObjectSchema(
       ajv,
-      schema,
+      singleObjectSchema,
+      inputDefinition.$ref,
+      inputWorkflowDefinition.definitions,
       userInput,
       `step '${currentStep.name}' input validation`
     );
@@ -265,14 +295,20 @@ function traverseSteps(
   }
 
   if (outputDefinition) {
-    const schema = getUserDefinition(
+    const singleObjectSchema = getUserDefinition(
       inputWorkflowDefinition,
       outputDefinition.$ref
     );
-    const userOutput = generateDataFromSchema(schema);
-    validateSchema(
+
+    const userOutput = generateDataFromSchema(
+      singleObjectSchema,
+      inputWorkflowDefinition.definitions
+    );
+    validateSingleObjectSchema(
       ajv,
-      schema,
+      singleObjectSchema,
+      outputDefinition.$ref,
+      inputWorkflowDefinition.definitions,
       userOutput,
       `step '${currentStep.name}' output validation`
     );
@@ -298,7 +334,8 @@ function traverseSteps(
 export function performAnalysisOnTypes(
   inputWorkflowDefinition: JustWorkflowItWorkflowDefinition,
   ajv: Ajv,
-  stepExecutors: Array<StepExecutor>
+  stepExecutors: Array<StepExecutor>,
+  workflowInput?: Record<string, unknown>
 ): void {
   if (
     !inputWorkflowDefinition.steps ||
@@ -316,7 +353,9 @@ export function performAnalysisOnTypes(
     ajv,
     stepExecutors,
     inputWorkflowDefinition.steps[0],
-    {},
+    {
+      workflowInput,
+    },
     []
   );
 }

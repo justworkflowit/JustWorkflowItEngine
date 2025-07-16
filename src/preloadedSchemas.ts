@@ -1504,6 +1504,9 @@ export default {
       definitionSchema: {
         type: 'object',
         properties: {
+          $ref: {
+            type: 'string',
+          },
           type: {
             type: 'string',
           },
@@ -1526,7 +1529,14 @@ export default {
             type: 'boolean',
           },
         },
-        required: ['type'],
+        anyOf: [
+          {
+            required: ['$ref'],
+          },
+          {
+            required: ['type'],
+          },
+        ],
         additionalProperties: false,
       },
       stepDefinition: {

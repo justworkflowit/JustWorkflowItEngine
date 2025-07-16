@@ -211,6 +211,23 @@ export type DefinitionsSchema =
   | {
       [k: string]: DefinitionSchema;
     };
+/**
+ * This interface was referenced by `JustWorkflowItWorkflowDefinition`'s JSON-Schema
+ * via the `definition` "definitionSchema".
+ */
+export type DefinitionSchema = DefinitionSchema1 & {
+  $ref?: string;
+  type?: string;
+  properties?: {
+    [k: string]: DefinitionSchema;
+  };
+  items?: DefinitionSchema;
+  required?: string[];
+  additionalProperties?: boolean;
+};
+export type DefinitionSchema1 = {
+  [k: string]: unknown | undefined;
+};
 
 export interface JustWorkflowItWorkflowDefinition {
   workflowName: string;
@@ -525,17 +542,4 @@ export interface FieldsetSchema {
  */
 export interface RefSchema {
   $ref: string;
-}
-/**
- * This interface was referenced by `JustWorkflowItWorkflowDefinition`'s JSON-Schema
- * via the `definition` "definitionSchema".
- */
-export interface DefinitionSchema {
-  type: string;
-  properties?: {
-    [k: string]: DefinitionSchema;
-  };
-  items?: DefinitionSchema;
-  required?: string[];
-  additionalProperties?: boolean;
 }

@@ -26,10 +26,11 @@ class JustWorkflowItEngine {
   constructor(constructorArgs: JustWorkflowItEngineConstructorArgs) {
     this.stepExecutors = constructorArgs.stepExecutors;
     this.workflowInput = constructorArgs.workflowInput;
-    // ToDO validate workflow input type
+    // TODO validate workflow input type
     this.workflowDefinition = validateAndGetWorkflowDefinition(
       constructorArgs.workflowDefinition,
-      this.stepExecutors
+      this.stepExecutors,
+      this.workflowInput
     );
   }
 

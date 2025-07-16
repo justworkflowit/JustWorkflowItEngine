@@ -5,7 +5,8 @@ import { getAjv } from './ajvInitialize';
 
 function validateAndGetWorkflowDefinition(
   inputWorkflowDefinitionString: string,
-  stepExecutors: Array<StepExecutor>
+  stepExecutors: Array<StepExecutor>,
+  workflowInput?: Record<string, unknown>
 ): JustWorkflowItWorkflowDefinition {
   const inputWorkflowDefinition = JSON.parse(
     inputWorkflowDefinitionString
@@ -27,7 +28,12 @@ function validateAndGetWorkflowDefinition(
     );
   }
 
-  performAnalysisOnTypes(inputWorkflowDefinition, ajv, stepExecutors);
+  performAnalysisOnTypes(
+    inputWorkflowDefinition,
+    ajv,
+    stepExecutors,
+    workflowInput
+  );
 
   return inputWorkflowDefinition;
 }
