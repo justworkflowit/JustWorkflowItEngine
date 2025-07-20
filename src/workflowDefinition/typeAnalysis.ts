@@ -55,12 +55,15 @@ function getStepByName(
 
 function validateSingleObjectSchema(
   ajv: Ajv,
-  singleObjectSchema: Schema,
+  singleObjectSchemaInput: Schema,
   singleObjectSchemaRef: string | undefined,
   allDefinitions: Record<string, DefinitionSchema>,
   data: Record<string, unknown>,
   context: string
 ): void {
+  const singleObjectSchema = JSON.parse(
+    JSON.stringify(singleObjectSchemaInput)
+  );
   singleObjectSchema.definitions = JSON.parse(JSON.stringify(allDefinitions));
 
   if (singleObjectSchemaRef) {
