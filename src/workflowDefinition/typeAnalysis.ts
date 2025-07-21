@@ -79,18 +79,76 @@ function validateSingleObjectSchema(
   }
 }
 
+function getValueByJsonXformSchemaPath(
+  inputData: Record<string, unknown>,
+  path: string | undefined
+): unknown {
+  if (!path) {
+    return undefined;
+  }
+
+  const data = JSON.parse(JSON.stringify(inputData));
+  return path.split('.').reduce<unknown>((acc, key) => {
+    if (acc && typeof acc === 'object' && key in acc) {
+      return (acc as Record<string, unknown>)[key];
+    }
+    return undefined;
+  }, data);
+}
+
+function findMissingRefs(
+  schema: any,
+  refs: Record<string, unknown>,
+  path = ''
+): string[] {
+  const missing: string[] = [];
+
+  if (typeof schema !== 'object' || schema === null) return missing;
+
+  if ('$ref' in schema) {
+    const ref = schema.$ref;
+    if (typeof ref === 'string' && !(ref in refs)) {
+      missing.push(`${path || '#'} -> ${ref}`);
+    }
+  }
+
+  for (const [key, value] of Object.entries(schema)) {
+    if (key !== '$ref') {
+      missing.push(...findMissingRefs(value, refs, `${path}/${key}`));
+    }
+  }
+
+  return missing;
+}
+
 function generateDataFromSchema(
   schema: Schema,
   allDefinitions: Record<string, DefinitionSchema>,
-  transformer?: JSONXformSchema,
-  data?: Record<string, unknown>
+  transformer: JSONXformSchema | undefined,
+  executionData: Record<string, unknown>
 ): Record<string, unknown> {
   if (transformer) {
+    for (const field of transformer.fieldset) {
+      // Some additional validation just to be nice, may have to heavily improve this in the future to actually fully implement the JSON xform source lookup, which does not sound fun.
+      if (field.from) {
+        const sourceValue = getValueByJsonXformSchemaPath(
+          executionData,
+          field.from
+        );
+        if (sourceValue === undefined) {
+          throw new Error(
+            `Transformation error: Missing expected field '${field.from}' in execution data. ExecutionData: ${JSON.stringify(executionData)}`
+          );
+        }
+      }
+    }
+
     // eslint-disable-next-line global-require
     const xform = require('@nkorai/json-xform');
     const { mapToNewObject } = xform;
-    return mapToNewObject(data || {}, transformer);
+    return mapToNewObject(executionData || {}, transformer);
   }
+
   const jsonSchemaFakerRefs: JSONSchemaFakerRefs = Object.entries(
     allDefinitions
   ).reduce(
@@ -101,26 +159,15 @@ function generateDataFromSchema(
     {} as Record<string, Schema>
   );
 
+  const missing = findMissingRefs(schema, jsonSchemaFakerRefs);
+  if (missing.length > 0) {
+    throw new Error(`Missing $ref definitions:\n${missing.join('\n')}`);
+  }
+
   return JSONSchemaFaker.generate(schema, jsonSchemaFakerRefs) as Record<
     string,
     unknown
   >;
-}
-
-function getValueByJsonXformSchemaPath(
-  data: Record<string, unknown>,
-  path: string | undefined
-): unknown {
-  if (!path) {
-    return undefined;
-  }
-
-  return path.split('.').reduce<unknown>((acc, key) => {
-    if (acc && typeof acc === 'object' && key in acc) {
-      return (acc as Record<string, unknown>)[key];
-    }
-    return undefined;
-  }, data);
 }
 
 function extractStepsFromJsonLogicStatement(
@@ -186,39 +233,6 @@ function getNextSteps(transitionToStep: string | JSONLogicSchema): string[] {
   );
 }
 
-function applyInputTransformer(
-  stepName: string,
-  inputTransformer: JSONXformSchema,
-  executionData: Record<string, unknown>,
-  traversalSteps: Array<string>
-): Record<string, unknown> {
-  // eslint-disable-next-line global-require
-  const xform = require('@nkorai/json-xform');
-  const { mapToNewObject } = xform;
-  const transformedData: Record<string, unknown> = mapToNewObject(
-    executionData || {},
-    inputTransformer
-  );
-  for (const field of inputTransformer.fieldset) {
-    // Some additional validation just to be nice, may have to heavily improve this in the future to actually fully implement the JSON xform source lookup, which does not sound fun.
-    if (field.from) {
-      const sourceValue = getValueByJsonXformSchemaPath(
-        executionData,
-        field.from
-      );
-      if (sourceValue === undefined) {
-        throw new Error(
-          `Transformation error: Missing expected field '${field.from}' in execution data. The graph traversal path taken: ${traversalSteps.join(' -> ')}`
-        );
-      }
-    }
-  }
-  return {
-    ...executionData,
-    [`${stepName}Input`]: transformedData,
-  };
-}
-
 function traverseSteps(
   inputWorkflowDefinition: JustWorkflowItWorkflowDefinition,
   ajv: Ajv,
@@ -266,15 +280,6 @@ function traverseSteps(
     );
   }
 
-  if (inputTransformer) {
-    executionData = applyInputTransformer(
-      currentStep.name,
-      inputTransformer,
-      executionData,
-      visitedSteps
-    );
-  }
-
   if (inputDefinition) {
     const singleObjectSchema = getUserDefinition(
       inputWorkflowDefinition,
@@ -305,8 +310,11 @@ function traverseSteps(
 
     const userOutput = generateDataFromSchema(
       singleObjectSchema,
-      inputWorkflowDefinition.definitions
+      inputWorkflowDefinition.definitions,
+      undefined,
+      executionData
     );
+
     validateSingleObjectSchema(
       ajv,
       singleObjectSchema,

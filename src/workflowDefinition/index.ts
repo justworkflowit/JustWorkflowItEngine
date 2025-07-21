@@ -24,7 +24,7 @@ function validateAndGetWorkflowDefinition(
 
   if (!validateWorkflowDefinition(inputWorkflowDefinition)) {
     throw new Error(
-      JSON.stringify(validateWorkflowDefinition.errors || 'Schema not found')
+      `${JSON.stringify(validateWorkflowDefinition.errors || 'Schema not found')} \nInput definition: ${inputWorkflowDefinitionString}`
     );
   }
 
