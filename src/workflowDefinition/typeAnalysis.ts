@@ -285,12 +285,16 @@ function traverseSteps(
       inputWorkflowDefinition,
       inputDefinition.$ref
     );
-    const userInput = generateDataFromSchema(
-      singleObjectSchema,
-      inputWorkflowDefinition.definitions,
-      inputTransformer,
-      executionData
-    );
+    // Use existing user input, otherwise generate
+    const userInput = executionData[`${currentStep.name}Input`]
+      ? (executionData[`${currentStep.name}Input`] as Record<string, unknown>)
+      : generateDataFromSchema(
+        singleObjectSchema,
+        inputWorkflowDefinition.definitions,
+        inputTransformer,
+        executionData
+      );
+
     validateSingleObjectSchema(
       ajv,
       singleObjectSchema,
@@ -308,12 +312,15 @@ function traverseSteps(
       outputDefinition.$ref
     );
 
-    const userOutput = generateDataFromSchema(
-      singleObjectSchema,
-      inputWorkflowDefinition.definitions,
-      undefined,
-      executionData
-    );
+    // Use existing user output, otherwise generate
+    const userOutput = executionData[`${currentStep.name}Output`]
+      ? (executionData[`${currentStep.name}Output`] as Record<string, unknown>)
+      : generateDataFromSchema(
+        singleObjectSchema,
+        inputWorkflowDefinition.definitions,
+        undefined,
+        executionData
+      );
 
     validateSingleObjectSchema(
       ajv,
@@ -358,6 +365,9 @@ export function performAnalysisOnTypes(
   Object.entries(inputWorkflowDefinition.definitions).forEach(([key, def]) => {
     JSONSchemaFaker.define(key, def as unknown as JSONSchemaFakerDefine);
   });
+
+  // Always include optional fields in generated data for type analysis at least, maybe we add a path for always false, and always true
+  JSONSchemaFaker.option({ alwaysFakeOptionals: true });
 
   traverseSteps(
     inputWorkflowDefinition,
