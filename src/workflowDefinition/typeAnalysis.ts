@@ -289,11 +289,11 @@ function traverseSteps(
     const userInput = executionData[`${currentStep.name}Input`]
       ? (executionData[`${currentStep.name}Input`] as Record<string, unknown>)
       : generateDataFromSchema(
-        singleObjectSchema,
-        inputWorkflowDefinition.definitions,
-        inputTransformer,
-        executionData
-      );
+          singleObjectSchema,
+          inputWorkflowDefinition.definitions,
+          inputTransformer,
+          executionData
+        );
 
     validateSingleObjectSchema(
       ajv,
@@ -316,11 +316,11 @@ function traverseSteps(
     const userOutput = executionData[`${currentStep.name}Output`]
       ? (executionData[`${currentStep.name}Output`] as Record<string, unknown>)
       : generateDataFromSchema(
-        singleObjectSchema,
-        inputWorkflowDefinition.definitions,
-        undefined,
-        executionData
-      );
+          singleObjectSchema,
+          inputWorkflowDefinition.definitions,
+          undefined,
+          executionData
+        );
 
     validateSingleObjectSchema(
       ajv,
