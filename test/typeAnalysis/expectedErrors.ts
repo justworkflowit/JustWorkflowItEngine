@@ -24,5 +24,6 @@ export const expectedErrors: Record<string, string> = {
     "No registered step executor found for type 'NonExistentSimpleIntegration'",
   'missingConfigProperty.json':
     'Validation failed step \'invalidStep\' config validation: [{"instancePath":"","schemaPath":"#/required","keyword":"required","params":{"missingProperty":"token"},"message":"must have required property \'token\'"}]. Used data \'{"env":"prod"}\'',
-  'indeterminatePropertyUsage.json': "Transformation error: Missing expected field 'firstStepOutput.optionalFlag' in execution data. ExecutionData: {\"firstStepInput\":{},\"firstStepOutput\":{\"outputA\":\""
+  'indeterminatePropertyUsage.json':
+    'Transformation error: Missing expected field \'firstStepOutput.optionalFlag\' in execution data. ExecutionData: {"firstStepInput":{},"firstStepOutput":{"outputA":"',
 };

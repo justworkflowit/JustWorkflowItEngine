@@ -16,6 +16,19 @@ interface JustWorkflowItEngineConstructorArgs {
   workflowInput?: Record<string, unknown>;
 }
 
+type ExecutionHistoryInput = Pick<
+  ExecutionHistoryItem,
+  | 'stepName'
+  | 'stepExecutorType'
+  | 'status'
+  | 'startTimestamp'
+  | 'endTimestamp'
+  | 'input'
+  | 'output'
+  | 'errors'
+  | 'warnings'
+>;
+
 class JustWorkflowItEngine {
   workflowDefinition: JustWorkflowItWorkflowDefinition;
 
@@ -173,6 +186,37 @@ class JustWorkflowItEngine {
       ...currentWorkflowState,
       executionData: newExecutionData,
       nextStepName,
+      executionHistory: [
+        ...currentWorkflowState.executionHistory,
+        newExecutionHistoryItem,
+      ],
+    };
+
+    return newWorkflowState;
+  }
+
+  public addExecutionHistoryItem(
+    currentWorkflowState: WorkflowState,
+    inputExecutionHistoryItem: ExecutionHistoryInput
+  ): WorkflowState {
+    const currentStepExecutor = this.stepExecutors.find(
+      (stepExecutor) =>
+        stepExecutor.type === inputExecutionHistoryItem.stepExecutorType
+    );
+    if (!currentStepExecutor) {
+      throw new IllegalArgumentException(
+        `Expected to find step executor of type '${inputExecutionHistoryItem.stepExecutorType}', not found.`
+      );
+    }
+
+    const newExecutionHistoryItem: ExecutionHistoryItem = {
+      ...inputExecutionHistoryItem,
+      id: uuidv4(),
+      historySource: 'external',
+    };
+
+    const newWorkflowState: WorkflowState = {
+      ...currentWorkflowState,
       executionHistory: [
         ...currentWorkflowState.executionHistory,
         newExecutionHistoryItem,
