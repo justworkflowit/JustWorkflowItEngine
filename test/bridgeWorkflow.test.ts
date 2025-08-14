@@ -75,6 +75,10 @@ const aWorkflowDefinition: JustWorkflowItWorkflowDefinition = {
               from: 'GetBusinessByIdOutput.businessEventListUrl',
               to: 'businessEventListUrl',
             },
+            {
+              from: 'GetBusinessByIdOutput.businessGeoCodeData',
+              to: 'businessGeoCodeData',
+            },
           ],
         },
         inputDefinition: {
@@ -260,6 +264,7 @@ const aWorkflowDefinition: JustWorkflowItWorkflowDefinition = {
         'businessCity',
         'businessAddress',
         'businessEventListUrl',
+        'businessGeoCodeData',
       ],
       additionalProperties: false,
     },
@@ -492,6 +497,10 @@ describe('Bridge Workflow Engine Test Cases', () => {
           SK: 'METADATA',
           businessEventListUrl: 'https://www.thegoldmark.com/events',
           PK: 'BUSINESS#e8d852f1-c0e5-4ce9-a2a9-5416abedf887',
+          businessGeoCodeData: {
+            lat: 1,
+            lon: 2,
+          },
         },
         WebScrapeBusinessInformationInput: {
           businessId: 'e8d852f1-c0e5-4ce9-a2a9-5416abedf887',
@@ -502,6 +511,10 @@ describe('Bridge Workflow Engine Test Cases', () => {
             'Goldmark, 4517 Butler Street, Pittsburgh, PA, 15201, United States',
           businessCity: 'Pittsburgh',
           businessEventListUrl: 'https://www.thegoldmark.com/events',
+          businessGeoCodeData: {
+            lat: 1,
+            lon: 2,
+          },
         },
         WebScrapeBusinessInformationOutput: {
           businessName: 'Goldmark',
@@ -519,6 +532,9 @@ describe('Bridge Workflow Engine Test Cases', () => {
           id: '49ba63b7-9c5c-4f72-872b-7a9a6247e9ab',
           stepName: 'GetBusinessById',
           stepExecutorType: '/justworkflowit/aws/lambda',
+          historySource: 'engine',
+          errors: [],
+          warnings: [],
           input: { businessId: 'e8d852f1-c0e5-4ce9-a2a9-5416abedf887' },
           output: {
             businessId: 'e8d852f1-c0e5-4ce9-a2a9-5416abedf887',
@@ -581,21 +597,21 @@ describe('Bridge Workflow Engine Test Cases', () => {
     });
 
     currentWorkflowState = await engine.executeNextStep(currentWorkflowState);
-    expect(currentWorkflowState.executionHistory.at(-1)?.error).toBeUndefined();
+    expect(currentWorkflowState.executionHistory.at(-1)?.errors.length).toBe(0);
     expect(currentWorkflowState.nextStepName).toBe('SaveBusinessInformation');
 
     currentWorkflowState = await engine.executeNextStep(currentWorkflowState);
-    expect(currentWorkflowState.executionHistory.at(-1)?.error).toBeUndefined();
+    expect(currentWorkflowState.executionHistory.at(-1)?.errors.length).toBe(0);
     expect(currentWorkflowState.nextStepName).toBe(
       'ScrapeEventListInformation'
     );
 
     currentWorkflowState = await engine.executeNextStep(currentWorkflowState);
-    expect(currentWorkflowState.executionHistory.at(-1)?.error).toBeUndefined();
+    expect(currentWorkflowState.executionHistory.at(-1)?.errors.length).toBe(0);
     expect(currentWorkflowState.nextStepName).toBe('ReconcileAndSaveEvents');
 
     currentWorkflowState = await engine.executeNextStep(currentWorkflowState);
-    expect(currentWorkflowState.executionHistory.at(-1)?.error).toBeUndefined();
+    expect(currentWorkflowState.executionHistory.at(-1)?.errors.length).toBe(0);
     expect(currentWorkflowState.nextStepName).toBe(null);
   });
 
@@ -615,7 +631,7 @@ describe('Bridge Workflow Engine Test Cases', () => {
     };
 
     currentWorkflowState = await engine.executeNextStep(currentWorkflowState);
-    expect(currentWorkflowState.executionHistory.at(-1)?.error).toBeUndefined();
+    expect(currentWorkflowState.executionHistory.at(-1)?.errors.length).toBe(0);
     expect(currentWorkflowState.nextStepName).toBe(
       'WebScrapeBusinessInformation'
     );
@@ -627,27 +643,27 @@ describe('Bridge Workflow Engine Test Cases', () => {
     ).toBe('testBusinessId');
 
     currentWorkflowState = await engine.executeNextStep(currentWorkflowState);
-    expect(currentWorkflowState.executionHistory.at(-1)?.error).toBeUndefined();
+    expect(currentWorkflowState.executionHistory.at(-1)?.errors.length).toBe(0);
     expect(currentWorkflowState.nextStepName).toBe(
       'TranslateAddressToGeoCodes'
     );
 
     currentWorkflowState = await engine.executeNextStep(currentWorkflowState);
-    expect(currentWorkflowState.executionHistory.at(-1)?.error).toBeUndefined();
+    expect(currentWorkflowState.executionHistory.at(-1)?.errors.length).toBe(0);
     expect(currentWorkflowState.nextStepName).toBe('SaveBusinessInformation');
 
     currentWorkflowState = await engine.executeNextStep(currentWorkflowState);
-    expect(currentWorkflowState.executionHistory.at(-1)?.error).toBeUndefined();
+    expect(currentWorkflowState.executionHistory.at(-1)?.errors.length).toBe(0);
     expect(currentWorkflowState.nextStepName).toBe(
       'ScrapeEventListInformation'
     );
 
     currentWorkflowState = await engine.executeNextStep(currentWorkflowState);
-    expect(currentWorkflowState.executionHistory.at(-1)?.error).toBeUndefined();
+    expect(currentWorkflowState.executionHistory.at(-1)?.errors.length).toBe(0);
     expect(currentWorkflowState.nextStepName).toBe('ReconcileAndSaveEvents');
 
     currentWorkflowState = await engine.executeNextStep(currentWorkflowState);
-    expect(currentWorkflowState.executionHistory.at(-1)?.error).toBeUndefined();
+    expect(currentWorkflowState.executionHistory.at(-1)?.errors.length).toBe(0);
     expect(currentWorkflowState.nextStepName).toBe(null);
   });
 });

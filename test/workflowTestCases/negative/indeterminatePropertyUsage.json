@@ -1,0 +1,94 @@
+{
+  "workflowName": "invalidStepReference",
+  "steps": [
+    {
+      "name": "firstStep",
+      "retries": 2,
+      "timeoutSeconds": 100,
+      "transitionToStep": "secondStep",
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "inputDefinition": {
+          "$ref": "#/definitions/firstStepInput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/firstStepOutput"
+        }
+      }
+    },
+    {
+      "name": "secondStep",
+      "retries": 1,
+      "timeoutSeconds": 60,
+      "transitionToStep": null,
+      "integrationDetails": {
+        "type": "simpleIntegration",
+        "inputTransformer": {
+          "fieldset": [
+            {
+              "from": "firstStepOutput.optionalFlag",
+              "to": "optionalFlag"
+            }
+          ]
+        },
+        "inputDefinition": {
+          "$ref": "#/definitions/secondStepInput"
+        },
+        "outputDefinition": {
+          "$ref": "#/definitions/secondStepOutput"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "workflowInput": {
+      "type": "object",
+      "properties": {
+        "existingProperty": {
+          "type": "string"
+        }
+      },
+      "required": ["existingProperty"],
+      "additionalProperties": false
+    },
+    "firstStepInput": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "firstStepOutput": {
+      "type": "object",
+      "properties": {
+        "outputA": {
+          "type": "string"
+        },
+        "optionalFlag": {
+          "type": "boolean"
+        }
+      },
+      "required": ["outputA"],
+      "additionalProperties": false
+    },
+    "secondStepInput": {
+      "type": "object",
+      "properties": {
+        "optionalFlag": {
+          "type": "boolean"
+        }
+      },
+      "required": ["optionalFlag"],
+      "additionalProperties": false
+    },
+    "secondStepOutput": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": ["result"],
+      "additionalProperties": false
+    }
+  }
+}

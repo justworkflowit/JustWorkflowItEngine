@@ -349,6 +349,24 @@ function traverseSteps(
   }
 }
 
+function testTypeAnalysis(
+  inputWorkflowDefinition: JustWorkflowItWorkflowDefinition,
+  ajv: Ajv,
+  stepExecutors: StepExecutor[],
+  workflowInput: Record<string, unknown> | undefined
+): void {
+  traverseSteps(
+    inputWorkflowDefinition,
+    ajv,
+    stepExecutors,
+    inputWorkflowDefinition.steps[0],
+    {
+      workflowInput,
+    },
+    []
+  );
+}
+
 export function performAnalysisOnTypes(
   inputWorkflowDefinition: JustWorkflowItWorkflowDefinition,
   ajv: Ajv,
@@ -366,17 +384,23 @@ export function performAnalysisOnTypes(
     JSONSchemaFaker.define(key, def as unknown as JSONSchemaFakerDefine);
   });
 
-  // Always include optional fields in generated data for type analysis at least, maybe we add a path for always false, and always true
+  // Always include optional fields in generated data first for type analysis
   JSONSchemaFaker.option({ alwaysFakeOptionals: true });
+  testTypeAnalysis(inputWorkflowDefinition, ajv, stepExecutors, workflowInput);
 
-  traverseSteps(
-    inputWorkflowDefinition,
-    ajv,
-    stepExecutors,
-    inputWorkflowDefinition.steps[0],
-    {
-      workflowInput,
-    },
-    []
-  );
+  // Then try it out with optionals nulled out. If this is the case the customer has provided a non-deterministic route
+  // and is relying on something to be required when it is not required
+  try {
+    JSONSchemaFaker.option({ alwaysFakeOptionals: false, requiredOnly: true });
+    testTypeAnalysis(
+      inputWorkflowDefinition,
+      ajv,
+      stepExecutors,
+      workflowInput
+    );
+  } catch (e) {
+    throw new IllegalArgumentException(
+      `The workflow definition is relying on a required property which is not marked as required up stream. This can lead to non-deterministic failures. Please ensure the property is optional throughout the workflow or required throughout the workflow. Error message: ${(e as Error).message}`
+    );
+  }
 }

@@ -5,6 +5,7 @@ export interface ExecutionHistoryItem {
   input: Record<string, unknown>;
   output: Record<string, unknown> | null;
   status: 'success' | 'failure';
+  historySource: 'engine' | 'external';
   /**
    *  ISO 8601 format date string when step execution started
    */
@@ -14,7 +15,11 @@ export interface ExecutionHistoryItem {
    */
   endTimestamp: string;
   /**
-   * Optional error message in case of failure
+   * Optional warning message(s) in execution
    */
-  error?: string;
+  warnings: Array<string>;
+  /**
+   * Optional error message(s) in case of failure
+   */
+  errors: Array<string>;
 }

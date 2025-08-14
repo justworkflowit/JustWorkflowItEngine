@@ -37,7 +37,9 @@ export class SampleEngineRunner {
           runAttempts += 1;
           continue;
         } else {
-          console.error(`Step execution failed: ${lastExecution.error}`);
+          console.error(
+            `Step execution failed: ${lastExecution.errors.join(', ')}`
+          );
           break;
         }
       }

@@ -114,7 +114,7 @@ class JustWorkflowItEngine {
 
     let stepOutput;
     let status: 'success' | 'failure' = 'success';
-    let error: string | undefined;
+    const errors: Array<string> = [];
     const startTimestamp = new Date().toISOString();
 
     let nextStepName: string | null = null;
@@ -126,7 +126,7 @@ class JustWorkflowItEngine {
     } catch (e) {
       stepOutput = null;
       status = 'failure';
-      error = String(e);
+      errors.push(String(e));
       nextStepName = currentWorkflowState.nextStepName;
     }
 
@@ -141,7 +141,9 @@ class JustWorkflowItEngine {
       status,
       startTimestamp,
       endTimestamp,
-      error,
+      errors,
+      warnings: [],
+      historySource: 'engine',
     };
 
     const newExecutionData = {
