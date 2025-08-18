@@ -377,7 +377,30 @@ export function performAnalysisOnTypes(
     !inputWorkflowDefinition.steps ||
     inputWorkflowDefinition.steps.length === 0
   ) {
-    throw new Error('Workflow has no steps defined.');
+    throw new IllegalArgumentException('Workflow has no steps defined.');
+  }
+
+  if (workflowInput && !inputWorkflowDefinition.definitions.workflowInput) {
+    throw new IllegalArgumentException(
+      'Workflow input definition must be provided when a workflow input is provided'
+    );
+  }
+
+  if (!workflowInput && inputWorkflowDefinition.definitions.workflowInput) {
+    throw new IllegalArgumentException(
+      'Workflow input value is required when a workflow input definition is provided'
+    );
+  }
+
+  if (workflowInput) {
+    validateSingleObjectSchema(
+      ajv,
+      inputWorkflowDefinition.definitions.workflowInput as Schema,
+      'workflowInput',
+      inputWorkflowDefinition.definitions,
+      workflowInput,
+      `workflowInput validation`
+    );
   }
 
   Object.entries(inputWorkflowDefinition.definitions).forEach(([key, def]) => {

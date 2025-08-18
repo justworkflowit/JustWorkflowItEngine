@@ -147,15 +147,6 @@
     }
   ],
   "definitions": {
-    "workflowInput": {
-      "type": "object",
-      "properties": {
-        "businessId": {
-          "type": "string"
-        }
-      },
-      "required": ["businessId"]
-    },
     "getBusinessByIdInput": {
       "type": "object",
       "properties": {

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { JSONSchemaFaker, Schema } from 'json-schema-faker';
 import { getAjv } from '../../src/workflowDefinition/ajvInitialize';
 import { JustWorkflowItWorkflowDefinition } from '../../src/workflowDefinition/types';
 import { performAnalysisOnTypes } from '../../src/workflowDefinition/typeAnalysis';
@@ -43,10 +44,22 @@ describe('Workflow Definition Type Analysis - Positive Test Cases', () => {
     const filePath = path.join(positiveTestCasesDir, file);
     const workflowDefinition: JustWorkflowItWorkflowDefinition = JSON.parse(
       fs.readFileSync(filePath, 'utf-8')
-    );
+    ) as JustWorkflowItWorkflowDefinition;
+
+    let workflowInput;
+    if (workflowDefinition?.definitions?.workflowInput) {
+      workflowInput = JSONSchemaFaker.generate(
+        workflowDefinition.definitions.workflowInput as Schema
+      );
+    }
 
     expect(() =>
-      performAnalysisOnTypes(workflowDefinition, ajv, stepExecutors)
+      performAnalysisOnTypes(
+        workflowDefinition,
+        ajv,
+        stepExecutors,
+        workflowInput
+      )
     ).not.toThrow();
   });
 });
@@ -56,7 +69,14 @@ describe('Workflow Definition Type Analysis - Negative Test Cases', () => {
     const filePath = path.join(negativeTestCasesDir, file);
     const workflowDefinition: JustWorkflowItWorkflowDefinition = JSON.parse(
       fs.readFileSync(filePath, 'utf-8')
-    );
+    ) as JustWorkflowItWorkflowDefinition;
+
+    let workflowInput;
+    if (workflowDefinition?.definitions?.workflowInput) {
+      workflowInput = JSONSchemaFaker.generate(
+        workflowDefinition.definitions.workflowInput as Schema
+      );
+    }
 
     const expectedError = expectedErrors[file];
     if (!expectedError) {
@@ -64,7 +84,12 @@ describe('Workflow Definition Type Analysis - Negative Test Cases', () => {
     }
 
     expect(() => {
-      performAnalysisOnTypes(workflowDefinition, ajv, stepExecutors);
+      performAnalysisOnTypes(
+        workflowDefinition,
+        ajv,
+        stepExecutors,
+        workflowInput
+      );
     }).toThrow(expectedError);
   });
 });

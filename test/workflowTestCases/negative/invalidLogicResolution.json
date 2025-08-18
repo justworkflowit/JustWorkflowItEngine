@@ -24,16 +24,6 @@
     }
   ],
   "definitions": {
-    "workflowInput": {
-      "type": "object",
-      "properties": {
-        "existingProperty": {
-          "type": "string"
-        }
-      },
-      "required": ["existingProperty"],
-      "additionalProperties": false
-    },
     "stepOneOutput": {
       "type": "object",
       "properties": {},

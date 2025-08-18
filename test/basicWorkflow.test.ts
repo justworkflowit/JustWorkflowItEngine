@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { JSONSchemaFaker, Schema } from 'json-schema-faker';
 import { expectedErrors } from './typeAnalysis/expectedErrors';
 import { JustWorkflowItEngine } from '../src';
 import {
@@ -192,10 +193,21 @@ describe('Workflow Engine Test Cases', () => {
   test.each(positiveTestCaseFiles)(
     'run workflow test case: %s',
     async (filePath) => {
-      const workflowDefinition = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      const workflowDefinition = JSON.parse(
+        fs.readFileSync(filePath, 'utf-8')
+      ) as JustWorkflowItWorkflowDefinition;
+
+      let workflowInput;
+      if (workflowDefinition?.definitions?.workflowInput) {
+        workflowInput = JSONSchemaFaker.generate(
+          workflowDefinition.definitions.workflowInput as Schema
+        );
+      }
+
       const engine = new JustWorkflowItEngine({
         workflowDefinition: JSON.stringify(workflowDefinition),
         stepExecutors,
+        workflowInput,
       });
 
       const initialWorkflowState: WorkflowState = {
@@ -228,7 +240,14 @@ describe('Workflow Engine Test Cases', () => {
     (filePath) => {
       const workflowDefinition: JustWorkflowItWorkflowDefinition = JSON.parse(
         fs.readFileSync(filePath, 'utf-8')
-      );
+      ) as JustWorkflowItWorkflowDefinition;
+
+      let workflowInput;
+      if (workflowDefinition?.definitions?.workflowInput) {
+        workflowInput = JSONSchemaFaker.generate(
+          workflowDefinition.definitions.workflowInput as Schema
+        );
+      }
 
       const consolidatedExpectedErrors = {
         ...expectedErrors,
@@ -246,6 +265,7 @@ describe('Workflow Engine Test Cases', () => {
         new JustWorkflowItEngine({
           workflowDefinition: JSON.stringify(workflowDefinition),
           stepExecutors,
+          workflowInput,
         });
       }).toThrow(expectedError);
     }

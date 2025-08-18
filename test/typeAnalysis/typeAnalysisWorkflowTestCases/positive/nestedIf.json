@@ -41,7 +41,7 @@
       "integrationDetails": {
         "type": "simpleIntegration",
         "inputDefinition": {
-          "$ref": "#/definitions/workflowInput"
+          "$ref": "#/definitions/stepOneInput"
         },
         "outputDefinition": {
           "$ref": "#/definitions/stepOneOutput"
@@ -95,7 +95,7 @@
     }
   ],
   "definitions": {
-    "workflowInput": {
+    "stepOneInput": {
       "type": "object",
       "properties": {
         "someProperty": {
