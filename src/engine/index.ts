@@ -1,7 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import jsonLogic, { AdditionalOperation, RulesLogic } from 'json-logic-js';
 import { IllegalArgumentException, IllegalStateException } from '../exceptions';
-import { StepExecutor, StepExecutorIntegrationDetails } from './stepExecutor';
+import {
+  StepExecutor,
+  StepExecutorIntegrationDetails,
+  StepExecutorOutput,
+} from './stepExecutor';
 import WorkflowState from './workflowState';
 import validateAndGetWorkflowDefinition from '../workflowDefinition';
 import {
@@ -20,7 +24,6 @@ type ExecutionHistoryInput = Pick<
   ExecutionHistoryItem,
   | 'stepName'
   | 'stepExecutorType'
-  | 'status'
   | 'startTimestamp'
   | 'endTimestamp'
   | 'input'
@@ -125,8 +128,7 @@ class JustWorkflowItEngine {
       ...restOfIntegrationDetails,
     };
 
-    let stepOutput;
-    let status: 'success' | 'failure' = 'success';
+    let stepOutput: StepExecutorOutput;
     const errors: Array<string> = [];
     const startTimestamp = new Date().toISOString();
 
@@ -137,8 +139,10 @@ class JustWorkflowItEngine {
         input: userInput,
       });
     } catch (e) {
-      stepOutput = null;
-      status = 'failure';
+      stepOutput = {
+        status: 'failure',
+        payload: undefined,
+      };
       errors.push(String(e));
       nextStepName = currentWorkflowState.nextStepName;
     }
@@ -151,7 +155,6 @@ class JustWorkflowItEngine {
       stepExecutorType: stepToExecuteDefinition.integrationDetails.type,
       input: userInput,
       output: stepOutput,
-      status,
       startTimestamp,
       endTimestamp,
       errors,
@@ -162,10 +165,13 @@ class JustWorkflowItEngine {
     const newExecutionData = {
       ...currentWorkflowState.executionData,
       [`${stepToExecuteDefinition.name}Input`]: userInput,
-      [`${stepToExecuteDefinition.name}Output`]: stepOutput,
+      [`${stepToExecuteDefinition.name}Output`]: stepOutput.payload,
     };
     // Evaluate JSON Logic for next step
-    if (status === 'success' && stepToExecuteDefinition.transitionToStep) {
+    if (
+      stepOutput.status === 'success' &&
+      stepToExecuteDefinition.transitionToStep
+    ) {
       if (typeof stepToExecuteDefinition.transitionToStep === 'string') {
         nextStepName = stepToExecuteDefinition.transitionToStep;
       } else {
@@ -179,6 +185,8 @@ class JustWorkflowItEngine {
           );
         }
       }
+    } else if (stepOutput.status === 'successful_but_incomplete') {
+      nextStepName = currentWorkflowState.nextStepName;
     }
 
     // If no valid next step is determined, workflow is complete

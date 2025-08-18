@@ -3,6 +3,7 @@ import { JustWorkflowItEngine } from '../src';
 import {
   StepExecutor,
   StepExecutorArguments,
+  StepExecutorOutput,
 } from '../src/engine/stepExecutor';
 import {
   JSONXformSchema,
@@ -397,71 +398,85 @@ function generateDataFromSchema(
 
 const GetBusinessByIdStepExecutor: StepExecutor = {
   type: 'GetBusinessByIdExecutor',
-  execute: (_args: StepExecutorArguments): Promise<Record<string, unknown>> =>
+  execute: (_args: StepExecutorArguments): Promise<StepExecutorOutput> =>
     Promise.resolve({
-      ...generateDataFromSchema(
-        aWorkflowDefinition.definitions.getBusinessByIdOutput as any,
-        '#/definitions/getBusinessByIdOutput'
-      ),
-      businessId: (_args.input as any)?.businessId,
+      status: 'success',
+      payload: {
+        ...generateDataFromSchema(
+          aWorkflowDefinition.definitions.getBusinessByIdOutput as any,
+          '#/definitions/getBusinessByIdOutput'
+        ),
+        businessId: (_args.input as any)?.businessId,
+      },
     }),
 };
 
 const WebScrapeBusinessInformationStepExecutor: StepExecutor = {
   type: 'WebScrapeBusinessInformationExecutor',
-  execute: (_args: StepExecutorArguments): Promise<Record<string, unknown>> =>
+  execute: (_args: StepExecutorArguments): Promise<StepExecutorOutput> =>
     Promise.resolve({
-      ...generateDataFromSchema(
-        aWorkflowDefinition.definitions.getBusinessByIdOutput as any,
-        '#/definitions/getBusinessByIdOutput'
-      ),
-      businessId: (_args.input as any)!.businessId,
+      status: 'success',
+      payload: {
+        ...generateDataFromSchema(
+          aWorkflowDefinition.definitions.getBusinessByIdOutput as any,
+          '#/definitions/getBusinessByIdOutput'
+        ),
+        businessId: (_args.input as any)!.businessId,
+      },
     }),
 };
 
 const TranslateAddressToGeoCodesStepExecutor: StepExecutor = {
   type: 'TranslateAddressToGeoCodesExecutor',
-  execute: (): Promise<Record<string, unknown>> =>
-    Promise.resolve(
-      generateDataFromSchema(
+  execute: (): Promise<StepExecutorOutput> =>
+    Promise.resolve({
+      status: 'success',
+      payload: generateDataFromSchema(
         aWorkflowDefinition.definitions.translateAddressToGeoCodesOutput as any,
         '#/definitions/translateAddressToGeoCodesOutput'
-      )
-    ),
+      ),
+    }),
 };
 
 const SaveBusinessInformationStepExecutor: StepExecutor = {
   type: 'SaveBusinessInformationExecutor',
-  execute: (_args: StepExecutorArguments): Promise<Record<string, unknown>> =>
+  execute: (_args: StepExecutorArguments): Promise<StepExecutorOutput> =>
     Promise.resolve({
-      ...generateDataFromSchema(
-        aWorkflowDefinition.definitions.getBusinessByIdOutput as any,
-        '#/definitions/getBusinessByIdOutput'
-      ),
-      businessId: (_args.input as any)!.businessId,
+      status: 'success',
+      payload: {
+        ...generateDataFromSchema(
+          aWorkflowDefinition.definitions.getBusinessByIdOutput as any,
+          '#/definitions/getBusinessByIdOutput'
+        ),
+        businessId: (_args.input as any)!.businessId,
+      },
     }),
 };
 
 const ScrapeEventListInformationStepExecutor: StepExecutor = {
   type: 'ScrapeEventListInformationExecutor',
-  execute: (): Promise<Record<string, unknown>> =>
-    Promise.resolve(
-      generateDataFromSchema(
+  execute: (): Promise<StepExecutorOutput> =>
+    Promise.resolve({
+      status: 'success',
+      payload: generateDataFromSchema(
         aWorkflowDefinition.definitions.scrapeEventListInformationOutput as any,
         '#/definitions/scrapeEventListInformationOutput'
-      )
-    ),
+      ),
+    }),
 };
 
 const ReconcileAndSaveEventsStepExecutor: StepExecutor = {
   type: 'ReconcileAndSaveEventsExecutor',
-  execute: (_args: StepExecutorArguments): Promise<Record<string, unknown>> =>
+  execute: (_args: StepExecutorArguments): Promise<StepExecutorOutput> =>
     Promise.resolve({
-      ...generateDataFromSchema(
-        aWorkflowDefinition.definitions.getBusinessByIdOutput as any,
-        '#/definitions/getBusinessByIdOutput'
-      ),
-      businessId: (_args.input as any)?.businessId,
+      status: 'success',
+      payload: {
+        ...generateDataFromSchema(
+          aWorkflowDefinition.definitions.getBusinessByIdOutput as any,
+          '#/definitions/getBusinessByIdOutput'
+        ),
+        businessId: (_args.input as any)?.businessId,
+      },
     }),
 };
 
@@ -537,22 +552,24 @@ describe('Bridge Workflow Engine Test Cases', () => {
           warnings: [],
           input: { businessId: 'e8d852f1-c0e5-4ce9-a2a9-5416abedf887' },
           output: {
-            businessId: 'e8d852f1-c0e5-4ce9-a2a9-5416abedf887',
-            businessWebsite: 'https://www.thegoldmark.com/',
-            createdAt: '2025-07-16T16:10:27.221Z',
-            businessAddress:
-              'Goldmark, 4517 Butler Street, Pittsburgh, PA, 15201, United States',
-            businessName: 'Goldmark',
-            businessCity: 'Pittsburgh',
-            GSI5SK: 'thegoldmark.com',
-            businessNeighborhood: 'Lawrenceville',
-            GSI5PK: 'BUSINESS_WEBSITE',
-            updatedAt: '2025-07-21T13:15:40.217Z',
-            SK: 'METADATA',
-            businessEventListUrl: 'https://www.thegoldmark.com/events',
-            PK: 'BUSINESS#e8d852f1-c0e5-4ce9-a2a9-5416abedf887',
+            status: 'success',
+            payload: {
+              businessId: 'e8d852f1-c0e5-4ce9-a2a9-5416abedf887',
+              businessWebsite: 'https://www.thegoldmark.com/',
+              createdAt: '2025-07-16T16:10:27.221Z',
+              businessAddress:
+                'Goldmark, 4517 Butler Street, Pittsburgh, PA, 15201, United States',
+              businessName: 'Goldmark',
+              businessCity: 'Pittsburgh',
+              GSI5SK: 'thegoldmark.com',
+              businessNeighborhood: 'Lawrenceville',
+              GSI5PK: 'BUSINESS_WEBSITE',
+              updatedAt: '2025-07-21T13:15:40.217Z',
+              SK: 'METADATA',
+              businessEventListUrl: 'https://www.thegoldmark.com/events',
+              PK: 'BUSINESS#e8d852f1-c0e5-4ce9-a2a9-5416abedf887',
+            },
           },
-          status: 'success',
           startTimestamp: '2025-07-21T13:15:47.016Z',
           endTimestamp: '2025-07-21T13:15:47.705Z',
         },
@@ -571,16 +588,18 @@ describe('Bridge Workflow Engine Test Cases', () => {
             businessEventListUrl: 'https://www.thegoldmark.com/events',
           },
           output: {
-            businessName: 'Goldmark',
-            businessAddress:
-              'Goldmark, 4517 Butler Street, Pittsburgh, PA, 15201, United States',
-            businessNeighborhood: 'Lawrenceville',
-            businessWebsite: 'https://www.thegoldmark.com/',
-            businessEventListUrl: 'https://www.thegoldmark.com/events',
-            businessWebsitePlatform: 'custom',
-            businessCity: 'Pittsburgh',
+            status: 'success',
+            payload: {
+              businessName: 'Goldmark',
+              businessAddress:
+                'Goldmark, 4517 Butler Street, Pittsburgh, PA, 15201, United States',
+              businessNeighborhood: 'Lawrenceville',
+              businessWebsite: 'https://www.thegoldmark.com/',
+              businessEventListUrl: 'https://www.thegoldmark.com/events',
+              businessWebsitePlatform: 'custom',
+              businessCity: 'Pittsburgh',
+            },
           },
-          status: 'success',
           startTimestamp: '2025-07-21T13:15:48.436Z',
           endTimestamp: '2025-07-21T13:17:09.688Z',
         },

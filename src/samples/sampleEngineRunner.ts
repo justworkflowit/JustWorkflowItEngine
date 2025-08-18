@@ -26,7 +26,7 @@ export class SampleEngineRunner {
         ];
 
       // if a step fails and retries are available, attempt a retry
-      if (lastExecution.status === 'failure') {
+      if (lastExecution.output.status === 'failure') {
         const stepUnderExecution = this.engine.getStepUnderExecution(
           this.currentWorkflowState
         );

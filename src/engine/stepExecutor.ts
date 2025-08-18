@@ -13,8 +13,13 @@ export interface StepExecutorArguments {
   input: unknown;
 }
 
+export interface StepExecutorOutput {
+  status: 'success' | 'successful_but_incomplete' | 'failure';
+  payload?: Record<string, unknown>;
+}
+
 export interface StepExecutor {
   type: string;
   configDefinition?: DefinitionSchema;
-  execute(args: StepExecutorArguments): Promise<Record<string, unknown>>;
+  execute(args: StepExecutorArguments): Promise<StepExecutorOutput>;
 }

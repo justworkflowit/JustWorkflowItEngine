@@ -6,6 +6,7 @@ import { JustWorkflowItEngine } from '../src';
 import {
   StepExecutor,
   StepExecutorArguments,
+  StepExecutorOutput,
 } from '../src/engine/stepExecutor';
 import { JustWorkflowItWorkflowDefinition } from '../src/workflowDefinition/types';
 import WorkflowState from '../src/engine/workflowState';
@@ -21,15 +22,21 @@ const outputA = {
 const stepExecutorA: StepExecutor = {
   // TODO: let's type the step executor, let the user provide unknown if needed
   type: simpleIntegration,
-  execute: (_args: StepExecutorArguments): Promise<Record<string, unknown>> =>
-    Promise.resolve(outputA),
+  execute: (_args: StepExecutorArguments): Promise<StepExecutorOutput> =>
+    Promise.resolve({
+      status: 'success',
+      payload: outputA,
+    }),
 };
 
 const stepExecutorB: StepExecutor = {
   // TODO: let's type the step executor, let the user provide unknown if needed
   type: 'noopIntegration',
-  execute: (_args: StepExecutorArguments): Promise<Record<string, unknown>> =>
-    Promise.resolve({}),
+  execute: (_args: StepExecutorArguments): Promise<StepExecutorOutput> =>
+    Promise.resolve({
+      status: 'success',
+      payload: {},
+    }),
 };
 
 const stepExecutors = [stepExecutorA, stepExecutorB];

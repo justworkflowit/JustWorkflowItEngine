@@ -2,6 +2,7 @@ import { IllegalArgumentException, JustWorkflowItEngine } from '../src';
 import {
   StepExecutor,
   StepExecutorArguments,
+  StepExecutorOutput,
 } from '../src/engine/stepExecutor';
 import { JustWorkflowItWorkflowDefinition } from '../src/workflowDefinition/types';
 import WorkflowState from '../src/engine/workflowState';
@@ -15,14 +16,20 @@ const outputA = {
 
 const stepExecutorA: StepExecutor = {
   type: simpleIntegration,
-  execute: (_args: StepExecutorArguments): Promise<Record<string, unknown>> =>
-    Promise.resolve(outputA),
+  execute: (_args: StepExecutorArguments): Promise<StepExecutorOutput> =>
+    Promise.resolve({
+      status: 'success',
+      payload: outputA,
+    }),
 };
 
 const stepExecutorB: StepExecutor = {
   type: 'noopIntegration',
-  execute: (_args: StepExecutorArguments): Promise<Record<string, unknown>> =>
-    Promise.resolve({}),
+  execute: (_args: StepExecutorArguments): Promise<StepExecutorOutput> =>
+    Promise.resolve({
+      status: 'success',
+      payload: {},
+    }),
 };
 
 const stepExecutors = [stepExecutorA, stepExecutorB];

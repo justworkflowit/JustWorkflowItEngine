@@ -2,6 +2,7 @@ import { JustWorkflowItEngine } from '../src';
 import {
   StepExecutor,
   StepExecutorArguments,
+  StepExecutorOutput,
 } from '../src/engine/stepExecutor';
 import { SampleEngineRunner } from '../src/samples/sampleEngineRunner';
 import { JustWorkflowItWorkflowDefinition } from '../src/workflowDefinition/types';
@@ -19,15 +20,16 @@ describe('Workflow Engine Test Cases with Retries', () => {
 
     const firstFailThenSucceedStepExecutor: StepExecutor = {
       type: simpleIntegration,
-      execute: (
-        _args: StepExecutorArguments
-      ): Promise<Record<string, unknown>> => {
+      execute: (_args: StepExecutorArguments): Promise<StepExecutorOutput> => {
         if (executionAttempts === 0) {
           executionAttempts += 1;
           throw new Error('Step execution failed on first attempt.');
         }
         executionAttempts += 1;
-        return Promise.resolve(outputA);
+        return Promise.resolve({
+          status: 'success',
+          payload: outputA,
+        });
       },
     };
 

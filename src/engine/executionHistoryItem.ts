@@ -1,10 +1,11 @@
+import { StepExecutorOutput } from './stepExecutor';
+
 export interface ExecutionHistoryItem {
   id: string;
   stepName: string;
   stepExecutorType: string;
   input: Record<string, unknown>;
-  output: Record<string, unknown> | null;
-  status: 'success' | 'failure';
+  output: StepExecutorOutput;
   historySource: 'engine' | 'external';
   /**
    *  ISO 8601 format date string when step execution started
