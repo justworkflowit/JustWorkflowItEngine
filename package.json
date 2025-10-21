@@ -1,8 +1,11 @@
 {
   "name": "@justworkflowit/engine",
-  "version": "0.0.72-alpha.0",
+  "version": "0.0.72",
   "description": "The JustWorkflowIt Engine",
   "types": "./dist/types/src/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     "import": "./dist/esm/src/index.js",
     "require": "./dist/cjs/src/index.js",
