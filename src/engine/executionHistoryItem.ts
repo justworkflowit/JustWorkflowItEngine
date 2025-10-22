@@ -8,6 +8,11 @@ export interface ExecutionHistoryItem {
   output: StepExecutorOutput;
   historySource: 'engine' | 'external';
   /**
+   * eventId for external events (e.g., child job ID for parent-child workflows)
+   * Only present when historySource is 'external'
+   */
+  eventId?: string;
+  /**
    *  ISO 8601 format date string when step execution started
    */
   startTimestamp: string;

@@ -30,6 +30,7 @@ type ExecutionHistoryInput = Pick<
   | 'output'
   | 'errors'
   | 'warnings'
+  | 'eventId'
 >;
 
 class JustWorkflowItEngine {
