@@ -27,7 +27,7 @@ jobs:
       - name: Increment Version and Create Tag
         id: tag
         run: |
-          npm version prepatch --preid=alpha --git-tag-version false
+          npm version patch --git-tag-version false
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
           git add package.json
@@ -45,7 +45,7 @@ jobs:
           tag_name: ${{ env.tag_name }}
           release_name: "Release ${{ env.tag_name }}"
           draft: false
-          prerelease: true
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -53,6 +53,6 @@ jobs:
       - name: Publish to npm
         run: |
           npm config set //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}
-          npm publish --access restricted
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
