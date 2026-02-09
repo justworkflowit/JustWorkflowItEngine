@@ -1,0 +1,116 @@
+name: Publish Package
+
+on:
+  workflow_dispatch:
+
+# Required for npm OIDC trusted publishing + provenance
+permissions:
+  contents: write  # For pushing tags
+  id-token: write  # For npm OIDC authentication and provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0  # Full history for diff against last-publish tag
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Upgrade npm for provenance support
+        run: |
+          npm install -g npm@latest
+          echo "npm version: $(npm --version)"
+
+      - name: Detect changes since last publish
+        id: detect
+        run: |
+          set -euo pipefail
+
+          if git rev-parse last-publish >/dev/null 2>&1; then
+            BASE=$(git rev-parse last-publish)
+            HEAD_SHA=$(git rev-parse HEAD)
+            echo "Last publish tag: $BASE"
+            echo "Current HEAD: $HEAD_SHA"
+
+            if [ "$BASE" = "$HEAD_SHA" ]; then
+              echo "No changes since last publish."
+              echo "should_publish=false" >> $GITHUB_OUTPUT
+            else
+              CHANGED=$(git diff --name-only "$BASE"..HEAD)
+              echo "Changed files since last publish:"
+              echo "$CHANGED"
+              echo "should_publish=true" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "No last-publish tag found. First publish."
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install dependencies
+        if: steps.detect.outputs.should_publish == 'true'
+        run: npm ci --ignore-scripts
+
+      - name: Build
+        if: steps.detect.outputs.should_publish == 'true'
+        run: npm run build
+
+      - name: Bump version and publish
+        if: steps.detect.outputs.should_publish == 'true'
+        run: |
+          set -euo pipefail
+
+          NAME=$(jq -r .name package.json)
+          LATEST=$(npm view "$NAME" version 2>/dev/null || echo "0.0.0")
+
+          echo "Latest published version of $NAME: $LATEST"
+
+          IFS='.' read -r major minor patch <<< "$LATEST"
+
+          # Find next available version
+          while true; do
+            patch=$((patch + 1))
+            NEW_VERSION="${major}.${minor}.${patch}"
+
+            if npm view "$NAME@$NEW_VERSION" version > /dev/null 2>&1; then
+              echo "$NEW_VERSION already published, trying next..."
+            else
+              echo "Bumping $NAME to $NEW_VERSION"
+              break
+            fi
+          done
+
+          # Update package.json in working directory (for npm publish)
+          jq --arg v "$NEW_VERSION" '.version = $v' package.json > package.json.tmp
+          mv package.json.tmp package.json
+
+          # Publish with provenance (OIDC trusted publishing - no NPM_TOKEN needed)
+          echo "Publishing $NAME@$NEW_VERSION with provenance..."
+          npm publish --access public --provenance
+
+          echo "Published $NAME@$NEW_VERSION"
+
+      - name: Update last-publish tag
+        if: steps.detect.outputs.should_publish == 'true'
+        run: |
+          # Only update the tag - do NOT push version bump commits
+          # Pushing commits would trigger the pipeline webhook, creating a cycle
+          # The npm registry is the source of truth for the published version
+          git tag -f last-publish
+          git push origin last-publish --force
+
+          echo "Updated last-publish tag"
+
+      - name: Skip publish (no changes)
+        if: steps.detect.outputs.should_publish != 'true'
+        run: echo "No changes since last publish. Skipping."

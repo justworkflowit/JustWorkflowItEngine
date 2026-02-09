@@ -26,7 +26,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nkorai/JustWorkflowItEngine.git"
+    "url": "git+https://github.com/justworkflowit/JustWorkflowItEngine.git"
   },
   "keywords": [
     "workflow",
@@ -36,9 +36,9 @@
   "author": "nkorai",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nkorai/JustWorkflowItEngine/issues"
+    "url": "https://github.com/justworkflowit/JustWorkflowItEngine/issues"
   },
-  "homepage": "https://github.com/nkorai/JustWorkflowItEngine#readme",
+  "homepage": "https://github.com/justworkflowit/JustWorkflowItEngine#readme",
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/json-logic-js": "^2.0.8",
