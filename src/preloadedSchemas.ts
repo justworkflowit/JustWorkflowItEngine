@@ -1830,9 +1830,6 @@ export default {
           "type": {
             "type": "string"
           },
-          "enum": {
-            "type": "array"
-          },
           "properties": {
             "type": "object",
             "additionalProperties": {
