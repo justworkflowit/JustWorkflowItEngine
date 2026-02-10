@@ -39,6 +39,7 @@
       "properties": {
         "$ref": { "type": "string" },
         "type": { "type": "string" },
+        "enum": { "type": "array" },
         "properties": {
           "type": "object",
           "additionalProperties": {
