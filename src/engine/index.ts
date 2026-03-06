@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import jsonLogic, { AdditionalOperation, RulesLogic } from 'json-logic-js';
+import { mapToNewObject } from '@nkorai/json-xform';
 import { IllegalArgumentException, IllegalStateException } from '../exceptions';
 import {
   StepExecutor,
@@ -99,9 +100,6 @@ class JustWorkflowItEngine {
     let userInput;
     if (inputTransformer) {
       try {
-        // eslint-disable-next-line global-require
-        const xform = require('@nkorai/json-xform');
-        const { mapToNewObject } = xform;
         userInput = mapToNewObject(
           currentWorkflowState.executionData,
           inputTransformer

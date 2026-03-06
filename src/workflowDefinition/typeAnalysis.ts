@@ -7,6 +7,7 @@ import {
   JSONSchemaFakerRefs,
   Schema,
 } from 'json-schema-faker';
+import { mapToNewObject } from '@nkorai/json-xform';
 import {
   JSONXformSchema,
   StepDefinition,
@@ -143,9 +144,6 @@ function generateDataFromSchema(
       }
     }
 
-    // eslint-disable-next-line global-require
-    const xform = require('@nkorai/json-xform');
-    const { mapToNewObject } = xform;
     return mapToNewObject(executionData || {}, transformer);
   }
 
