@@ -100,6 +100,11 @@
           "type": "object",
           "description": "Static configuration for the step executor, validated against the executor's configDefinition.",
           "additionalProperties": true
+        },
+        "secretBindings": {
+          "type": "object",
+          "description": "Maps secret slot names to organization secret key names. The keys declare what secrets the step needs, the values bind them to org secret keys.",
+          "additionalProperties": { "type": "string" }
         }
       },
       "required": ["type", "inputDefinition", "outputDefinition"],

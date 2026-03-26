@@ -503,6 +503,12 @@ export interface IntegrationDetails {
   config?: {
     [k: string]: unknown | undefined;
   };
+  /**
+   * Maps secret slot names to organization secret key names. The keys declare what secrets the step needs, the values bind them to org secret keys.
+   */
+  secretBindings?: {
+    [k: string]: string | undefined;
+  };
 }
 /**
  * https://github.com/perpk/json-xform
