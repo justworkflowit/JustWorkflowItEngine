@@ -27,11 +27,6 @@ jobs:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Upgrade npm for provenance support
-        run: |
-          npm install -g npm@11 --force
-          echo "npm version: $(npm --version)"
-
       - name: Detect changes since last publish
         id: detect
         run: |
