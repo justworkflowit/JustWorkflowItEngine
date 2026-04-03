@@ -91,7 +91,7 @@ jobs:
 
           # Publish with provenance (OIDC trusted publishing - no NPM_TOKEN needed)
           echo "Publishing $NAME@$NEW_VERSION with provenance..."
-          npm publish --access public --provenance
+          npx npm@11 publish --access public --provenance
 
           echo "Published $NAME@$NEW_VERSION"
 
