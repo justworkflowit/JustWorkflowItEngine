@@ -1,6 +1,6 @@
 # JustWorkflowIt Engine
 
-[![Node.js Package](https://github.com/nkorai/JustWorkflowItEngine/actions/workflows/npm-publish.yml/badge.svg?branch=main)](https://github.com/nkorai/JustWorkflowItEngine/actions/workflows/npm-publish.yml)
+[![Node.js Package](https://github.com/justworkflowit/JustWorkflowItEngine/actions/workflows/npm-publish.yml/badge.svg?branch=main)](https://github.com/nkorai/JustWorkflowItEngine/actions/workflows/npm-publish.yml)
 
 A lightweight workflow orchestration engine that lets you define complex workflows as JSON and execute them step-by-step. Think of it as a state machine with built-in data transformation, conditional branching, and retry logic.
 
