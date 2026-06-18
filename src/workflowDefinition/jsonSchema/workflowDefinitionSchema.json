@@ -154,6 +154,19 @@
         "toArray": {
           "type": "boolean"
         },
+        "fromArray": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "skipEmpty": {
+          "type": "boolean"
+        },
+        "unique": {
+          "type": "boolean"
+        },
+        "flatten": {
+          "type": "boolean"
+        },
         "via": {
           "type": "object",
           "properties": {
