@@ -47,7 +47,8 @@
         },
         "items": { "$ref": "#/definitions/definitionSchema" },
         "required": { "type": "array", "items": { "type": "string" } },
-        "additionalProperties": { "type": "boolean" }
+        "additionalProperties": { "type": "boolean" },
+        "default": {}
       },
       "anyOf": [{ "required": ["$ref"] }, { "required": ["type"] }],
       "additionalProperties": false
